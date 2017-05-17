@@ -48,4 +48,12 @@ deactivate
 ```
 (All of these steps where tested using a linux bash.)
 
+### Configure PyCharm to user virtualenv
+
+- Open the Settings and enter ```Project Interpreter``` in the search box. Then click ```Project Interpreter```.
+- Click the gear icon on the top right, then click ```add local```
+- Select the python binary from the virtual enviroment you just set up. In my case this is ```~/git/enterprise-memes/.venv/django-dev/bin/python```
+- Click OK a couple of times
+
+
 Happy coding!
