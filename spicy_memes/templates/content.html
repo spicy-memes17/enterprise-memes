@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
-
+{% load staticfiles %}
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -33,6 +33,7 @@
                 <li class="active"><a href="#">Hot</a></li>
                 <li><a href="#">Trending</a></li>
                 <li><a href="#">Fresh</a></li>
+                <li><a href="{% url 'spicy_memes:userprofile' %}">Username</a></li>
             </ul>
         </div>
     </div>

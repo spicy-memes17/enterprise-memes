@@ -4,5 +4,6 @@ from . import views
 
 app_name = 'spicy_memes'
 urlpatterns = [
-    url(r'^$', views.content, name='content')
+    url(r'^$', views.content, name='content'),
+    url(r'^userprofile', views.userprofile, name='userprofile'),
 ]
