@@ -34,11 +34,17 @@ cd .venv
 virtualenv django-dev
 ```
 to create a new virtual environment called "django-dev" inside a hidden folder, which git ignores.
-Next, you need to activate the virtualenv. Run
+Next, you need to activate the virtualenv. If you use a linux bash, run
 ```
 source django-dev/bin/activate
 ```
-to activate the environment. Now, every dependency is loaded from "django-dev". In order to install Django, simply run
+to activate the environment. 
+
+On a Windows system, run 
+```
+django-dev\Scripts\activate.bat 
+```
+instead of the source-command above. Now, every dependency is loaded from "django-dev". In order to install Django, simply run
 ```
 pip install Django
 ```
