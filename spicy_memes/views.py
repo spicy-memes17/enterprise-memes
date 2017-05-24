@@ -19,3 +19,9 @@ def signUp(request):
 
 def userprofile(request):
     return render(request, 'userProfile.html')
+
+def trendingPage(request):
+    return render(request, 'trending.html')
+
+def freshPage(request):
+    return render(request, 'fresh.html')

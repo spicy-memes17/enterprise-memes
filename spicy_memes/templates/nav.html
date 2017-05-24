@@ -1,25 +1,25 @@
 <nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">🌶️ SPICY️ MEMES ️</a>
-        </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Hot</a></li>
-                <li><a href="#">Trending</a></li>
-                <li><a href="#">Fresh</a></li>
-                <li><a href="{% url 'spicy_memes:userprofile' %}">Username</a></li>
-            </ul>
-        </div>
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+            data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">🌶️ SPICY️ MEMES ️</a>
     </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+            <li {% if active == "content" %} class="active" {% endif %}><a href="{% url 'spicy_memes:content' %}">Hot</a></li>
+            <li {% if active == "trendingPage" %} class="active" {% endif %}><a href="{% url 'spicy_memes:trendingPage' %}">Trending</a></li>
+            <li {% if active == "freshPage" %} class="active" {% endif %}><a href="{% url 'spicy_memes:freshPage' %}">Fresh</a></li>
+            <li {% if active == "userprofile" %} class="active" {% endif %}><a href="{% url 'spicy_memes:userprofile' %}">Username</a></li>
+        </ul>
+    </div>
+</div>
 </nav>
