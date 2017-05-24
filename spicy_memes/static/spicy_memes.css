@@ -1,0 +1,15 @@
+.memes {
+    margin: 20px;
+}
+
+.memes .img-responsive {
+    width: 100%;
+    height: 420px;
+    margin-top: 20px;
+    margin-bottom: 25px;
+}
+
+.vote {
+    padding-top: 25px;
+    padding-bottom: 20px;
+}
