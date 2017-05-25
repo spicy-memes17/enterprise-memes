@@ -74,7 +74,7 @@ class Statistic(models.Model):
     downvotes = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class Comment(models.Model):
@@ -84,7 +84,7 @@ class Comment(models.Model):
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 #ADDITIONAL INFO IF SOMETHING GOES WRONG:
