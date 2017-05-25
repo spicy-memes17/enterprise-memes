@@ -70,8 +70,8 @@ class Group(models.Model): #there is a group model in django. we could use it, b
 
 
 class Statistic(models.Model):
-    upvotes = models.IntegerField()
-    downvotes = models.IntegerField()
+    upvotes = models.PositiveIntegerField()
+    downvotes = models.PositiveIntegerField()
 
     def __str__(self):
         return self.id
