@@ -25,3 +25,6 @@ def trendingPage(request):
 
 def freshPage(request):
     return render(request, 'fresh.html')
+
+def loginPage(request):
+    return render(request, 'login.html')
