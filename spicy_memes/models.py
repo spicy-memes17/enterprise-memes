@@ -19,9 +19,10 @@ class Post(models.Model):
     description = models.CharField(max_length=2000)
     date = models.DateTimeField()
     image_field = models.ImageField(upload_to='images/', default='media/images/image.jpg')
+    upvotes = models.PositiveIntegerField(default=0)
+    downvotes = models.PositiveIntegerField(default=0)
 
     tags = models.ManyToManyField('Tag', blank=True)
-    statistic = models.OneToOneField('Statistic', on_delete=models.CASCADE)#cascading -> when passing multiple parameters, the other table's name seems to have to be in ''
     group = models.ForeignKey('MemeGroup', on_delete=models.CASCADE)#ForeignKey models a 1 to Many relationship
     user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
 
@@ -69,18 +70,11 @@ class MemeGroup(models.Model): #there is a group model in django. we could use i
         return self.name
 
 
-class Statistic(models.Model):
-    upvotes = models.PositiveIntegerField(default=0)
-    downvotes = models.PositiveIntegerField(default=0)
-
-    def __str__(self):
-        return str(self.id)
-
-
 class Comment(models.Model):
     date = models.DateTimeField()
     content = models.CharField(max_length=500)
-    statistic = models.OneToOneField(Statistic, on_delete=models.CASCADE)
+    upvotes = models.PositiveIntegerField(default=0)
+    downvotes = models.PositiveIntegerField(default=0)
     user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
 

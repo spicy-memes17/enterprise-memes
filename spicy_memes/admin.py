@@ -5,6 +5,5 @@ from .models import *
 admin.site.register(Tag)
 admin.site.register(Post)
 admin.site.register(Comment)
-admin.site.register(Statistic)
 admin.site.register(MemeGroup)
 admin.site.register(MyUser)
