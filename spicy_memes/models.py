@@ -22,7 +22,7 @@ class Post(models.Model):
 
     tags = models.ManyToManyField('Tag', blank=True)
     statistic = models.OneToOneField('Statistic', on_delete=models.CASCADE)#cascading -> when passing multiple parameters, the other table's name seems to have to be in ''
-    group = models.ForeignKey('Group', on_delete=models.CASCADE)#ForeignKey models a 1 to Many relationship
+    group = models.ForeignKey('MemeGroup', on_delete=models.CASCADE)#ForeignKey models a 1 to Many relationship
     user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -61,7 +61,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin): #we don't need all attributes 
         return self.email
 
 
-class Group(models.Model): #there is a group model in django. we could use it, but it doesn't seem necessary to me https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.Group
+class MemeGroup(models.Model): #there is a group model in django. we could use it, but it doesn't seem necessary to me https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.Group
     name = models.CharField(max_length=30)
     users = models.ManyToManyField(MyUser)
 
@@ -70,8 +70,8 @@ class Group(models.Model): #there is a group model in django. we could use it, b
 
 
 class Statistic(models.Model):
-    upvotes = models.PositiveIntegerField()
-    downvotes = models.PositiveIntegerField()
+    upvotes = models.PositiveIntegerField(default=0)
+    downvotes = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.id
