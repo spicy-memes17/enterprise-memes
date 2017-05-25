@@ -19,8 +19,6 @@ class Post(models.Model):
     description = models.CharField(max_length=2000)
     date = models.DateTimeField()
     image_field = models.ImageField(upload_to='images/', default='media/images/image.jpg')
-    upvotes = models.PositiveIntegerField(default=0)
-    downvotes = models.PositiveIntegerField(default=0)
 
     tags = models.ManyToManyField('Tag', blank=True)
     group = models.ForeignKey('MemeGroup', on_delete=models.CASCADE)#ForeignKey models a 1 to Many relationship
@@ -73,13 +71,29 @@ class MemeGroup(models.Model): #there is a group model in django. we could use i
 class Comment(models.Model):
     date = models.DateTimeField()
     content = models.CharField(max_length=500)
-    upvotes = models.PositiveIntegerField(default=0)
-    downvotes = models.PositiveIntegerField(default=0)
     user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.id)
+
+
+class LikesPost(models.Model):
+    class Meta:
+        unique_together = (('user','post'),)
+
+    user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
+    post = models.ForeignKey('Post', on_delete=models.CASCADE)
+    likes = models.BooleanField(default=True)
+
+
+class LikesComment(models.Model):
+    class Meta:
+        unique_together = (('user','comment'),)
+
+    user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
+    comment = models.ForeignKey('Comment', on_delete=models.CASCADE)
+    likes = models.BooleanField(default=True)
 
 
 #ADDITIONAL INFO IF SOMETHING GOES WRONG:
