@@ -10,6 +10,10 @@ from django.utils import timezone
 class Tag(models.Model):
     name = models.CharField(max_length=20)
 
+    def __str__(self):
+        return self.name
+
+
 class Post(models.Model):
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=2000)
@@ -21,6 +25,10 @@ class Post(models.Model):
     group = models.ForeignKey('Group', on_delete=models.CASCADE)#ForeignKey models a 1 to Many relationship
     user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.title
+
+
 class MyUser(AbstractBaseUser, PermissionsMixin): #we don't need all attributes of the django user model. extending AbstractBaseUser allows us to create a custom user model
     username = models.CharField(max_length=15, unique=True)
     email = models.EmailField()
@@ -30,7 +38,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin): #we don't need all attributes 
 
     USERNAME_FIELD = 'username' #probably maps custom names to internal names used for user actions
     EMAIL_FIELD = 'email'
-    
+
     REQUIRED_FIELDS = ['email']# "A list of the field names that will be prompted for when creating a user via the createsuperuser management command"
     #"REQUIRED_FIELDS must contain all required fields on your user model, but should not contain the USERNAME_FIELD or password as these fields will always be prompted for."
 
@@ -52,22 +60,31 @@ class MyUser(AbstractBaseUser, PermissionsMixin): #we don't need all attributes 
         """Return the email."""
         return self.email
 
+
 class Group(models.Model): #there is a group model in django. we could use it, but it doesn't seem necessary to me https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.Group
     name = models.CharField(max_length=30)
-    
-    users = models.ManyToManyField(MyUser) 
+    users = models.ManyToManyField(MyUser)
+
+    def __str__(self):
+        return self.name
+
 
 class Statistic(models.Model):
     upvotes = models.IntegerField()
     downvotes = models.IntegerField()
 
+    def __str__(self):
+        return self.id
+
+
 class Comment(models.Model):
     date = models.DateTimeField()
     content = models.CharField(max_length=500)
-
     statistic = models.OneToOneField(Statistic, on_delete=models.CASCADE)
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.id
 
 
 #ADDITIONAL INFO IF SOMETHING GOES WRONG:
