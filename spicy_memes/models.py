@@ -81,6 +81,7 @@ class Comment(models.Model):
     date = models.DateTimeField()
     content = models.CharField(max_length=500)
     statistic = models.OneToOneField(Statistic, on_delete=models.CASCADE)
+    user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
 
     def __str__(self):
