@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spicy Memes</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
+
+</head>
+<body>
+{% include 'nav.html' with active="index" %}
+<div class="container">
+    <div class="row">
+        <div class="page-header">
+            <h1>HOT 🔥</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 memes col-md-offset-8 ">
+            <h3>Spicy Meme 1</h3>
+            <img src="{% static 'placeholder.jpg' %}" class="img-responsive img-rounded">
+            <p class="pull-right"><strong>Spiciness Factor: </strong> 500 🌶️🌶️🌶️</p>
+            <div class="btn-toolbar vote">
+                <button type="button" class="btn btn-default">🌶️</button>
+                <button type="button" class="btn btn-default">🍼</button>
+                <button type="button" class="btn btn-default">💬</button>
+            </div>
+            <hr/>
+        </div>
+    </div>
+</div>
+</body>
+</html>

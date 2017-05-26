@@ -1,0 +1,22 @@
+.memes {
+    margin: 20px;
+}
+
+.memes .img-responsive {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 25px;
+}
+
+.vote {
+    padding-top: 25px;
+    padding-bottom: 20px;
+}
+
+.signup {
+    margin-top: 200px;
+}
+
+.redirectLogin {
+    margin-top: 40px;
+}
