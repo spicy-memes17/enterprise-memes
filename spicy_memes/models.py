@@ -7,6 +7,7 @@ from django.utils import timezone
 #cascading
 #min_length does not exist for models. find substitute to enforce a minimum password length
 
+
 class Tag(models.Model):
     name = models.CharField(max_length=20)
 
@@ -25,7 +26,7 @@ class Post(models.Model):
     user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.title
+        return self.title + ": " + self.description
 
 
 class MyUser(AbstractBaseUser, PermissionsMixin): #we don't need all attributes of the django user model. extending AbstractBaseUser allows us to create a custom user model
@@ -59,6 +60,9 @@ class MyUser(AbstractBaseUser, PermissionsMixin): #we don't need all attributes 
         """Return the email."""
         return self.email
 
+    def __str__(self):
+        return self.username
+
 
 class MemeGroup(models.Model): #there is a group model in django. we could use it, but it doesn't seem necessary to me https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.Group
     name = models.CharField(max_length=30)
@@ -75,7 +79,7 @@ class Comment(models.Model):
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.id)
+        return str(self.id) + ": " + self.content[0:10]
 
 
 class LikesPost(models.Model):
@@ -86,6 +90,9 @@ class LikesPost(models.Model):
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
     likes = models.BooleanField(default=True)
 
+    def __str__(self):
+        return str(self.user) + " likes " if self.likes else " dislikes " + str(self.post)
+
 
 class LikesComment(models.Model):
     class Meta:
@@ -94,6 +101,9 @@ class LikesComment(models.Model):
     user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
     comment = models.ForeignKey('Comment', on_delete=models.CASCADE)
     likes = models.BooleanField(default=True)
+
+    def __str__(self):
+        return str(self.user) + (" likes " if self.likes else " dislikes ") + str(self.comment)
 
 
 #ADDITIONAL INFO IF SOMETHING GOES WRONG:
