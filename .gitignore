@@ -9,6 +9,7 @@ __pycache__/
 local_settings.py
 db.sqlite3
 media
+/*/migrations/
 
 ### PyCharm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, 
