@@ -1,8 +1,11 @@
 from django import forms
-# from .models import User
+from .models import MyUser
 
-class SignUp(forms.Form):
-    username = forms.CharField(label = 'Username')
-    email = forms.EmailField(label = 'Email')
-    password = forms.CharField(label = 'Password', widget=forms.PasswordInput)
+class SignUpForm(forms.ModelForm):
+    class Meta:
+        model = MyUser
+        fields = ('username', 'email', 'password')
+    # username = forms.CharField(label = 'Username')
+    # email = forms.EmailField(label = 'Email')
+    # password = forms.CharField(label = 'Password', widget=forms.PasswordInput)
 
