@@ -6,7 +6,8 @@ from .models import MyUser
 from django.contrib.auth import authenticate, login
 
 def content(request):
-    return render(request, 'content.html')
+    current_user = request.user
+    return render(request, 'content.html', {'user' : current_user})
 
 def signUp(request):
     if request.method == 'POST':
