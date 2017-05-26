@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import SignUpForm
+from .forms import LogInForm
 from .models import MyUser
+from django.contrib.auth import authenticate, login
 
 def content(request):
     return render(request, 'content.html')
@@ -32,4 +34,22 @@ def freshPage(request):
     return render(request, 'fresh.html')
 
 def loginPage(request):
-    return render(request, 'login.html')
+    if request.method == 'POST':
+        username = request.POST['username']
+        print(username)
+        password = request.POST['password']
+        print(password)
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect('/spicy_memes') #succes redirect to the startpage
+        else:
+            print("no-succes")
+            return HttpResponseRedirect('/spicy_memes/loginPage') #wrong login-information: reload for the moment
+            
+
+
+    else:
+        form = LogInForm()
+
+    return render(request, 'login.html', {'LogInForm': form})
