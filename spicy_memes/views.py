@@ -3,10 +3,11 @@ from django.http import HttpResponseRedirect
 from .forms import SignUpForm
 from .forms import LogInForm
 from .models import MyUser
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 def content(request):
     current_user = request.user
+    print(request.user)
     return render(request, 'content.html', {'user' : current_user})
 
 def signUp(request):
@@ -35,6 +36,7 @@ def freshPage(request):
     return render(request, 'fresh.html')
 
 def loginPage(request):
+    current_user = request.user
     if request.method == 'POST':
         username = request.POST['username']
         print(username)
@@ -52,5 +54,8 @@ def loginPage(request):
 
     else:
         form = LogInForm()
+    return render(request, 'login.html', {'LogInForm': form, 'user' : current_user})
 
-    return render(request, 'login.html', {'LogInForm': form})
+def logoutView(request):
+    logout(request)
+    return HttpResponseRedirect('/spicy_memes/loginPage')
