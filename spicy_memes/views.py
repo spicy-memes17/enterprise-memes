@@ -60,5 +60,4 @@ def loginPage(request):
 
 def logOut(request):
     logout(request)
-    return HttpResponseRedirect('/spicy_memes')
-
+    return HttpResponseRedirect('/spicy_memes/signUp')
