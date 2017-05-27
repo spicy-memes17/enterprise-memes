@@ -19,6 +19,8 @@ def signUp(request):
             user.email = request.POST['email']
             user.password = request.POST['password']
             user.save()
+            user_auth = authenticate(username=username, password=raw_password)
+            login(request, user_auth)
             return HttpResponseRedirect('/spicy_memes')
 
     else:
@@ -56,6 +58,7 @@ def loginPage(request):
         form = LogInForm()
     return render(request, 'login.html', {'LogInForm': form, 'user' : current_user})
 
-def logoutView(request):
+def logOut(request):
     logout(request)
-    return HttpResponseRedirect('/spicy_memes/loginPage')
+    return HttpResponseRedirect('/spicy_memes')
+
