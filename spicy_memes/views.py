@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from .forms import SignUpForm
 from .forms import LogInForm
 from .models import MyUser
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 def content(request):
     current_user = request.user
@@ -18,6 +18,8 @@ def signUp(request):
             user.email = request.POST['email']
             user.password = request.POST['password']
             user.save()
+            user_auth = authenticate(username=username, password=raw_password)
+            login(request, user_auth)
             return HttpResponseRedirect('/spicy_memes')
 
     else:
@@ -54,3 +56,7 @@ def loginPage(request):
         form = LogInForm()
 
     return render(request, 'login.html', {'LogInForm': form})
+
+def logOut(request):
+    logout(request)
+    return HttpResponseRedirect('/spicy_memes')

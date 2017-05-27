@@ -18,6 +18,11 @@
     <div class="row">
         <div align="right">
             <p>Logged in as: {{user.username}}</p>
+            <form align="right" action="logOut/" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-default">Logout</button>
+            </form>
         </div>
         <div class="page-header">
             <h1>HOT 🔥</h1>
