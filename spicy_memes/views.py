@@ -19,7 +19,7 @@ def signUp(request):
             user.email = request.POST['email']
             user.password = request.POST['password']
             user.save()
-            user_auth = authenticate(username=username, password=raw_password)
+            user_auth = authenticate(request, username=user.username, password=user.password)
             login(request, user_auth)
             return HttpResponseRedirect('/spicy_memes')
 
