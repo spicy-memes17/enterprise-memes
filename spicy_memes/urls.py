@@ -11,5 +11,6 @@ urlpatterns = [
     url(r'^trendingPage', views.trendingPage, name='trendingPage'),
     url(r'^freshPage', views.freshPage, name='freshPage'),
     url(r'^loginPage', views.loginPage, name='loginPage'),
-    url(r'^logout', views.logOut, name='logoutPage')
+    url(r'^logout', views.logOut, name='logoutPage'),
+    url(r'^deleteUser', views.deleteUser, name='deleteUser')
     ]

@@ -51,9 +51,6 @@ def loginPage(request):
         else:
             print("no-succes")
             return HttpResponseRedirect('/spicy_memes/loginPage') #wrong login-information: reload for the moment
-            
-
-
     else:
         form = LogInForm()
     return render(request, 'login.html', {'LogInForm': form, 'user' : current_user})
@@ -61,3 +58,12 @@ def loginPage(request):
 def logOut(request):
     logout(request)
     return HttpResponseRedirect('/spicy_memes/signUp')
+
+def deleteUser(request):
+    current_user = request.user
+    if request.user.is_authenticated():
+        logout(request)
+        current_user.delete()
+        return HttpResponseRedirect('/spicy_memes/signUp')
+    else:
+        return render(request, 'userProfile.html')
