@@ -33,16 +33,5 @@
             <hr/>
         </div>
     </div>
-    <div><label>Form</label>
-    <form method="post" action="{% url 'spicy_memes:upload_file' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        <p>
-        {{ form }}
-        </p>
-        <button type="submit" class="btn btn-default pull-right">
-            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-        </button>
-    </form>
-    </div>
 </body>
 </html>

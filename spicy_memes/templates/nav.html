@@ -21,7 +21,8 @@
             <li {% if active == "userprofile" %} class="active" {% endif %}><a href="{% url 'spicy_memes:userprofile' %}">Username</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-            <button action="upload">Upload</button>
+			<li {% if active == "uploadFile" %} class="active" {% endif %}><a href="{% url 'spicy_memes:uploadFile' %}">Upload</a></li>
+            <!--<button action="upload">Upload</button>-->
         </ul>
     </div>
 </div>

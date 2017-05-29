@@ -7,9 +7,10 @@ from .forms import SignUp
 
 from .models import Post
 from .forms import UploadFileForm
+from .forms import UploadForm
 
 def content(request):
-    upload_file(request)
+    #upload_file(request)
     return render(request, 'content.html')
 
 def signUp(request):
@@ -36,20 +37,12 @@ def freshPage(request):
 def loginPage(request):
     return render(request, 'login.html')
 	
-def upload_file(request):
-    print("bla")
+def uploadFile(request):
     if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
+        form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
-            newPost = Post()
-            newPost.title = form.cleaned_data['title']
-            newPost.description = form.cleaned_data['description']
-            newPost.date = "1/1/17"
-            newPost.image_field = request.FILES['image_field']
-            newPost.save()
+            form.save()
             return HttpResponseRedirect('/content/')
     else:
-        form = UploadFileForm()
-        return render(request, 'content.html', {'form': form})
-
-    
+        form = UploadForm()
+        return render(request, 'uploadFile.html', {'form': form})

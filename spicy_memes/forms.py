@@ -1,6 +1,7 @@
 from django import forms
 # from .models import User
 from .models import Post
+from django.forms import ModelForm
 
 class SignUp(forms.Form):
     username = forms.CharField(label = 'Username')
@@ -21,4 +22,8 @@ class UploadFileForm(forms.Form):
         label ='Select a file',
         help_text='max. 5 megabytes')
 
-    
+# data upload mit ModelForm. ist empfohlen, wenn man mit models.py arbeitet
+class UploadForm(ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'description', 'image_field']
