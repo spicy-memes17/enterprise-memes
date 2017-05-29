@@ -19,7 +19,7 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=2000)
     date = models.DateTimeField()
-    image_field = models.ImageField(upload_to='images/', default='media/images/image.jpg')
+    image_field = models.FileField(upload_to='images/', default='media/images/image.jpg')
 
     tags = models.ManyToManyField('Tag', blank=True)
     group = models.ForeignKey('MemeGroup', on_delete=models.CASCADE)#ForeignKey models a 1 to Many relationship
