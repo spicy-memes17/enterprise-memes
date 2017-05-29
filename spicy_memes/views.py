@@ -10,8 +10,9 @@ from .forms import UploadFileForm
 from .forms import UploadForm
 
 def content(request):
-    #upload_file(request)
-    return render(request, 'content.html')
+    latest_meme_list = Post.objects.order_by('-date') [:20]
+    context = {'latest_meme_list': latest_meme_list}
+    return render(request, 'content.html', context)
 
 def signUp(request):
     if request.method == 'POST':
@@ -42,7 +43,7 @@ def uploadFile(request):
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/content/')
+            return HttpResponseRedirect('/spicy_memes/')
     else:
-        form = UploadForm()
+        form = UploadForm(initial = {'post.group_id': 0 })
         return render(request, 'uploadFile.html', {'form': form})

@@ -1,7 +1,7 @@
 from django import forms
 # from .models import User
 from .models import Post
-from django.forms import ModelForm
+from django.forms import ModelForm, Textarea
 
 class SignUp(forms.Form):
     username = forms.CharField(label = 'Username')
@@ -27,3 +27,7 @@ class UploadForm(ModelForm):
     class Meta:
         model = Post
         fields = ['title', 'description', 'image_field']
+        widgets = {
+            'title' : Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Spicy Title'}),
+            'description' : Textarea(attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Enter spicy description'}),
+        }
