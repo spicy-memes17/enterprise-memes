@@ -24,9 +24,9 @@ def signUp(request):
             return HttpResponseRedirect('/spicy_memes')
 
     else:
-        form = SignUpForm()
+        signUpForm = SignUp()
 
-    return render(request, 'signup.html', {'signUpForm': form})
+    return render(request, 'signup.html', {'signUpForm': signUpForm})
 
 def userprofile(request):
     current_user = request.user
@@ -72,3 +72,4 @@ def deleteUser(request):
             return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if password is wrong
     else:
         return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if accessed with http-get
+      
