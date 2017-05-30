@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from .forms import SignUp
 from django.shortcuts import get_object_or_404
 from .models import Post
 from .forms import UploadFileForm
