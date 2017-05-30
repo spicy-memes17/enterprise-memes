@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spicy Memes</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
+
+</head>
+<body>
+{% include 'nav.html' with active="index" %}
+<div class="container">
+    <div><label>Upload your Meme</label>
+        <form method="post" action="{% url 'spicy_memes:uploadFile' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p>
+                {{ form.title }}
+            </p>
+            <br>
+            {{ form.description }}
+            <br>
+            {{ form.image_field }}
+            <button type="submit" class="btn btn-default pull-right">
+            <span class="glyphicon glyphicon-upload" aria-hidden="true">
+                <div class="uploadbtn">UPLOAD</div>
+            </span>
+            </button>
+        </form>
+    </div>
+</body>
+</html>

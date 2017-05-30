@@ -20,3 +20,9 @@
 .redirectLogin {
     margin-top: 40px;
 }
+
+.uploadbtn {
+    font-family: sans-serif;
+    display: inline;
+    font-weight: bold;
+}

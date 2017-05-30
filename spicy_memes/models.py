@@ -18,12 +18,13 @@ class Tag(models.Model):
 class Post(models.Model):
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=2000)
-    date = models.DateTimeField()
-    image_field = models.ImageField(upload_to='images/', default='media/images/image.jpg')
+    date = models.DateTimeField(auto_now_add=True)
+    image_field = models.FileField(upload_to='images/', default='media/images/image.jpg')
 
     tags = models.ManyToManyField('Tag', blank=True)
-    group = models.ForeignKey('MemeGroup', on_delete=models.CASCADE)#ForeignKey models a 1 to Many relationship
-    user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
+    #default = 1 for first sprint version of meme upload
+    group = models.ForeignKey('MemeGroup', default = 1, on_delete=models.CASCADE)#ForeignKey models a 1 to Many relationship
+    user = models.ForeignKey('MyUser', default = 1, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title + ": " + self.description

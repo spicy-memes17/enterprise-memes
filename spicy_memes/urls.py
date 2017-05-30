@@ -11,6 +11,9 @@ urlpatterns = [
     url(r'^trendingPage', views.trendingPage, name='trendingPage'),
     url(r'^freshPage', views.freshPage, name='freshPage'),
     url(r'^loginPage', views.loginPage, name='loginPage'),
+	  url(r'^uploadFile', views.uploadFile, name='uploadFile'),
+	  url(r'^editFile', views.editFile, name='editFile'),
+	  url(r'^post/(?P<pk>\d+)/delete/$', views.deleteFile, name='deleteFile'),
     url(r'^logout', views.logOut, name='logoutPage'),
     url(r'^deleteUser', views.deleteUser, name='deleteUser')
     ]
