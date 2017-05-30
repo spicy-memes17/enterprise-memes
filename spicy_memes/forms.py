@@ -1,13 +1,12 @@
 from django import forms
 # from .models import User
-from .models import Post
+from .models import Post, MyUser
 from django.forms import ModelForm, Textarea
 
-class SignUp(forms.Form):
-    username = forms.CharField(label = 'Username')
-    email = forms.EmailField(label = 'Email')
-    password = forms.CharField(label = 'Password', widget=forms.PasswordInput)
-
+class SignUpForm(forms.ModelForm):
+    class Meta:
+        model = MyUser
+        fields = ('username', 'email', 'password')
 
 # data upload
 class UploadFileForm(forms.Form):
@@ -41,3 +40,9 @@ class EditForm(ModelForm):
             'title' : Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Spicy Title'}),
             'description' : Textarea(attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Enter spicy description'}),
         }
+
+
+class LogInForm(forms.ModelForm):
+    class Meta:
+        model = MyUser
+        fields = ('username', 'password')
