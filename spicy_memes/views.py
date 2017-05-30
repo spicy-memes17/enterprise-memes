@@ -29,7 +29,9 @@ def signUp(request):
     return render(request, 'signup.html', {'signUpForm': form})
 
 def userprofile(request):
-    return render(request, 'userProfile.html')
+    current_user = request.user
+    authform = LogInForm()
+    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user})
 
 def trendingPage(request):
     return render(request, 'trending.html')
@@ -41,9 +43,7 @@ def loginPage(request):
     current_user = request.user
     if request.method == 'POST':
         username = request.POST['username']
-        print(username)
         password = request.POST['password']
-        print(password)
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
@@ -61,9 +61,14 @@ def logOut(request):
 
 def deleteUser(request):
     current_user = request.user
-    if request.user.is_authenticated():
-        logout(request)
-        current_user.delete()
-        return HttpResponseRedirect('/spicy_memes/signUp')
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        if request.user.is_authenticated and current_user.username == username and current_user.password == password:
+            logout(request)
+            current_user.delete()
+            return HttpResponseRedirect('/spicy_memes/signUp')
+        else:
+            return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if password is wrong
     else:
-        return render(request, 'userProfile.html')
+        return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if accessed with http-get

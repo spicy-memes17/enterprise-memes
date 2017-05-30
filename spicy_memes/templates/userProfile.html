@@ -30,7 +30,7 @@
             <div class="useravatar">
                 <img alt="" src="{% static 'user/img/noPic.png' %}">
             </div>
-            <div class="card-info"> <span class="card-title">Username</span>
+            <div class="card-info"> <span class="card-title">{{user.username}}</span>
 
             </div>
         </div>
@@ -59,15 +59,21 @@
             </div>
             <div class="tab-pane fade in" id="tab2">
               <h3>Settings</h3>
-              <form align="right" action="deleteUser" method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-default">Delete Account</button>
-                </form>
-          </div>
-          <div class="tab-pane fade in" id="tab3">
+              <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#delete-account">Delete Account</button>
+              <div id="delete-account" class="collapse">
+                  <form align="right" action="deleteUser" method="post">
+                      {% csrf_token %}
+                      {% for field in AuthForm %}
+                          <p>{{ field.label_tag }} <br/>{{ field }}</p>
+                      {% endfor %}
+                      <button type="submit" class="btn btn-default">Delete Account</button>
+                  </form>
+              </div>
+
+            </div>
+            <div class="tab-pane fade in" id="tab3">
               <h3>Gruppen</h3>
-          </div>
+            </div>
       </div>
   </div>
 
