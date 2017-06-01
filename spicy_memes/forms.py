@@ -23,9 +23,24 @@ class UploadFileForm(forms.Form):
 
 # data upload mit ModelForm. ist empfohlen, wenn man mit models.py arbeitet
 class UploadForm(ModelForm):
+    def __init__(self, **kwargs):
+        self.user = kwargs.pop('user', None)
+        #self.group = kwargs.pop('group', None)
+        super(UploadForm, self).__init__(**kwargs)
+
+    def save(self, commit=True):
+        obj = super(UploadForm, self).save(commit=False)
+        obj.user = self.user
+        #obj.group = self.group
+        if commit:
+            obj.save()
+        return obj
+    
     class Meta:
         model = Post
         fields = ['title', 'description', 'image_field']
+        user = forms.CharField(widget=forms.HiddenInput())
+        group = forms.CharField(widget=forms.HiddenInput())
         widgets = {
             'title' : Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Spicy Title'}),
             'description' : Textarea(attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Enter spicy description'}),

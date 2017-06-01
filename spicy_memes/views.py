@@ -2,9 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from .forms import SignUp
 from django.shortcuts import get_object_or_404
-from .models import Post
+from .models import Post, MemeGroup
 from .forms import UploadFileForm
 from .forms import UploadForm
 from .forms import EditForm
@@ -88,12 +87,13 @@ def deleteUser(request):
 	
 def uploadFile(request):
     if request.method == 'POST':
-        form = UploadForm(request.POST, request.FILES)
+        form = UploadForm(user = request.user, files=request.FILES, data=request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/spicy_memes/')
     else:
-        form = UploadForm(initial = {'post.group_id': 0 })
+        form = UploadForm()
+        print(request.user.id)
         return render(request, 'uploadFile.html', {'form': form})
 
 def editFile(request):

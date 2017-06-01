@@ -24,7 +24,7 @@ class Post(models.Model):
     tags = models.ManyToManyField('Tag', blank=True)
     #default = 1 for first sprint version of meme upload
     group = models.ForeignKey('MemeGroup', default = 1, on_delete=models.CASCADE)#ForeignKey models a 1 to Many relationship
-    user = models.ForeignKey('MyUser', default = 1, on_delete=models.CASCADE)
+    user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title + ": " + self.description
