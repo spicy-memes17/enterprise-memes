@@ -26,3 +26,8 @@
     display: inline;
     font-weight: bold;
 }
+
+.thumbnail img {
+    max-height: 10%;
+    max-width: 10%;
+}

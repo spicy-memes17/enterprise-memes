@@ -56,6 +56,16 @@
           <div class="tab-content">
             <div class="tab-pane fade in active" id="tab1">
                 <h3>User Info</h3>
+                <p><h3>Your spicy collection</h3></p>
+                {% for post in user_meme_list %}
+                    <div class="col-xs-3">
+                    <p>
+                    <strong>{{ post.title }}</strong>
+                    <img src="{{ post.image_field.url }}" class="img-responsive img-rounded thumbnail">
+                    <hr/>
+                    </p>
+                    </div>
+                {% endfor %}
             </div>
             <div class="tab-pane fade in" id="tab2">
               <h3>Settings</h3>

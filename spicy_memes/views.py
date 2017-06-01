@@ -42,8 +42,13 @@ def signUp(request):
 
 def userprofile(request):
     current_user = request.user
+    print(current_user)
+    print(request.user)
+    for meme in Post.objects.filter(user=current_user):
+        print(meme)
+    user_meme_list = Post.objects.filter(user=current_user).order_by('-date') [:20]
     authform = LogInForm()
-    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user})
+    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user, 'user_meme_list': user_meme_list})
 
 def trendingPage(request):
     return render(request, 'trending.html')
