@@ -11,6 +11,8 @@ from .forms import SignUpForm
 from .forms import LogInForm
 from .models import MyUser
 from django.contrib.auth import authenticate, login, logout
+from datetime import timedelta
+import datetime
 
 def content(request):
     latest_meme_list = Post.objects.order_by('-date') [:20]
@@ -93,8 +95,36 @@ def uploadFile(request):
             return HttpResponseRedirect('/spicy_memes/')
     else:
         form = UploadForm()
-        print(request.user.id)
         return render(request, 'uploadFile.html', {'form': form})
+
+def postDetail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    user = request.user
+    editform = EditForm(initial={'title': post.title,'description': post.description})
+    print((datetime.datetime.now().replace(tzinfo=None) - post.date.replace(tzinfo=None)).days * 24 * 60)
+    if (post.user == request.user):
+        postOwner = True
+    else:
+        postOwner = False
+    context = {'post': post, 'user': user, 'owner': postOwner, 'editform': editform}
+    return render(request, 'postDetail.html', context)
+
+def editPost(request, pk):
+    if request.method == 'POST':
+        form = EditForm(request.POST)
+        if form.is_valid():
+            post = get_object_or_404(Post, pk=pk)
+            post.title = form.cleaned_data['title']
+            post.description = form.cleaned_data['description']
+            post.save()
+            #messages.success(request, 'Post \"%s\" was edited successfully' % post_text)
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    else:
+        form = EditForm()
+        return render(request, '/spicy_memes/', {'form': form})   
 
 def editFile(request):
     latest_meme_list = Post.objects.order_by('-date')[:20]
