@@ -93,7 +93,6 @@ def uploadFile(request):
             return HttpResponseRedirect('/spicy_memes/')
     else:
         form = UploadForm()
-        print(request.user.id)
         return render(request, 'uploadFile.html', {'form': form})
 
 def editFile(request):
