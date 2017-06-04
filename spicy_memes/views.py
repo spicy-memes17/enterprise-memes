@@ -87,12 +87,13 @@ def deleteUser(request):
 	
 def uploadFile(request):
     if request.method == 'POST':
-        form = UploadForm(request.POST, request.FILES)
+        form = UploadForm(user = request.user, files=request.FILES, data=request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/spicy_memes/')
     else:
-        form = UploadForm(initial = {'post.group_id': 0 })
+        form = UploadForm()
+        print(request.user.id)
         return render(request, 'uploadFile.html', {'form': form})
 
 def editFile(request):
