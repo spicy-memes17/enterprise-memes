@@ -27,6 +27,8 @@ class SignUpForm(forms.ModelForm):
             raise forms.ValidationError("Username and password must have at least four characters.")
         if password != passwordConfirm:
             raise forms.ValidationError("Passwords do not match!")
+        if len(list(filter(lambda x: x.username == username, MyUser.objects.all()))) != 0:
+            raise forms.ValidationError("Username is already taken!")
         return self.cleaned_data
 
 # data upload
