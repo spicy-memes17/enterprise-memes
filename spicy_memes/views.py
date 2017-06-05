@@ -13,6 +13,7 @@ from .models import MyUser
 from django.contrib.auth import authenticate, login, logout
 from datetime import timedelta
 import datetime
+from django.utils.timesince import timesince
 
 def content(request):
     latest_meme_list = Post.objects.order_by('-date') [:20]
@@ -101,12 +102,19 @@ def postDetail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     user = request.user
     editform = EditForm(initial={'title': post.title,'description': post.description})
-    print((datetime.datetime.now().replace(tzinfo=None) - post.date.replace(tzinfo=None)).days * 24 * 60)
+    tdelta = datetime.datetime.now() - post.date.replace(tzinfo=None)
+    print((tdelta.seconds/60) - 120)
+    time_posted = (tdelta.seconds/60) - 120
+    time_diff = round(15 - time_posted)
+#    if (time_posted <= 15):
+#        editable = True
+#    else :
+#        editable = False
     if (post.user == request.user):
         postOwner = True
     else:
         postOwner = False
-    context = {'post': post, 'user': user, 'owner': postOwner, 'editform': editform}
+    context = {'post': post, 'user': user, 'owner': postOwner, 'editform': editform, 'time_posted': time_posted, 'time_diff': time_diff}
     return render(request, 'postDetail.html', context)
 
 def editPost(request, pk):

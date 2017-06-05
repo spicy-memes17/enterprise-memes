@@ -29,7 +29,7 @@
         <div class="col-xs-8 memesdetail">
             <h3>{{ post.title }}</h3>
             <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
-            <strong>Posted by: </strong> {{ post.user }}<p class="pull-right"><strong>Spiciness Factor: </strong> 500 🌶️🌶️🌶️</p>
+            <strong>Posted by: </strong> {{ post.user }} ({{ post.date|timesince }} ago)<p class="pull-right"><strong>Spiciness Factor: </strong> 500 🌶️🌶️🌶️</p>
             <br>
             <p class="description">{{ post.description }}</p>
             <div class="btn-toolbar vote">
@@ -39,12 +39,12 @@
             </div>
             <hr/>
         </div>
-        {% if owner %}
+        {% if owner and time_posted < 15 %}
         <div class="col-xs-6 col-lg-4 edit">
         <form action="{% url 'spicy_memes:editPost' post.id %}" method="post">
         {% csrf_token %}
         <h3>Edit your post</h3>
-        <p>You can edit your post for another xx minutes.</p>
+        <p>You can edit your post for another {{ time_diff }} minute(s).</p>
         <label>Title</label>
         {{ editform.title }}
         <br>
