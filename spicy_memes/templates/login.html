@@ -26,7 +26,7 @@
                     {% for field in LogInForm %}
                     <p>{{ field.label_tag }} <br/>{{ field }}</p>
                     {% endfor %}
-                    <a href="{% url 'spicy_memes:content' %}"> <button type="submit" class="btn btn-default">Login</button></a> 
+                    <button type="submit" class="btn btn-default">Login</button>
                     <a href="{% url 'spicy_memes:signUp' %}"> <button type="submit" class="btn btn-default">Back to SignUp</button></a> 
                 </form>
             <div class="redirectContent">

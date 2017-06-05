@@ -6,7 +6,23 @@ from django.forms import ModelForm, Textarea
 class SignUpForm(forms.ModelForm):
     class Meta:
         model = MyUser
+        username = forms.CharField(max_length=255, required=True)
+        email = forms.CharField(max_length=255, required=True)
+        password = forms.CharField(widget=forms.PasswordInput(), required=True)
+
         fields = ('username', 'email', 'password')
+        widgets = {
+            'password': forms.PasswordInput(),
+        }
+
+        def clean(self):
+            self.cleaned_data = super(SubClassForm, self).clean()
+            username = self.cleaned_data.get('username')
+            email = self.cleaned_data.get('email')
+            password = self.cleaned_data.get('password')
+            if len(username) < 4 or len(password) < 4:
+                raise forms.ValidationError("Username and password must have at least four characters.")
+            return self.cleaned_data
 
 # data upload
 class UploadFileForm(forms.Form):
@@ -45,4 +61,10 @@ class EditForm(ModelForm):
 class LogInForm(forms.ModelForm):
     class Meta:
         model = MyUser
+        username = forms.CharField(max_length=255, required=True)
+        password = forms.CharField(widget=forms.PasswordInput(), required=True)
         fields = ('username', 'password')
+        widgets = {
+            'password': forms.PasswordInput(),
+        }
+        
