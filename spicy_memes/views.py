@@ -60,9 +60,6 @@ def loginPage(request):
             if user is not None:
                 login(request, user)
                 return HttpResponseRedirect('/spicy_memes') #succes redirect to the startpage
-            else:
-                print("no-succes")
-                return HttpResponseRedirect('/spicy_memes/loginPage') #wrong login-information: reload for the moment
     else:
         form = LogInForm()
     return render(request, 'login.html', {'LogInForm': form, 'user' : current_user})

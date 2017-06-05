@@ -2,6 +2,7 @@ from django import forms
 # from .models import User
 from .models import Post, MyUser
 from django.forms import ModelForm, Textarea
+from .authenticate import MyBackend
 
 class SignUpForm(forms.ModelForm):
     class Meta:
@@ -15,14 +16,13 @@ class SignUpForm(forms.ModelForm):
             'password': forms.PasswordInput(),
         }
 
-        def clean(self):
-            self.cleaned_data = super(SubClassForm, self).clean()
-            username = self.cleaned_data.get('username')
-            email = self.cleaned_data.get('email')
-            password = self.cleaned_data.get('password')
-            if len(username) < 4 or len(password) < 4:
-                raise forms.ValidationError("Username and password must have at least four characters.")
-            return self.cleaned_data
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        email = self.cleaned_data.get('email')
+        password = self.cleaned_data.get('password')
+        if len(username) < 4 or len(password) < 4:
+            raise forms.ValidationError("Username and password must have at least four characters.")
+        return self.cleaned_data
 
 # data upload
 class UploadFileForm(forms.Form):
@@ -67,4 +67,13 @@ class LogInForm(forms.ModelForm):
         widgets = {
             'password': forms.PasswordInput(),
         }
+
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+        mb = MyBackend()
+        user = mb.authenticate(username=username, password=password)
+        if user is None:
+            raise forms.ValidationError("Wrong combination for username and password!")
+        return self.cleaned_data
         

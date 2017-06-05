@@ -26,6 +26,14 @@
                     {% for field in LogInForm %}
                     <p>{{ field.label_tag }} <br/>{{ field }}</p>
                     {% endfor %}
+
+                    {% if LogInForm.non_field_errors %}
+                    
+                    {% for error in LogInForm.non_field_errors %}
+                        <div class="alert alert-danger">{{ error }}</div>
+                    {% endfor %}
+                    
+                    {% endif %}
                     <button type="submit" class="btn btn-default">Login</button>
                     <a href="{% url 'spicy_memes:signUp' %}"> <button type="submit" class="btn btn-default">Back to SignUp</button></a> 
                 </form>

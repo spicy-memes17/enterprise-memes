@@ -1,7 +1,7 @@
 from .models import MyUser
 
 class MyBackend(object):
-    def authenticate(self, request, username=None, password=None):
+    def authenticate(self, request=None, username=None, password=None):
         users = MyUser.objects.all() #get all users
         user = list(filter(lambda x: x.username == username, users)) # look for desired user -> there is probably a more elegant way to do this
         if len(user) == 0: # no such user in database
