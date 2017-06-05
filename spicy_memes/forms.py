@@ -5,23 +5,28 @@ from django.forms import ModelForm, Textarea
 from .authenticate import MyBackend
 
 class SignUpForm(forms.ModelForm):
+    passwordConfirm = forms.CharField(widget=forms.PasswordInput(), required=True, label="Confirm password")
     class Meta:
         model = MyUser
         username = forms.CharField(max_length=255, required=True)
         email = forms.CharField(max_length=255, required=True)
         password = forms.CharField(widget=forms.PasswordInput(), required=True)
 
-        fields = ('username', 'email', 'password')
+        fields = ('username', 'email', 'password', 'passwordConfirm')
         widgets = {
             'password': forms.PasswordInput(),
+            'passwordConfirm' : forms.PasswordInput(),
         }
 
     def clean(self):
         username = self.cleaned_data.get('username')
         email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
+        passwordConfirm = self.cleaned_data.get('passwordConfirm')
         if len(username) < 4 or len(password) < 4:
             raise forms.ValidationError("Username and password must have at least four characters.")
+        if password != passwordConfirm:
+            raise forms.ValidationError("Passwords do not match!")
         return self.cleaned_data
 
 # data upload
