@@ -4,7 +4,7 @@ from . import views
 
 app_name = 'spicy_memes'
 urlpatterns = [
-    url(r'^$', views.content, name='content'),
+    url(r'^$', views.hotPage, name='content'),
     url(r'^post/(?P<pk>\d+)/detail/$', views.postDetail, name='postDetail'),
      url(r'^post/(?P<pk>\d+)/editPost/$', views.editPost, name='editPost'),
     url(r'signUp/', views.signUp, name='signUp'),

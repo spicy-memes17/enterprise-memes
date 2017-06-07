@@ -16,16 +16,6 @@
 {% include 'nav.html' with active="index" %}
 <div class="container">
     <div class="row">
-        <div align="right">
-            <p>Logged in as: {{user.username}}</p>
-            <form align="right" action="logOut/" method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-default">Logout</button>
-            </form>
-        </div>
-    </div>  
-    <div class="row">
         <div class="col-xs-8 memesdetail">
             <h3>{{ post.title }}</h3>
             <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
