@@ -14,6 +14,8 @@ from django.contrib.auth import authenticate, login, logout
 from datetime import timedelta
 import datetime
 from django.utils.timesince import timesince
+from django.contrib import messages
+
 
 def hotPage(request):
     latest_meme_list = Post.objects.order_by('-date') [:20]
@@ -49,7 +51,7 @@ def trendingPage(request):
 def freshPage(request):
     latest_meme_list = Post.objects.order_by('-date') [:20]
     context = {'latest_meme_list': latest_meme_list}
-    return render(request, 'hotPage.html', context)
+    return render(request, 'fresh.html', context)
 
 def loginPage(request):
     current_user = request.user
@@ -89,6 +91,9 @@ def uploadFile(request):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/spicy_memes/')
+        else:
+            messages.success(request, 'Please choose an image file with a name under 40 characters long.')
+            return render(request, 'uploadFile.html', {'form': form})
     else:
         form = UploadForm()
         return render(request, 'uploadFile.html', {'form': form})
