@@ -15,15 +15,10 @@ from datetime import timedelta
 import datetime
 from django.utils.timesince import timesince
 
-def content(request):
+def hotPage(request):
     latest_meme_list = Post.objects.order_by('-date') [:20]
     context = {'latest_meme_list': latest_meme_list}
-    return render(request, 'content.html', context)
-
-#def content(request):
-#    current_user = request.user
-#    print(request.user)
-#    return render(request, 'content.html', {'user' : current_user})
+    return render(request, 'hotPage.html', context)
 
 def signUp(request):
     if request.method == 'POST':
@@ -52,7 +47,9 @@ def trendingPage(request):
     return render(request, 'trending.html')
 
 def freshPage(request):
-    return render(request, 'fresh.html')
+    latest_meme_list = Post.objects.order_by('-date') [:20]
+    context = {'latest_meme_list': latest_meme_list}
+    return render(request, 'hotPage.html', context)
 
 def loginPage(request):
     current_user = request.user
@@ -85,7 +82,7 @@ def deleteUser(request):
             return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if password is wrong
     else:
         return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if accessed with http-get
-	
+
 def uploadFile(request):
     if request.method == 'POST':
         form = UploadForm(user = request.user, files=request.FILES, data=request.POST)
@@ -101,7 +98,6 @@ def postDetail(request, pk):
     user = request.user
     editform = EditForm(initial={'title': post.title,'description': post.description})
     tdelta = datetime.datetime.now() - post.date.replace(tzinfo=None)
-    print((tdelta.seconds/60) - 120)
     time_posted = (tdelta.seconds/60) - 120
     time_diff = round(15 - time_posted)
 #    if (time_posted <= 15):
@@ -131,18 +127,6 @@ def editPost(request, pk):
     else:
         form = EditForm()
         return render(request, '/spicy_memes/', {'form': form})   
-
-def editFile(request):
-    latest_meme_list = Post.objects.order_by('-date')[:20]
-    context = {'latest_meme_list': latest_meme_list}
-    if request.method == 'PUT':
-        form = EditForm(request.PUT)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/spicy_memes/')
-    else:
-        form = EditForm(initial = {'put.group_id': 0 })
-        return render(request, 'editFile.html', context, {'form': form})
 
 def deleteFile(request, pk):
         po = get_object_or_404(Post, pk=pk)
