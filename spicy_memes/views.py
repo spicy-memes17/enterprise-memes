@@ -11,6 +11,9 @@ from .forms import SignUpForm
 from .forms import LogInForm
 from .models import MyUser
 from django.contrib.auth import authenticate, login, logout
+from datetime import timedelta
+import datetime
+from django.utils.timesince import timesince
 
 def content(request):
     latest_meme_list = Post.objects.order_by('-date') [:20]
@@ -85,13 +88,49 @@ def deleteUser(request):
 	
 def uploadFile(request):
     if request.method == 'POST':
-        form = UploadForm(request.POST, request.FILES)
+        form = UploadForm(user = request.user, files=request.FILES, data=request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/spicy_memes/')
     else:
-        form = UploadForm(initial = {'post.group_id': 0 })
+        form = UploadForm()
         return render(request, 'uploadFile.html', {'form': form})
+
+def postDetail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    user = request.user
+    editform = EditForm(initial={'title': post.title,'description': post.description})
+    tdelta = datetime.datetime.now() - post.date.replace(tzinfo=None)
+    print((tdelta.seconds/60) - 120)
+    time_posted = (tdelta.seconds/60) - 120
+    time_diff = round(15 - time_posted)
+#    if (time_posted <= 15):
+#        editable = True
+#    else :
+#        editable = False
+    if (post.user == request.user):
+        postOwner = True
+    else:
+        postOwner = False
+    context = {'post': post, 'user': user, 'owner': postOwner, 'editform': editform, 'time_posted': time_posted, 'time_diff': time_diff}
+    return render(request, 'postDetail.html', context)
+
+def editPost(request, pk):
+    if request.method == 'POST':
+        form = EditForm(request.POST)
+        if form.is_valid():
+            post = get_object_or_404(Post, pk=pk)
+            post.title = form.cleaned_data['title']
+            post.description = form.cleaned_data['description']
+            post.save()
+            #messages.success(request, 'Post \"%s\" was edited successfully' % post_text)
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    else:
+        form = EditForm()
+        return render(request, '/spicy_memes/', {'form': form})   
 
 def editFile(request):
     latest_meme_list = Post.objects.order_by('-date')[:20]

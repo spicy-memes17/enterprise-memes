@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spicy Memes</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
+
+</head>
+<body>
+{% include 'nav.html' with active="index" %}
+<div class="container">
+    <div class="row">
+        <div align="right">
+            <p>Logged in as: {{user.username}}</p>
+            <form align="right" action="logOut/" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-default">Logout</button>
+            </form>
+        </div>
+    </div>  
+    <div class="row">
+        <div class="col-xs-8 memesdetail">
+            <h3>{{ post.title }}</h3>
+            <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
+            <strong>Posted by: </strong> {{ post.user }} ({{ post.date|timesince }} ago)<p class="pull-right"><strong>Spiciness Factor: </strong> 500 🌶️🌶️🌶️</p>
+            <br>
+            <p class="description">{{ post.description }}</p>
+            <div class="btn-toolbar vote">
+                <button type="button" class="btn btn-default">🌶️</button>
+                <button type="button" class="btn btn-default">🍼</button>
+                <button type="button" class="btn btn-default">💬</button>
+            </div>
+            <hr/>
+        </div>
+        {% if owner and time_posted < 15 %}
+        <div class="col-xs-6 col-lg-4 edit">
+        <form action="{% url 'spicy_memes:editPost' post.id %}" method="post">
+        {% csrf_token %}
+        <h3>Edit your post</h3>
+        <p>You can edit your post for another {{ time_diff }} minute(s).</p>
+        <label>Title</label>
+        {{ editform.title }}
+        <br>
+        <label>Description</label>
+        {{ editform.description }}
+        <br>
+        <button type="submit" class="btn btn-default pull-left uploadbtn" value="submit">SUBMIT EDIT</button>
+        </form>
+        <a class="btn btn-default pull-right" href="{% url 'spicy_memes:deleteFile' pk=post.pk %}" onclick="return confirm('Are you sure you want to delete this Meme?')"><span class="glyphicon glyphicon-delete"></span><div class="uploadbtn">DELETE</div></a>
+        </div>
+        <br>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col-md-8 comments col-md-offset-8">
+        <h3>Comments</h3>
+        <p>There are no comments yet.</p>
+        </div>
+    </div>
+</body>
+</html>
