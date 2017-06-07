@@ -132,18 +132,6 @@ def editPost(request, pk):
         form = EditForm()
         return render(request, '/spicy_memes/', {'form': form})   
 
-def editFile(request):
-    latest_meme_list = Post.objects.order_by('-date')[:20]
-    context = {'latest_meme_list': latest_meme_list}
-    if request.method == 'PUT':
-        form = EditForm(request.PUT)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/spicy_memes/')
-    else:
-        form = EditForm(initial = {'put.group_id': 0 })
-        return render(request, 'editFile.html', context, {'form': form})
-
 def deleteFile(request, pk):
         po = get_object_or_404(Post, pk=pk)
         po.delete()
