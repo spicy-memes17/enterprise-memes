@@ -26,10 +26,18 @@
                 {% for field in signUpForm %}
                 <p>{{ field.label_tag }} <br/>{{ field }}</p>
                 {% endfor %}
+                
+                {% if signUpForm.non_field_errors %}
+                
+                {% for error in signUpForm.non_field_errors %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endfor %}
+                
+                {% endif %}
                 <button type="submit" class="btn btn-default">Create New Account</button>
             </form>
             <div class="redirectLogin">
-                <a href="/spicy_memes/loginPage">Already have an account?</p>
+                <a href="/spicy_memes/loginPage">Already have an account?</a>
                 <a href="{% url 'spicy_memes:loginPage' %}"> <button type="submit" class="btn btn-default">Login</button></a> 
             </div>
         </div>
@@ -37,7 +45,6 @@
 
         </div>
     </div>
-</div>
 
 
 </body>
