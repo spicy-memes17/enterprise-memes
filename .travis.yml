@@ -1,0 +1,9 @@
+# From https://docs.travis-ci.com/user/languages/python/
+
+language: python
+python:
+  - "3.6"
+# command to install dependencies
+install: "pip install -r requirements"
+# command to run tests
+script: spicy_memes/tests
