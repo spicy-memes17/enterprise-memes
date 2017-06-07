@@ -32,7 +32,7 @@ def signUp(request):
             user = form.save(commit=False)
             user.username = request.POST['username']
             user.email = request.POST['email']
-            user.password = request.POST['password']
+            user.set_password(request.POST['password'])
             user.save()
             user_auth = authenticate(request, username=user.username, password=user.password)
             login(request, user_auth)
@@ -57,29 +57,27 @@ def freshPage(request):
 def loginPage(request):
     current_user = request.user
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return HttpResponseRedirect('/spicy_memes') #succes redirect to the startpage
-        else:
-            print("no-succes")
-            return HttpResponseRedirect('/spicy_memes/loginPage') #wrong login-information: reload for the moment
+        form = LogInForm(request.POST)
+        if form.is_valid:
+            user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect('/spicy_memes') #succes redirect to the startpage
     else:
         form = LogInForm()
     return render(request, 'login.html', {'LogInForm': form, 'user' : current_user})
 
 def logOut(request):
     logout(request)
-    return HttpResponseRedirect('/spicy_memes/signUp')
+    return HttpResponseRedirect('/spicy_memes/loginPage')
 
 def deleteUser(request):
     current_user = request.user
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        if request.user.is_authenticated and current_user.username == username and current_user.password == password:
+        user = authenticate(username = username, password = password)
+        if current_user == user:
             logout(request)
             current_user.delete()
             return HttpResponseRedirect('/spicy_memes/signUp')
