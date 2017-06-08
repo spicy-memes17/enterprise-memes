@@ -144,10 +144,11 @@ def search(request):
             tag_names = form.cleaned_data['tags'].split(',')
 
             for tag_name in tag_names:
-                tag= Tag.objects.get(name=tag_name).name
-                if tag is not None:
-                    filtered_posts = Post.objects.filter(tags__name__contains=tag).distinct() #search here for error
-                    posts.extend(filtered_posts)
+                if tag_name is not "":
+                    tag= Tag.objects.get(name=tag_name).name
+                    if tag is not None:
+                        filtered_posts = Post.objects.filter(tags__name__contains=tag).distinct() #search here for error
+                        posts.extend(filtered_posts)
                     
             context = {'latest_meme_list': posts}  # only temporary
                 
