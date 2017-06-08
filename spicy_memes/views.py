@@ -138,22 +138,23 @@ def deleteFile(request, pk):
 
 def search(request):
     if request.method == 'GET':
-        form= SearchForm(request.POST)
+        form= SearchForm(request.GET)
         if form.is_valid():
             posts = []
-            tag_names = form.cleaned_data['tags'].split(',')
+            tag_names = form.cleaned_data.get('tags').split(',')
+            test= form.cleaned_data.get('tags')
 
             for tag_name in tag_names:
-                if tag_name is not "":
+                try:
                     tag= Tag.objects.get(name=tag_name).name
-                    if tag is not None:
-                        filtered_posts = Post.objects.filter(tags__name__contains=tag).distinct() #search here for error
+                    if tag is not "":
+                        filtered_posts = Post.objects.filter(tags__name=tag) #search here for error
                         posts.extend(filtered_posts)
-                    
-            context = {'latest_meme_list': posts}  # only temporary
+                except:
+                    pass
+                        
+        context = {'latest_meme_list': posts}  # only temporary
                 
-            
-    
     return render(request, 'hotPage.html', context)# only temporary
     
     
