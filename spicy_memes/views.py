@@ -3,12 +3,12 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404
-from .models import Post
+from .models import Post, Tag
 from .forms import UploadFileForm
 from .forms import UploadForm
 from .forms import EditForm
 from .forms import SignUpForm
-from .forms import LogInForm
+from .forms import LogInForm, SearchForm
 from .models import MyUser
 from django.contrib.auth import authenticate, login, logout
 from datetime import timedelta
@@ -136,8 +136,24 @@ def deleteFile(request, pk):
         return HttpResponseRedirect('/spicy_memes/')
 
 
-def searchForMeme(request):
-    self.hotPage(request)
+def search(request):
+    if request.method == 'GET':
+        form= SearchForm(request.POST)
+        if form.is_valid():
+            posts = []
+            tag_names = form.cleaned_data['tags'].split(',')
+
+            for tag_name in tag_names:
+                tag= Tag.objects.get(name=tag_name).name
+                if tag is not None:
+                    filtered_posts = Post.objects.filter(tags__name__contains=tag).distinct() #search here for error
+                    posts.extend(filtered_posts)
+                    
+            context = {'latest_meme_list': posts}  # only temporary
+                
+            
+    
+    return render(request, 'hotPage.html', context)# only temporary
     
     
 

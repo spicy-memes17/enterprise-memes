@@ -98,6 +98,11 @@ class UploadForm(ModelForm):
         }
 
 
+class SearchForm(forms.Form):
+    tags = forms.CharField(required=False, widget=forms.Textarea(
+                                                attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Enter Spicy Tags'}))
+
+
 # data edit with modelform. image field soll nicht editiert werden. Wenn Bild unerwünscht ist, dann lieber löschen
 class EditForm(ModelForm):
     class Meta:
