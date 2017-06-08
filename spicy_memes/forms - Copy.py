@@ -54,49 +54,48 @@ class UploadForm(ModelForm):
         #self.group = kwargs.pop('group', None)
         super(UploadForm, self).__init__(**kwargs)
 
-    #fetches tags by name and writes them into a list. if the tag does not exist it is created
-    def handle_tags(self, tagstring): #TODO add some level of restriction. maybe there should not be an empty tag... shave off some space...
-        tag_list = []
-        tag = Tag()
-        tag_name_list= tagstring.split(',')
-        for tag_name in tag_name_list: # not none check?
-            try:
-                tag= Tag.objects.get(name=tag_name)
-            except Tag.DoesNotExist:
-                tag= Tag(name=tag_name)
-                tag.save()
-            tag_list.append(tag)
-        return tag_list
-
     def save(self, commit=True):
         obj = super(UploadForm, self).save(commit=False)
         obj.user = self.user
         #obj.group = self.group
 
-        tag_names= self.cleaned_data.get('tags')
-        #get list of tags
-        tag_list= self.handle_tags(tag_names)                   # self to call functions from same class
 
-        # object has to have a value for id before a relationship can be set
+        #check for errors here first
+        tag_list = self.cleaned_data.get('tags', None)
+        
+        if tag_list is not None:
+            for tag_name in tag_list.split(","):
+                tag = Tag.objects.get(name=tag_name)
+                obj.tags.add(tag)
+        
         if commit:
             obj.save()
-
-        #add all tags to the many to many relationship
-        if tag_list is not None:
-            for tag in tag_list:
-                obj.tags.add(tag)
-          
         return obj
     
     class Meta:
         model = Post
         exclude = ('tags',) #don't remove the ,
-        fields = ['title', 'description', 'image_field']
+        fields = ['title', 'description', 'image_field', 'tags']
         widgets = {
             'title' : Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Spicy Title'}),
             'description' : Textarea(attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Enter spicy description'}),
+            'tags' : Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Enter Spicy Tags'})
         }
 
+        	      #check for errors here first
+    def clean_tags_list(self):            #https://stackoverflow.com/questions/5608576/django-enter-a-list-of-values-form-error-when-rendering-a-manytomanyfield-as-a
+        data = self.cleaned_data
+        tag_list = data.get('tags', None)
+        if tag_list is not None:
+            for tag_name in actors_list.split(','):
+                try:
+                    actor = Tag.objects.get(name=tag_name)
+                except Tag.DoesNotExist:
+                    if FAIL_ON_NOT_EXIST: # decide if you want this behaviour or to create it
+                        raise forms.ValidationError('Tag %s does not exist' % tag_name)
+                    else: # create it if it doesnt exist
+                    Tag(name=tag_name).save()
+        return tag_list
 
 # data edit with modelform. image field soll nicht editiert werden. Wenn Bild unerwünscht ist, dann lieber löschen
 class EditForm(ModelForm):

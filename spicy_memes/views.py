@@ -89,6 +89,8 @@ def uploadFile(request):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/spicy_memes/')
+        else:
+            return render(request, 'uploadFile.html', {'form': form}) #add error message at some point
     else:
         form = UploadForm()
         return render(request, 'uploadFile.html', {'form': form})
@@ -132,3 +134,31 @@ def deleteFile(request, pk):
         po = get_object_or_404(Post, pk=pk)
         po.delete()
         return HttpResponseRedirect('/spicy_memes/')
+
+
+def searchForMeme(request):
+    self.hotPage(request)
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
