@@ -16,5 +16,7 @@ urlpatterns = [
 	url(r'^uploadFile', views.uploadFile, name='uploadFile'),
 	url(r'^post/(?P<pk>\d+)/delete/$', views.deleteFile, name='deleteFile'),
     url(r'^logout', views.logOut, name='logoutPage'),
-    url(r'^deleteUser', views.deleteUser, name='deleteUser')
+    url(r'^deleteUser', views.deleteUser, name='deleteUser'),
+    url(r'^post/(?P<pk>\d+)/comment/$', views.addComment, name='addComment'),
+    url(r'^post/(?P<pk>(\d+))/(?P<likes>(\d+))/vote/$', views.voteComment, name='voteComment'),
     ]

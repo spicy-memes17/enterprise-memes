@@ -74,7 +74,7 @@ class MemeGroup(models.Model): #there is a group model in django. we could use i
 
 
 class Comment(models.Model):
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now_add=True)
     content = models.CharField(max_length=500)
     user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
     post = models.ForeignKey('Post', on_delete=models.CASCADE)

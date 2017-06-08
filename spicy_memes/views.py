@@ -3,13 +3,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404
-from .models import Post
-from .forms import UploadFileForm
-from .forms import UploadForm
-from .forms import EditForm
-from .forms import SignUpForm
-from .forms import LogInForm
-from .models import MyUser
+from .models import Post, MyUser, Comment, LikesComment
+from .forms import UploadFileForm, UploadForm, EditForm, SignUpForm, LogInForm, CommentForm, VoteCommentForm
+
 from django.contrib.auth import authenticate, login, logout
 from datetime import timedelta
 import datetime
@@ -97,18 +93,20 @@ def postDetail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     user = request.user
     editform = EditForm(initial={'title': post.title,'description': post.description})
+    commentform = CommentForm()
+    commentform.user = request.user
     tdelta = datetime.datetime.now() - post.date.replace(tzinfo=None)
     time_posted = (tdelta.seconds/60) - 120
     time_diff = round(15 - time_posted)
-#    if (time_posted <= 15):
-#        editable = True
-#    else :
-#        editable = False
+    postComments = Comment.objects.filter(post = post) [:20]
+    voteform = VoteCommentForm()
     if (post.user == request.user):
         postOwner = True
     else:
         postOwner = False
-    context = {'post': post, 'user': user, 'owner': postOwner, 'editform': editform, 'time_posted': time_posted, 'time_diff': time_diff}
+    context = {'post': post, 'user': user, 'owner': postOwner, 'editform': editform,'commentform': commentform,
+               'time_posted': time_posted, 'time_diff': time_diff, 'postComments': postComments,
+               'voteform': voteform}
     return render(request, 'postDetail.html', context)
 
 def editPost(request, pk):
@@ -132,3 +130,48 @@ def deleteFile(request, pk):
         po = get_object_or_404(Post, pk=pk)
         po.delete()
         return HttpResponseRedirect('/spicy_memes/')
+
+def addComment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    commentform = CommentForm(request.POST or None)
+    if request.method == "POST":
+        if commentform.is_valid():
+            comment = commentform.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            print(commentform)
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        commentform = CommentForm()
+    return render(request, 'postDetail.html', {'commentform': commentform})
+
+def voteComment(request, pk, likes):
+    print(likes)
+    comment = get_object_or_404(Comment, pk=pk)
+    voteform = VoteCommentForm(request.POST or None)
+    vote = LikesComment()
+    if request.method == "POST":
+        votes = LikesComment.objects.filter(comment = comment).filter(user = request.user).filter(comment = comment)
+        print(votes)
+        if votes:
+            LikesComment.objects.filter(comment = comment).filter(user = request.user).delete()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        if voteform.is_valid():
+            vote = voteform.save(commit=False)
+            vote.user = request.user
+            vote.comment = comment
+            if (likes == "0"):
+                vote.likes = False
+            else:
+                vote.likes = True
+            print(vote.likes)
+            vote.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        voteform = VoteCommentForm()
+    return render(request, 'postDetail.html', {'voteform': voteform, 'totalLikes': totalLikes})

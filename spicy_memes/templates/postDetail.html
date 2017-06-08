@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 
 {% load staticfiles %}
+{% load vote_extras %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -47,11 +48,55 @@
         <br>
         {% endif %}
     </div>
+</div>
+
+<div class="container">
     <div class="row">
-        <div class="col-md-8 comments col-md-offset-8">
+        <div class="col-md-8">
         <h3>Comments</h3>
-        <p>There are no comments yet.</p>
+        <br>
+        <form action="{% url 'spicy_memes:addComment' post.id %}" method="post">
+        {% csrf_token %}
+        <label>Any sauce to add?</label>
+        <br>
+        {{ commentform.content }}
+        <button type="submit" class="btn btn-default pull-left uploadbtn" value="submit" style="margin-bottom: 5px">COMMENT</button>
+        </form>
+        
+        <br>
+
+        {% for comment in postComments %}
+        <br>
+        <!-- <div class="commentProfilePic img-responsive img-rounded" style="padding-top: 5px"><img src="{{ comment.user.profile_pic.url }}"></img></div> -->
+        <div class="col-xs-2" style="padding-top: 5px"><img class="commentpic" src="{% static 'user/img/noPic.png' %}"></img></div>
+        <div class="singlecomment col-xs-10">
+                <div class="cheading"><strong>{{ comment.user }}</strong>
+                <span style="float: right">{{ comment.date }}</span></div>
+                <p>{{ comment.content|linebreaks }}</p>
+                <!--<a href="www.google.de"><span style="display: inline">Reply</span></a>-->
+                <form action="{% url 'spicy_memes:voteComment' pk=comment.id likes=0 %}" method="post">
+                {% csrf_token %}
+                <div style="display: none">{{ voteform.likes }}</div>
+                <button class="btn btn-default" type="submit" value="submit" style="display: inline; float: right; padding-left: 10px;"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true" style="color: red;"></span></button>
+                </form>
+                <form action="{% url 'spicy_memes:voteComment' pk=comment.id likes=1 %}" method="post">
+                {% csrf_token %}
+                <div style="display: none">{{ voteform.likes }}</div>
+                <button class="btn btn-default" type="submit" value="submit" style="outline: none; display: inline; float: right; padding-left: 10px;"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true" style="color: green;"></span></button>
+                </form>
+                {% getVotes comment as rating %}
+                <p>{{ rating }}</p>
+        <br>
+        <hr/>
+        </div>
+        {% empty %}
+                <br>
+                <p>There are no comments yet.</p>
+        {% endfor %}
+        </div>
         </div>
     </div>
+</div>
+    
 </body>
 </html>
