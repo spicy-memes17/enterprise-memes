@@ -104,6 +104,9 @@ def postDetail(request, pk):
     #Get difference between time posted and now
     tdelta = datetime.datetime.now() - post.date.replace(tzinfo=None)
     time_posted = (tdelta.seconds/60) - 120
+    if((datetime.datetime.today().strftime('%d-%m-%Y')) != (post.date.strftime('%d-%m-%Y'))):
+        time_posted = 16
+
     time_diff = round(15 - time_posted)
 
     #Probably very complicated way of getting a list that sorts comments by
@@ -198,4 +201,4 @@ def voteComment(request, pk, likes):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         voteform = VoteCommentForm()
-    return render(request, 'postDetail.html', {'voteform': voteform, 'totalLikes': totalLikes})
+    return render(request, 'postDetail.html', {'voteform': voteform, 'totalLikes': totalLikes, 'user': request.user})
