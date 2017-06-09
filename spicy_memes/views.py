@@ -142,7 +142,6 @@ def search(request):
         if form.is_valid():
             posts = []
             tag_names = form.cleaned_data.get('tags').split(',')
-            test= form.cleaned_data.get('tags')
 
             for tag_name in tag_names:
                 try:

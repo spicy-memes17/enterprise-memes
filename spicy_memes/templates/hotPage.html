@@ -27,7 +27,14 @@
             <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
                 <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
             </a>
-            <strong>Posted by: </strong> {{ post.user }}<p class="pull-right"><strong>Spiciness Factor: </strong> 500 🌶️🌶️🌶️</p>
+            <strong>Posted by: </strong> {{ post.user }}<p class="pull-right"><strong>Spiciness Factor: </strong> 500 🌶️🌶️🌶️</p> <br>
+			<strong>Tags: </strong> <br>
+			{% for tag in post.tags.all %} <!--jeder tag ist in einer form und klickbar. es wird nach posts mit dem angeklickten tag gesucht-->
+				<form method="GET" action="{% url 'spicy_memes:search' %}">
+					<input value="{{ tag.name }}" type="hidden" name="tags">
+					<button type="submit" class="btn-link">{{ tag.name }}</button><br>
+				</form>
+			{% endfor %}
             <div class="btn-toolbar vote">
                 <a class="btn btn-default" href="#">🌶️</a>
                 <a class="btn btn-default" href="#">🍼</a>

@@ -55,17 +55,19 @@ class UploadForm(ModelForm):
         super(UploadForm, self).__init__(**kwargs)
 
     #fetches tags by name and writes them into a list. if the tag does not exist it is created
-    def handle_tags(self, tagstring): #TODO add some level of restriction. maybe there should not be an empty tag... shave off some space...
+    def handle_tags(self, tagstring):
         tag_list = []
         tag = Tag()
         tag_name_list= tagstring.split(',')
-        for tag_name in tag_name_list: # not none check?
-            try:
-                tag= Tag.objects.get(name=tag_name)
-            except Tag.DoesNotExist:
-                tag= Tag(name=tag_name)
-                tag.save()
-            tag_list.append(tag)
+        stripped_tag_names= map(lambda x: x.strip(), tag_name_list)
+        for tag_name in stripped_tag_names: # not none check?
+            if tag_name is not "": # can this happen?
+                try:
+                    tag= Tag.objects.get(name=tag_name)
+                except Tag.DoesNotExist:
+                    tag= Tag(name=tag_name)
+                    tag.save()
+                tag_list.append(tag)
         return tag_list
 
     def save(self, commit=True):
@@ -73,8 +75,8 @@ class UploadForm(ModelForm):
         obj.user = self.user
         #obj.group = self.group
 
-        tag_names= self.cleaned_data.get('tags')
         #get list of tags
+        tag_names= self.cleaned_data.get('tags')
         tag_list= self.handle_tags(tag_names)                   # self to call functions from same class
 
         # object has to have a value for id before a relationship can be set
