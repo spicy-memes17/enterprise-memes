@@ -168,25 +168,30 @@ def addComment(request, pk):
     return render(request, 'postDetail.html', {'commentform': commentform})
 
 def voteComment(request, pk, likes):
-    print(likes)
     comment = get_object_or_404(Comment, pk=pk)
     voteform = VoteCommentForm(request.POST or None)
     vote = LikesComment()
     if request.method == "POST":
+
+        #Find out if this user has already voted on the specific comment,
+        #if yes, remove whatever his vote was.
         votes = LikesComment.objects.filter(comment = comment).filter(user = request.user).filter(comment = comment)
-        print(votes)
         if votes:
             LikesComment.objects.filter(comment = comment).filter(user = request.user).delete()
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
         if voteform.is_valid():
             vote = voteform.save(commit=False)
             vote.user = request.user
             vote.comment = comment
+
+            #Upvote: likes == "1"; Downvote: likes=="0" - I don't know how to
+            #adjust the matching RegEx in urls.py to accept Booleans instead of
+            #Integers
             if (likes == "0"):
                 vote.likes = False
             else:
                 vote.likes = True
-            print(vote.likes)
             vote.save()
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
