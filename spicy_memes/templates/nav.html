@@ -23,7 +23,9 @@
         <ul class="nav navbar-nav navbar-right">
 			<li> 
 				<form method= "GET" action="{% url 'spicy_memes:search' %}">
-					<input class="form-control" type="text" name="tags" placeholder="Enter Spicy Tags"/>
+					<input class="form-control" type="text" name="search_term" placeholder="Enter Spicy Search"/>
+					<input type="checkbox" name="by_name"> by name </input>
+					<input type="checkbox" name="by_tag"> by tag </input>
 				</form>
 			</li>
             <li {% if active == "uploadFile" %} class="active" {% endif %}><a href="{% url 'spicy_memes:uploadFile' %}">Upload</a></li>

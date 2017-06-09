@@ -101,9 +101,12 @@ class UploadForm(ModelForm):
 
 
 class SearchForm(forms.Form):
-    tags = forms.CharField(required=False, widget=forms.Textarea(
+    search_term = forms.CharField(required=False, widget=forms.Textarea(
                                                 attrs={'class': 'form-control', 'rows': '1' ,'placeholder': 'Enter Spicy Tags'}))
 
+    #has to be false to be able to pass empty boxes
+    by_name= forms.BooleanField(required=False)
+    by_tag= forms.BooleanField(required=False)
 
 
 # data edit with modelform. image field soll nicht editiert werden. Wenn Bild unerwünscht ist, dann lieber löschen
