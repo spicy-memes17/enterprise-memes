@@ -11,6 +11,8 @@ from datetime import timedelta
 import datetime
 from django.utils.timesince import timesince
 
+from django.core.paginator import Paginator
+
 def hotPage(request):
     latest_meme_list = Post.objects.order_by('-date') [:20]
     context = {'latest_meme_list': latest_meme_list}
@@ -92,21 +94,39 @@ def uploadFile(request):
 def postDetail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     user = request.user
+
+    #Initialize forms
     editform = EditForm(initial={'title': post.title,'description': post.description})
     commentform = CommentForm()
     commentform.user = request.user
+    voteform = VoteCommentForm()
+
+    #Get difference between time posted and now
     tdelta = datetime.datetime.now() - post.date.replace(tzinfo=None)
     time_posted = (tdelta.seconds/60) - 120
     time_diff = round(15 - time_posted)
-    postComments = Comment.objects.filter(post = post) [:20]
-    voteform = VoteCommentForm()
+
+    #Probably very complicated way of getting a list that sorts comments by
+    #their user rating, but it's according to the model where there is no
+    #reference to LikesPost from Comment. Improvements welcome
+    postComments = Comment.objects.filter(post = post)
+    tupleComments = list()
+    sortedComments = list()
+    for comment in postComments:
+        ctuple = (comment, LikesComment.objects.filter(comment=comment).filter(likes=True).count() - LikesComment.objects.filter(comment=comment).filter(likes=False).count())
+        tupleComments.append(ctuple)
+    tupleComments = sorted(tupleComments, key=lambda x: x[1], reverse=True)
+    for tup in tupleComments:
+        sortedComments.append(tup[0])
+
+    #Identify post owner for editing purposes.
     if (post.user == request.user):
         postOwner = True
     else:
         postOwner = False
     context = {'post': post, 'user': user, 'owner': postOwner, 'editform': editform,'commentform': commentform,
                'time_posted': time_posted, 'time_diff': time_diff, 'postComments': postComments,
-               'voteform': voteform}
+               'voteform': voteform, 'sortedComments': sortedComments}
     return render(request, 'postDetail.html', context)
 
 def editPost(request, pk):
@@ -142,7 +162,6 @@ def addComment(request, pk):
             comment.save()
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
-            print(commentform)
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         commentform = CommentForm()

@@ -10,6 +10,7 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
 
 </head>
@@ -65,7 +66,7 @@
         
         <br>
 
-        {% for comment in postComments %}
+        {% for comment in sortedComments %}
         <br>
         <!-- <div class="commentProfilePic img-responsive img-rounded" style="padding-top: 5px"><img src="{{ comment.user.profile_pic.url }}"></img></div> -->
         <div class="col-xs-2" style="padding-top: 5px"><img class="commentpic" src="{% static 'user/img/noPic.png' %}"></img></div>
@@ -85,7 +86,17 @@
                 <button class="btn btn-default" type="submit" value="submit" style="outline: none; display: inline; float: right; padding-left: 10px;"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true" style="color: green;"></span></button>
                 </form>
                 {% getVotes comment as rating %}
-                <p>{{ rating }}</p>
+                <p id="rating_{{comment.id}}" onload="loadStyles()">{{ rating }}</p>
+                <script>
+                    rating = document.getElementById("rating_{{comment.id}}");
+                    if (rating.innerHTML < 0) {
+                        rating.style.color = "red";
+                    }
+                    else if (rating.innerHTML > 0) {
+                        rating.style.color = "green";
+                    }
+                </script>
+                <div id="newItem"></div>
         <br>
         <hr/>
         </div>
@@ -96,7 +107,58 @@
         </div>
         </div>
     </div>
-</div>
-    
+</div> 
 </body>
+<script>
+    $(document).ready(function(){     
+   $(window).bind('scroll', loadOnScroll);
+});
+
+// Scroll globals
+var pageNum = 1; // The latest page loaded
+var hasNextPage = true; // Indicates whether to expect another page after this one
+
+// loadOnScroll handler
+var loadOnScroll = function() {
+   // If the current scroll position is past out cutoff point...
+    if ($(window).scrollTop() > $(document).height() - ($(window).height()*2)) {
+        // temporarily unhook the scroll event watcher so we don't call a bunch of times in a row
+        $(window).unbind(); 
+        // execute the load function below that will visit the JSON feed and stuff data into the HTML
+        loadItems();
+    }
+};
+
+var loadItems = function() {
+    // If the next page doesn't exist, just quit now 
+    if (hasNextPage === false) {
+        return false
+    }
+    // Update the page number
+    pageNum = pageNum + 1;
+    // Configure the url we're about to hit
+    $.ajax({
+        url: '',
+        data: {page_number: pageNum},
+        dataType: 'json',
+        success: function(data) {
+            // Update global next page variable
+            hasNextPage = true;//.hasNext;
+            // Loop through all items
+            for (i in data) {
+                $("#newItems").before(
+                // Do something with your json object response
+            }
+        },
+        error: function(data) {
+            // When I get a 400 back, fail safely
+            hasNextPage = false
+        },
+        complete: function(data, textStatus){
+            // Turn the scroll monitor back on
+            $(window).bind('scroll', loadOnScroll);
+        }
+    });
+};
+</script>
 </html>
