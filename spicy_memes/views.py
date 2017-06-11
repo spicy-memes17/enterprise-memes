@@ -9,8 +9,10 @@ from .forms import UploadForm
 from .forms import EditForm
 from .forms import SignUpForm
 from .forms import LogInForm
+from .forms import EditProfileForm
 from .models import MyUser
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserChangeForm
 from datetime import timedelta
 import datetime
 from django.utils.timesince import timesince
@@ -132,3 +134,15 @@ def deleteFile(request, pk):
         po = get_object_or_404(Post, pk=pk)
         po.delete()
         return HttpResponseRedirect('/spicy_memes/')
+
+def edit_profile (request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance = request.user)
+        if form.is_valid():
+            form.save
+            return HttpResponseRedirect('/spicy_memes/userprofile')
+            #return redirect ('/spicy_memes/userprofile')
+    else:
+        form=EditProfileForm(instance=request.user)
+        args = {'form':form}
+        return render (request, 'edit_profile.html' , args)
