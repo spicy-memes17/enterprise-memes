@@ -139,7 +139,7 @@ def edit_profile (request):
     if request.method == 'POST':
         form = EditProfileForm(request.POST, instance = request.user)
         if form.is_valid():
-            form.save
+            form.save()
             return HttpResponseRedirect('/spicy_memes/userprofile')
             #return redirect ('/spicy_memes/userprofile')
     else:
