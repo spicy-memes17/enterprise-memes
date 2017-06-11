@@ -11,8 +11,8 @@ from .forms import SignUpForm
 from .forms import LogInForm
 from .forms import EditProfileForm
 from .models import MyUser
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from datetime import timedelta
 import datetime
 from django.utils.timesince import timesince
@@ -150,3 +150,16 @@ def edit_profile (request):
         form=EditProfileForm(instance=request.user)
         args = {'form':form}
         return render (request, 'edit_profile.html' , args)
+
+def change_password (request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user = request.user)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return HttpResponseRedirect('/spicy_memes/userprofile')
+            #return redirect ('/spicy_memes/userprofile')
+    else:
+        form=PasswordChangeForm(user=request.user)
+        args = {'form':form}
+        return render (request, 'change_password.html' , args)
