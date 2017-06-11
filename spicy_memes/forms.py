@@ -3,6 +3,7 @@ from django import forms
 from .models import Post, MyUser
 from django.forms import ModelForm, Textarea
 from .authenticate import MyBackend
+from django.contrib.auth.forms import UserChangeForm
 
 class SignUpForm(forms.ModelForm):
     passwordConfirm = forms.CharField(widget=forms.PasswordInput(), required=True, label="Confirm password")
@@ -96,4 +97,14 @@ class LogInForm(forms.ModelForm):
         if user is None:
             raise forms.ValidationError("Wrong combination for username and password!")
         return self.cleaned_data
+
+class EditProfileForm(UserChangeForm):
+    class Meta:
+        model = MyUser
+        fields = (
+            'username',
+            'email',
+            'password'
+            )
+            
         
