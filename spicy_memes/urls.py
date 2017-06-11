@@ -4,17 +4,18 @@ from . import views
 
 app_name = 'spicy_memes'
 urlpatterns = [
-    url(r'^$', views.hotPage, name='content'),
+    url(r'^$', views.startPage, name='startPage'),
     url(r'^post/(?P<pk>\d+)/detail/$', views.postDetail, name='postDetail'),
-     url(r'^post/(?P<pk>\d+)/editPost/$', views.editPost, name='editPost'),
+    url(r'^post/(?P<pk>\d+)/editPost/$', views.editPost, name='editPost'),
     url(r'signUp/', views.signUp, name='signUp'),
     url(r'logOut/', views.logOut, name='logOut'),
     url(r'^userprofile', views.userprofile, name='userprofile'),
     url(r'^trendingPage', views.trendingPage, name='trendingPage'),
     url(r'^freshPage', views.freshPage, name='freshPage'),
     url(r'^loginPage', views.loginPage, name='loginPage'),
-	url(r'^uploadFile', views.uploadFile, name='uploadFile'),
-	url(r'^post/(?P<pk>\d+)/delete/$', views.deleteFile, name='deleteFile'),
+    url(r'^hotPage', views.hotPage, name='content'),
+    url(r'^uploadFile', views.uploadFile, name='uploadFile'),
+    url(r'^post/(?P<pk>\d+)/delete/$', views.deleteFile, name='deleteFile'),
     url(r'^logout', views.logOut, name='logoutPage'),
-    url(r'^deleteUser', views.deleteUser, name='deleteUser')
-    ]
+    url(r'^deleteUser', views.deleteUser, name='deleteUser'),
+]

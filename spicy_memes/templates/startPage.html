@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spicy Memes</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
+</head>
+<body class="startPage">
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+      <span class="navbar-brand">
+        <img alt="Spicy Memes" src="../static/logo_xs.png">
+      </span>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row text-center">
+        <div class="col-md-offset-4 col-md-4" id="start_buttons" role="group">
+            <div class="btn-toolbar">
+                <a href="{% url 'spicy_memes:signUp' %}" type="button" class="btn btn-default btn-block">Create an account!</a>
+                <a href="{% url 'spicy_memes:loginPage' %}"button type="button" class="btn btn-default btn-block">Login!</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
