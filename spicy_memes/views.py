@@ -155,6 +155,8 @@ def change_password (request):
             update_session_auth_hash(request, form.user)
             return HttpResponseRedirect('/spicy_memes/userprofile')
             #return redirect ('/spicy_memes/userprofile')
+        else:
+            return HttpResponseRedirect('/spicy_memes/change_password')
     else:
         form=PasswordChangeForm(user=request.user)
         args = {'form':form}
