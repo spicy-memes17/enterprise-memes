@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 
 {% load staticfiles %}
+{% load like_extras %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -29,7 +30,10 @@
             </a>
             <strong>Posted by: </strong> {{ post.user }}<p class="pull-right"><strong>Spiciness Factor: </strong> 50 🌶️🌶️🌶️</p>
             <div class="btn-toolbar vote">
-                <a  class="btn btn-default" href="{% url 'spicy_memes:likePost' post.id %}">🌶️</a>
+                <form action="{% url 'spicy_memes:likePost' pk=post.id likes=1%}" method="post">
+                {% csrf_token %}
+                <a  class="btn btn-default" type="submit" value="submit">🌶️</a>
+                </form>
                 <a class="btn btn-default" href="#">🍼</a>
                 <a class="btn btn-default" href="{% url 'spicy_memes:postDetail' post.id %}">💬</a>
             </div>

@@ -8,7 +8,7 @@ from .forms import UploadFileForm
 from .forms import UploadForm
 from .forms import EditForm
 from .forms import SignUpForm
-from .forms import LogInForm
+from .forms import LogInForm, LikeForm
 from .models import MyUser
 from django.contrib.auth import authenticate, login, logout
 from datetime import timedelta
@@ -128,14 +128,43 @@ def editPost(request, pk):
         form = EditForm()
         return render(request, '/spicy_memes/', {'form': form})
 
-def likePost(request, pk):
-    if request.method == "POST":
-        user = request.user
-        like = LikesPost(user, pk)
-        like.save()
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def likePost(request, pk, likes):
+
+        post = get_object_or_404(Post, pk=pk)
+        likeform = LikeForm(request.POST or None)
+        like = LikesPost()
+        if request.method == "POST":
+            # Find out if this user has already voted on the specific comment,
+            # if yes, remove whatever his vote was.
+            votes = LikesPost.objects.filter(post=post).filter(user=request.user).filter(post=post)
+            if votes:
+                LikesPost.objects.filter(post).filter(user=request.user).delete()
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            if likeform.is_valid():
+                like = likeform.save(commit=False)
+                like.post = post
+                like.user = request.user
+
+                # Upvote: likes == "1"; Downvote: likes=="0" - I don't know how to
+                # adjust the matching RegEx in urls.py to accept Booleans instead of
+                # Integers
+                if (likes == "0"):
+                    like.likes = False
+                else:
+                    like.likes = True
+                like.save()
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            else:
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            likeform = LikeForm()
+        return render(request, 'postDetail.html', {'likeform': likeform})
 
 def deleteFile(request, pk):
         po = get_object_or_404(Post, pk=pk)
         po.delete()
         return HttpResponseRedirect('/spicy_memes/')
+

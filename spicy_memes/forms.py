@@ -1,6 +1,6 @@
 from django import forms
 # from .models import User
-from .models import Post, MyUser
+from .models import Post, MyUser, LikesPost
 from django.forms import ModelForm, Textarea
 from .authenticate import MyBackend
 
@@ -97,3 +97,8 @@ class LogInForm(forms.ModelForm):
             raise forms.ValidationError("Wrong combination for username and password!")
         return self.cleaned_data
         
+class LikeForm(forms.ModelForm):
+
+    class Meta:
+        model = LikesPost
+        fields = ('likes', )
