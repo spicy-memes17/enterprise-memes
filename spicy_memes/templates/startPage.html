@@ -20,15 +20,20 @@
         <img alt="Spicy Memes" src="../static/logo_xs.png">
       </span>
         </div>
-    </div>
+            <form class="navbar-form navbar-right">
+                <div class="form-group">
+                    <a href="{% url 'spicy_memes:signUp' %}" type="button" class="btn btn-default">Create an
+                        account!</a>
+                    <a href="{% url 'spicy_memes:loginPage' %}" button type="button" class="btn btn-default">Login!</a>
+                </div>
+            </form>
+        </div>
+
 </nav>
 <div class="container-fluid">
     <div class="row text-center">
         <div class="col-md-offset-4 col-md-4" id="start_buttons" role="group">
-            <div class="btn-toolbar">
-                <a href="{% url 'spicy_memes:signUp' %}" type="button" class="btn btn-default btn-block">Create an account!</a>
-                <a href="{% url 'spicy_memes:loginPage' %}"button type="button" class="btn btn-default btn-block">Login!</a>
-            </div>
+
         </div>
     </div>
 </div>

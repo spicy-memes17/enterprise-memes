@@ -5,8 +5,10 @@ from django.forms import ModelForm, Textarea
 from .authenticate import MyBackend
 from django.contrib.auth.forms import UserChangeForm
 
+
 class SignUpForm(forms.ModelForm):
     passwordConfirm = forms.CharField(widget=forms.PasswordInput(), required=True, label="Confirm password")
+
     class Meta:
         model = MyUser
         username = forms.CharField(max_length=255, required=True)
@@ -16,7 +18,7 @@ class SignUpForm(forms.ModelForm):
         fields = ('username', 'email', 'password', 'passwordConfirm')
         widgets = {
             'password': forms.PasswordInput(),
-            'passwordConfirm' : forms.PasswordInput(),
+            'passwordConfirm': forms.PasswordInput(),
         }
 
     def clean(self):
@@ -32,41 +34,45 @@ class SignUpForm(forms.ModelForm):
             raise forms.ValidationError("Username is already taken!")
         return self.cleaned_data
 
+
 # data upload
 class UploadFileForm(forms.Form):
-    title = forms.CharField(max_length=200)	
+    title = forms.CharField(max_length=200)
     description = forms.CharField(max_length=2000,
-        widget=forms.Textarea(
-            attrs={
-                'rows': '5',
-                'placeholder': 'Type your spicy description here',
-            }))
+                                  widget=forms.Textarea(
+                                      attrs={
+                                          'rows': '5',
+                                          'placeholder': 'Type your spicy description here',
+                                      }))
     image_field = forms.FileField(
-        label ='Select a file',
+        label='Select a file',
         help_text='max. 5 megabytes')
+
 
 # data upload mit ModelForm. ist empfohlen, wenn man mit models.py arbeitet
 class UploadForm(ModelForm):
     def __init__(self, **kwargs):
         self.user = kwargs.pop('user', None)
-        #self.group = kwargs.pop('group', None)
+        # self.group = kwargs.pop('group', None)
         super(UploadForm, self).__init__(**kwargs)
 
     def save(self, commit=True):
         obj = super(UploadForm, self).save(commit=False)
         obj.user = self.user
-        #obj.group = self.group
+        # obj.group = self.group
         if commit:
             obj.save()
         return obj
-    
+
     class Meta:
         model = Post
         fields = ['title', 'description', 'image_field']
         widgets = {
-            'title' : Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Spicy Title'}),
-            'description' : Textarea(attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Enter spicy description'}),
+            'title': Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Spicy Title'}),
+            'description': Textarea(
+                attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Enter spicy description'}),
         }
+
 
 # data edit with modelform. image field soll nicht editiert werden. Wenn Bild unerwünscht ist, dann lieber löschen
 class EditForm(ModelForm):
@@ -74,8 +80,9 @@ class EditForm(ModelForm):
         model = Post
         fields = ['title', 'description']
         widgets = {
-            'title' : Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Spicy Title'}),
-            'description' : Textarea(attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Enter spicy description'}),
+            'title': Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Spicy Title'}),
+            'description': Textarea(
+                attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Enter spicy description'}),
         }
 
 
@@ -105,6 +112,12 @@ class EditProfileForm(UserChangeForm):
             'username',
             'email',
             'password'
-            )
-            
-        
+        )
+
+class ChangeProfilePic(forms.ModelForm):
+    class Meta:
+        model = MyUser
+        fields = ['profile_pic']
+
+
+

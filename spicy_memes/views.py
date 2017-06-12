@@ -10,6 +10,7 @@ from .forms import EditForm
 from .forms import SignUpForm
 from .forms import LogInForm
 from .forms import EditProfileForm
+from .forms import ChangeProfilePic
 from .models import MyUser
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
@@ -31,7 +32,7 @@ def signUp(request):
             user.email = request.POST['email']
             user.set_password(request.POST['password'])
             user.save()
-            user_auth = authenticate(request, username=user.username, password=user.password)
+            user_auth = authenticate(username=user.username, password=user.password)
             login(request, user_auth)
             return HttpResponseRedirect('/spicy_memes')
 
@@ -43,7 +44,9 @@ def signUp(request):
 def userprofile(request):
     current_user = request.user
     authform = LogInForm()
-    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user})
+    profilepicform = ChangeProfilePic()
+    passwordform = PasswordChangeForm(data=request.POST, user=request.user)
+    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user, 'passwordform': passwordform, 'profilepicform': profilepicform})
 
 def trendingPage(request):
     return render(request, 'trending.html')
@@ -128,7 +131,7 @@ def editPost(request, pk):
 
     else:
         form = EditForm()
-        return render(request, '/spicy_memes/', {'form': form})   
+        return render(request, '/spicy_memes/', {'form': form})
 
 def deleteFile(request, pk):
         po = get_object_or_404(Post, pk=pk)
@@ -163,3 +166,18 @@ def change_password (request):
         form=PasswordChangeForm(user=request.user)
         args = {'form':form}
         return render (request, 'change_password.html' , args)
+
+
+def changeProfilePic(request):
+    user = request.user
+    if request.method == 'POST':
+        form = ChangeProfilePic(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/spicy_memes/userprofile')
+        else:
+            print("Fail")
+            return HttpResponseRedirect('/spicy_memes/userprofile')
+    else:
+        form = ChangeProfilePic()
+        return render(request, 'test.html', {'form': form})
