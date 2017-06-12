@@ -18,5 +18,6 @@ urlpatterns = [
     url(r'^logout', views.logOut, name='logoutPage'),
     url(r'^deleteUser', views.deleteUser, name='deleteUser'),
     url(r'^post/(?P<pk>\d+)/comment/$', views.addComment, name='addComment'),
+    url(r'^post/(?P<pk>\d+)/comment/delete/$', views.deleteComment, name='deleteComment'),
     url(r'^post/(?P<pk>(\d+))/(?P<likes>(\d+))/vote/$', views.voteComment, name='voteComment'),
     ]

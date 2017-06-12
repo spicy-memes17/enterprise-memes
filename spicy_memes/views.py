@@ -202,3 +202,8 @@ def voteComment(request, pk, likes):
     else:
         voteform = VoteCommentForm()
     return render(request, 'postDetail.html', {'voteform': voteform, 'totalLikes': totalLikes, 'user': request.user})
+
+def deleteComment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    comment.delete()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

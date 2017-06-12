@@ -20,3 +20,10 @@ def hasDownVoted(user, comment):
         return True
     else:
         return False
+    
+@register.filter
+def isAuthor(user, comment):
+    if(comment.user == user):
+        return True
+    else:
+        return False
