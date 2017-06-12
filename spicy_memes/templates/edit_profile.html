@@ -22,14 +22,37 @@
 {% include 'nav.html' with active="index" %}
 <body class="body" style="background-color:#f6f6f6">
   <div class="container-fluid">
+    <div class="card hovercard">
+      <div class="card-background">
+        <img class="card-bkimg" alt="" src="{% static 'user/img/noPic.png' %}">
+        <!-- http://lorempixel.com/850/280/people/9/ -->
+      </div>
+      <div class="useravatar">
+        <img alt="" src="{% static 'user/img/noPic.png' %}">
+      </div>
+      <div class="card-info"> <span class="card-title">{{user.username}}</span>
+
+      </div>
+    </div>
+    <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+
+      <div class="btn-group" role="group">
+        <button type="button" id="Settings" class="btn btn-default" href="#tab2" data-toggle="tab" ><span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+          <div class="hidden-xs">Settings</div>
+        </button>
+      </div>
+
+    </div>
+    <br/>
     <form method="post">
-    {% csrf_token %}
+      {% csrf_token %}
       {{ form.as_p }}
       <br/>
-      <button type = "submit">
+      <button type = "submit" class="btn btn-xs btn-info">
         Submit
       </button>
     </form>
-
+    <br/>
+    <a href="{% url 'spicy_memes:userprofile' %}" class="btn btn-xs btn-info">Back</a>
   </div>
 </body>
