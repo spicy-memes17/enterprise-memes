@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404
-from .models import Post
+from .models import Post, LikesPost
 from .forms import UploadFileForm
 from .forms import UploadForm
 from .forms import EditForm
@@ -126,7 +126,14 @@ def editPost(request, pk):
 
     else:
         form = EditForm()
-        return render(request, '/spicy_memes/', {'form': form})   
+        return render(request, '/spicy_memes/', {'form': form})
+
+def likePost(request, pk):
+    if request.method == "POST":
+        user = request.user
+        like = LikesPost(user, pk)
+        like.save()
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 def deleteFile(request, pk):
         po = get_object_or_404(Post, pk=pk)

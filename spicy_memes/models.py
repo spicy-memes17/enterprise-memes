@@ -91,6 +91,8 @@ class LikesPost(models.Model):
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
     likes = models.BooleanField(default=True)
 
+
+
     def __str__(self):
         return str(self.user) + " likes " if self.likes else " dislikes " + str(self.post)
 

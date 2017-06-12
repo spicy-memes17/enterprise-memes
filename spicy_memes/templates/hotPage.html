@@ -27,9 +27,9 @@
             <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
                 <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
             </a>
-            <strong>Posted by: </strong> {{ post.user }}<p class="pull-right"><strong>Spiciness Factor: </strong> 500 🌶️🌶️🌶️</p>
+            <strong>Posted by: </strong> {{ post.user }}<p class="pull-right"><strong>Spiciness Factor: </strong> 50 🌶️🌶️🌶️</p>
             <div class="btn-toolbar vote">
-                <a class="btn btn-default" href="#">🌶️</a>
+                <a  class="btn btn-default" href="{% url 'spicy_memes:likePost' post.id %}">🌶️</a>
                 <a class="btn btn-default" href="#">🍼</a>
                 <a class="btn btn-default" href="{% url 'spicy_memes:postDetail' post.id %}">💬</a>
             </div>
