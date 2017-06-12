@@ -58,17 +58,17 @@ def loginPage(request):
     if request.method == 'POST':
         form = LogInForm(request.POST)
         if form.is_valid:
-            user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
+            user = authenticate(username=request.POST['username'], password=request.POST['password'])
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect('/spicy_memes') #succes redirect to the startpage
+                return HttpResponseRedirect('/spicy_memes/hotPage') #succes redirect to the startpage
     else:
         form = LogInForm()
     return render(request, 'login.html', {'LogInForm': form, 'user' : current_user})
 
 def logOut(request):
     logout(request)
-    return HttpResponseRedirect('/spicy_memes/loginPage')
+    return HttpResponseRedirect('/spicy_memes')
 
 def deleteUser(request):
     current_user = request.user
@@ -134,6 +134,10 @@ def deleteFile(request, pk):
         po = get_object_or_404(Post, pk=pk)
         po.delete()
         return HttpResponseRedirect('/spicy_memes/')
+
+
+def startPage(request):
+    return render(request, 'startPage.html')
 
 def edit_profile (request):
     if request.method == 'POST':
