@@ -23,22 +23,27 @@
     </div>
     <div class="row">
         {% for post in latest_meme_list %}
-        <div class="col-md-8 memes col-md-offset-8 ">
-            <h3><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></h3>
-            <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
-                <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
-            </a>
-            <strong>Posted by: </strong> {{ post.user }}<p class="pull-right"><strong>Spiciness Factor: </strong> 50 🌶️🌶️🌶️</p>
-            <div class="btn-toolbar vote">
-                <form action="{% url 'spicy_memes:likePost' pk=post.id likes=1%}" method="post">
-                {% csrf_token %}
-                <a  class="btn btn-default" type="submit" value="submit">🌶️</a>
-                </form>
-                <a class="btn btn-default" href="#">🍼</a>
-                <a class="btn btn-default" href="{% url 'spicy_memes:postDetail' post.id %}">💬</a>
+            <div class="col-md-8 memes col-md-offset-8 ">
+                <h3><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></h3>
+                <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
+                    <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
+                </a>
+                {% getLikes post as rating %}
+                <strong>Posted by: </strong> {{ post.user }}<p class="pull-right"><strong>Spiciness
+                Factor: </strong> {{ rating }} 🌶️🌶️🌶️</p>
+                <div class="btn-toolbar vote">
+                    <form action="{% url 'spicy_memes:likePost' pk=post.id likes=1 %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-default" type="submit" value="submit">🌶️</button>
+                    </form>
+                    <form action="{% url 'spicy_memes:likePost' pk=post.id likes=0 %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-default" type="submit" value="submit">🍼</button>
+                    </form>
+                    <a class="btn btn-default" href="{% url 'spicy_memes:postDetail' post.id %}">💬</a>
+                </div>
+                <hr/>
             </div>
-            <hr/>
-        </div>
         {% endfor %}
     </div>
 </body>

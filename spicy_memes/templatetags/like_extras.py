@@ -5,7 +5,7 @@ register = template.Library()
 
 
 @register.simple_tag
-def getVotes(post):
+def getLikes(post):
     return LikesPost.objects.filter(post=post).filter(likes=True).count() - LikesPost.objects.filter(
         post=post).filter(likes=False).count()
 

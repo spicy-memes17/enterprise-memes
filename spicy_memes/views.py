@@ -138,9 +138,9 @@ def likePost(request, pk, likes):
         if request.method == "POST":
             # Find out if this user has already voted on the specific comment,
             # if yes, remove whatever his vote was.
-            votes = LikesPost.objects.filter(post=post).filter(user=request.user).filter(post=post)
+            votes = LikesPost.objects.filter(post=post).filter(user=request.user)
             if votes:
-                LikesPost.objects.filter(post).filter(user=request.user).delete()
+                LikesPost.objects.filter(post=post).filter(user=request.user).delete()
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
             if likeform.is_valid():
@@ -161,7 +161,7 @@ def likePost(request, pk, likes):
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             likeform = LikeForm()
-        return render(request, 'postDetail.html', {'likeform': likeform})
+        return render(request, 'postDetail.html', {'likeform': likeform, 'totalLikes': totalLikes, 'user': request.user})
 
 def deleteFile(request, pk):
         po = get_object_or_404(Post, pk=pk)
