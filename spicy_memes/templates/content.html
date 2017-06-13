@@ -1,7 +1,7 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 {% load staticfiles %}
-{% load like_extras %}
+{% load likepost_extras %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,17 +18,17 @@
 <div class="container">
     <div class="row">
         <div class="page-header">
-            <h1>HOT 🔥</h1>
+            <h1 id="headline">{{ content }}</h1>
         </div>
     </div>
     <div class="row">
-        {% for post in latest_meme_list %}
+        {% for post in memeList %}
             <div class="col-md-8 memes col-md-offset-8 ">
                 <h3><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></h3>
                 <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
                     <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
                 </a>
-                {% getLikes post as rating %}
+                {% getPostLikes post as rating %}
                 <strong>Posted by: </strong> {{ post.user }}<p class="pull-right"><strong>Spiciness
                 Factor: </strong> {{ rating }} 🌶️🌶️🌶️</p>
                 <div class="btn-toolbar vote">
@@ -47,4 +47,17 @@
         {% endfor %}
     </div>
 </body>
+
+<script>
+    headline = document.getElementById("headline");
+    if (headline.innerHTML == "Fresh") {
+        headline.innerHTML += " 👶";
+    }
+    else if (headline.innerHTML == "Spicy") {
+        headline.innerHTML += " 🌶️";
+    }
+    else if (headline.innerHTML == "On Fire") {
+        headline.innerHTML += " 🔥️";
+    }
+</script>
 </html>

@@ -5,13 +5,13 @@ register = template.Library()
 
 
 @register.simple_tag
-def getLikes(post):
+def getPostLikes(post):
     return LikesPost.objects.filter(post=post).filter(likes=True).count() - LikesPost.objects.filter(
         post=post).filter(likes=False).count()
 
 
 @register.filter
-def hasUpVoted(user, post):
+def hasUpVotedPost(user, post):
     if (LikesPost.objects.filter(post=post).filter(user=user).filter(likes=True)):
         return True
     else:
@@ -19,7 +19,7 @@ def hasUpVoted(user, post):
 
 
 @register.filter
-def hasDownVoted(user, post):
+def hasDownVotedPost(user, post):
     if (LikesPost.objects.filter(post=post).filter(user=user).filter(likes=False)):
         return True
     else:
@@ -27,7 +27,7 @@ def hasDownVoted(user, post):
 
 
 @register.filter
-def isAuthor(user, post):
+def isPostAuthor(user, post):
     if (post.user == user):
         return True
     else:

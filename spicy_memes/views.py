@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404
-from .models import Post, LikesPost
+from .models import Post, LikesPost, Comment
 from .forms import UploadFileForm
 from .forms import UploadForm
 from .forms import EditForm
@@ -15,10 +15,39 @@ from datetime import timedelta
 import datetime
 from django.utils.timesince import timesince
 
-def hotPage(request):
-    latest_meme_list = Post.objects.order_by('-date') [:20]
-    context = {'latest_meme_list': latest_meme_list}
-    return render(request, 'hotPage.html', context)
+def content(request, content=None):
+    if(content == None):
+        content = "on_fire"
+
+    memeList = Post.objects.all()
+    memeTupleList = list()
+    sortedMemeList = list()
+
+    for post in memeList:
+        mtuple = (post,
+                  (LikesPost.objects.filter(post=post).filter(likes=True).count()
+                   - LikesPost.objects.filter(post=post).filter(likes=False).count())*2
+                  + Comment.objects.filter(post=post).count()*5)
+        memeTupleList.append(mtuple)
+
+    memeTupleList = sorted(memeTupleList, key=lambda x: x[1], reverse=True)
+    
+    if(content == "fresh"):
+        content = "Fresh"
+        sortedMemeList = Post.objects.order_by('-date') [:20]
+    elif(content == "spicy"):
+        content = "Spicy"
+        for tup in memeTupleList:
+            if(tup[1] >= 5 and tup[1] < 15):
+                sortedMemeList.append(tup[0])
+    elif(content == "on_fire"):
+        content = "On Fire"
+        for tup in memeTupleList:
+            if(tup[1] >= 15):
+                sortedMemeList.append(tup[0])
+                
+    context = {'memeList': sortedMemeList, 'content': content}
+    return render(request, 'content.html', context)    
 
 def signUp(request):
     if request.method == 'POST':
@@ -42,14 +71,6 @@ def userprofile(request):
     current_user = request.user
     authform = LogInForm()
     return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user})
-
-def trendingPage(request):
-    return render(request, 'trending.html')
-
-def freshPage(request):
-    latest_meme_list = Post.objects.order_by('-date') [:20]
-    context = {'latest_meme_list': latest_meme_list}
-    return render(request, 'hotPage.html', context)
 
 def loginPage(request):
     current_user = request.user

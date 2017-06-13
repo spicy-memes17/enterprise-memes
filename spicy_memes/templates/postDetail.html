@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 
 {% load staticfiles %}
-{% load like_extras %}
+{% load likepost_extras %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -20,8 +20,8 @@
         <div class="col-xs-8 memesdetail">
             <h3>{{ post.title }}</h3>
             <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
-            {% getLikes post as rating %}
-            <strong>Posted by: </strong> {{ post.user }} ({{ post.date|timesince }} ago)<p class="pull-right"><strong>Spiciness Factor: </strong> {{ rating}} 🌶️🌶️🌶️</p>
+            {% getPostLikes post as postRating %}
+            <strong>Posted by: </strong> {{ post.user }} ({{ post.date|timesince }} ago)<p class="pull-right"><strong>Spiciness Factor: </strong> {{ postRating }} 🌶️🌶️🌶️</p>
             <br>
             <p class="description">{{ post.description }}</p>
             <div class="btn-toolbar vote">
