@@ -43,10 +43,11 @@ def signUp(request):
 
 def userprofile(request):
     current_user = request.user
+    generalForm = EditProfileForm();
     authform = LogInForm()
     profilepicform = ChangeProfilePic()
     passwordform = PasswordChangeForm(data=request.POST, user=request.user)
-    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user, 'passwordform': passwordform, 'profilepicform': profilepicform})
+    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user, 'passwordform': passwordform, 'profilepicform': profilepicform, 'generalForm': generalForm})
 
 def trendingPage(request):
     return render(request, 'trending.html')
@@ -71,7 +72,7 @@ def loginPage(request):
 
 def logOut(request):
     logout(request)
-    return HttpResponseRedirect('/spicy_memes')
+    return HttpResponseRedirect('/spicy_memes/')
 
 def deleteUser(request):
     current_user = request.user
@@ -140,6 +141,9 @@ def deleteFile(request, pk):
 
 
 def startPage(request):
+    print(request.user)
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('/spicy_memes/hotPage')
     return render(request, 'startPage.html')
 
 def edit_profile (request):
@@ -149,6 +153,8 @@ def edit_profile (request):
             form.save()
             return HttpResponseRedirect('/spicy_memes/userprofile')
             #return redirect ('/spicy_memes/userprofile')
+        else:
+            print('fail')
     else:
         form=EditProfileForm(instance=request.user)
         args = {'form':form}
@@ -161,13 +167,12 @@ def change_password (request):
             form.save()
             update_session_auth_hash(request, form.user)
             return HttpResponseRedirect('/spicy_memes/userprofile')
-            #return redirect ('/spicy_memes/userprofile')
         else:
-            return HttpResponseRedirect('/spicy_memes/change_password')
+            print('not valid')
+            return HttpResponseRedirect('/spicy_memes/userprofile')
     else:
         form=PasswordChangeForm(user=request.user)
-        args = {'form':form}
-        return render (request, 'change_password.html' , args)
+        return render (request, '/spicy_memes/userprofile' , {'form':form})
 
 
 def changeProfilePic(request):
@@ -178,7 +183,6 @@ def changeProfilePic(request):
             form.save()
             return HttpResponseRedirect('/spicy_memes/userprofile')
         else:
-            print("Fail")
             return HttpResponseRedirect('/spicy_memes/userprofile')
     else:
         form = ChangeProfilePic()

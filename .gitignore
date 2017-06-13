@@ -9,6 +9,7 @@ __pycache__/
 local_settings.py
 db.sqlite3
 media
+!media/default_user_pic.jpg
 /*/migrations/
 
 ### PyCharm ###

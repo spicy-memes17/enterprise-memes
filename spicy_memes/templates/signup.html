@@ -12,39 +12,51 @@
     <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
 </head>
 <body>
-    <div class="container">
-        <div class="row signup">
-        {% if user.is_authenticated %}
-        <div class="col-md-offset-4 col-md-6">
-            <p>You are already logged into your account. Click <a href="/spicy_memes/logout">logout</a> to create a new account!</p>
-        </div>
-        {% else %}
-        <div class="col-md-offset-4 col-md-6">
-            <h3>Create a <strong>Spicy Memes</strong> Account 🌶️</h3>
-            <form action="spicy_memes/signUp/" method="post">
-                {% csrf_token %}
-                {% for field in signUpForm %}
-                <p>{{ field.label_tag }} <br/>{{ field }}</p>
-                {% endfor %}
-                
-                {% if signUpForm.non_field_errors %}
-                
-                {% for error in signUpForm.non_field_errors %}
-                    <div class="alert alert-danger">{{ error }}</div>
-                {% endfor %}
-                
-                {% endif %}
-                <button type="submit" class="btn btn-default">Create New Account</button>
-            </form>
-            <div class="redirectLogin">
-                <a href="/spicy_memes/loginPage">Already have an account?</a>
-                <a href="{% url 'spicy_memes:loginPage' %}"> <button type="submit" class="btn btn-default">Login</button></a> 
-            </div>
-        </div>
-        {% endif %}
-
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a href="{% url 'spicy_memes:startPage' %}"><span class="navbar-brand">
+        <img alt="Spicy Memes" src="/static/logo_xs.png">
+        </span></a>
         </div>
     </div>
+</nav>
+<div class="container">
+    <div class="row signup">
+        {% if user.is_authenticated %}
+            <div class="col-md-offset-4 col-md-6">
+                <p>You are already logged into your account. Click <a href="/spicy_memes/logout">logout</a> to create a
+                    new account!</p>
+            </div>
+        {% else %}
+            <div class="col-md-offset-4 col-md-6">
+                <h3>Create a <strong>Spicy Memes</strong> Account 🌶️</h3>
+                <form action="spicy_memes/signUp/" method="post">
+                    {% csrf_token %}
+                    {% for field in signUpForm %}
+                        <p>{{ field.label_tag }} <br/>{{ field }}</p>
+                    {% endfor %}
+
+                    {% if signUpForm.non_field_errors %}
+
+                        {% for error in signUpForm.non_field_errors %}
+                            <div class="alert alert-danger">{{ error }}</div>
+                        {% endfor %}
+
+                    {% endif %}
+                    <button type="submit" class="btn btn-default">Create New Account</button>
+                </form>
+                <div class="redirectLogin">
+                    <a href="/spicy_memes/loginPage">Already have an account?</a>
+                    <a href="{% url 'spicy_memes:loginPage' %}">
+                        <button type="submit" class="btn btn-default">Login</button>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
 
 
 </body>

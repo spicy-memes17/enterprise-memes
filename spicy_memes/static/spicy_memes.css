@@ -67,5 +67,9 @@ a:hover
 }
 
 #start_buttons {
-    margin-top: 30%;
+   padding-top: 50%;
+}
+
+body {
+  min-height: 100%;
 }

@@ -33,7 +33,7 @@ class Post(models.Model):
 class MyUser(AbstractBaseUser, PermissionsMixin): #we don't need all attributes of the django user model. extending AbstractBaseUser allows us to create a custom user model
     username = models.CharField(max_length=15, unique=True)
     email = models.EmailField()
-    profile_pic = models.FileField(upload_to='images/', default='images/noPic.png')
+    profile_pic = models.FileField(upload_to='images/', default='default_user_pic.jpg')
 
     #a password field seems to already exist in the AbstractBaseUser. django documentation is shit
 
