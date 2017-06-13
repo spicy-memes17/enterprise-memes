@@ -8,7 +8,7 @@ from .forms import UploadFileForm
 from .forms import UploadForm
 from .forms import EditForm
 from .forms import SignUpForm
-from .forms import LogInForm, SearchForm
+from .forms import LogInForm, SearchForm, TagSearchForm
 from .models import MyUser
 from django.contrib.auth import authenticate, login, logout
 from datetime import timedelta
@@ -138,25 +138,37 @@ def deleteFile(request, pk):
 
 def search(request):
     if request.method == 'GET':
-        form= SearchForm(request.GET)
+        searchform= SearchForm(request.GET)
+        tagsearchform= TagSearchForm(request.GET)
         posts = []
-        if form.is_valid():
-            search_terms = form.cleaned_data.get('search_term').split(',')
-            by_tags = form.cleaned_data.get('by_tag')
-            by_name = form.cleaned_data.get('by_name')
+        if searchform.is_valid():
+            search_terms = searchform.cleaned_data.get('search_term').split(',')
+            by_tags = searchform.cleaned_data.get('by_tag')
+            by_name = searchform.cleaned_data.get('by_name')
             both_false = not (by_tags or by_name)
             for term in search_terms:   #we sort by tags if the tag selection is true or neither is set (default)
                 if both_false or by_tags:
                     try:
                         tag= Tag.objects.get(name=term).name
                         if tag is not "":#here or one step up?
-                            filtered_posts = Post.objects.filter(tags__name=tag) #search here for error
+                            filtered_posts = Post.objects.filter(tags__name=tag)
                             posts.extend(filtered_posts)
                     except:
                         pass
                 if by_name:
                     filtered_posts = Post.objects.filter(title__contains=term)
                     posts.extend(filtered_posts)
+
+        #TODO: clean this code up a bit. maybe add a new function. is shit now
+        if tagsearchform.is_valid():
+            term= tagsearchform.cleaned_data.get('tag')
+            try:
+                tag= Tag.objects.get(name=term).name
+                if tag is not "":
+                    filtered_posts = Post.objects.filter(tags__name=tag)
+                    posts.extend(filtered_posts)
+            except:
+                pass
                         
         context = {'latest_meme_list': posts}  # only temporary
                 

@@ -31,7 +31,7 @@
 			<strong>Tags: </strong> <br>
 			{% for tag in post.tags.all %} <!--jeder tag ist in einer form und klickbar. es wird nach posts mit dem angeklickten tag gesucht-->
 				<form method="GET" action="{% url 'spicy_memes:search' %}" style="float: left">
-					<input value="{{ tag.name }}" type="hidden" name="tags">
+					<input value="{{ tag.name }}" type="hidden" name="tag">
 					<button type="submit" class="btn-link">{{ tag.name }}</button>
 				</form>
 			{% endfor %}

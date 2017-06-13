@@ -108,6 +108,10 @@ class SearchForm(forms.Form):
     by_name= forms.BooleanField(required=False)
     by_tag= forms.BooleanField(required=False)
 
+#used for the search performed after clicking on a tag
+class TagSearchForm(forms.Form):
+    tag = forms.CharField(required=False, widget=forms.Textarea(
+                                                attrs={'class': 'form-control', 'rows': '1' ,'placeholder': 'Enter Spicy Tags'}))
 
 # data edit with modelform. image field soll nicht editiert werden. Wenn Bild unerwünscht ist, dann lieber löschen
 class EditForm(ModelForm):
