@@ -14,7 +14,7 @@ from django.core.paginator import Paginator
 from .models import Post, MyUser, Comment, LikesComment, LikesPost
 from .forms import UploadFileForm, UploadForm, EditForm, SignUpForm, LogInForm, CommentForm, VoteCommentForm, LikeForm
 
-
+@login_required
 def content(request, content=None):
     if(content == None):
         content = "on_fire"
