@@ -19,7 +19,7 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=2000)
     date = models.DateTimeField(auto_now_add=True)
-    image_field = models.FileField(upload_to='images/', default='media/images/image.jpg')
+    image_field = models.ImageField(upload_to='images/', default='media/images/image.jpg', max_length=40)
 
     tags = models.ManyToManyField('Tag', blank=True)
     #default = 1 for first sprint version of meme upload
