@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="changeProfilePic" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p>Change your profile image:</p>
+    {{ form.profile_pic }}
+    <button type="submit" align="left" class="btn btn-default">Submit</button>
+</form>
+</body>
+</html>

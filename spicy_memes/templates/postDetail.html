@@ -78,8 +78,9 @@
 
         {% for comment in sortedComments %}
         <br>
-        <!-- <div class="commentProfilePic img-responsive img-rounded" style="padding-top: 5px"><img src="{{ comment.user.profile_pic.url }}"></div> -->
-        <div class="col-xs-2" style="padding-top: 5px"><img class="commentpic" src="{% static 'user/img/noPic.png' %}"></div>
+            <!-- TODO this has no size limitations -->
+        <div class="commentProfilePic img-responsive img-rounded" style="padding-top: 5px"><img src="{{ comment.user.profile_pic.url }}"></div>
+        <!--<div class="col-xs-2" style="padding-top: 5px"><img class="commentpic" src="{% static 'user/img/noPic.png' %}"></div>-->
         <div class="singlecomment col-xs-10">
                 <div class="cheading"><strong>{{ comment.user }}</strong>
                 <span style="float: right">{{ comment.date }}</span></div>
