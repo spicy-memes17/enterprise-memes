@@ -1,8 +1,10 @@
 from django import forms
 # from .models import User
-from .models import Post, MyUser, Comment, LikesComment
+
+from .models import Post, MyUser, Comment, LikesComment, LikesPost
 from django.forms import ModelForm, Textarea
 from .authenticate import MyBackend
+
 
 class SignUpForm(forms.ModelForm):
     passwordConfirm = forms.CharField(widget=forms.PasswordInput(), required=True, label="Confirm password")
@@ -111,3 +113,8 @@ class LogInForm(forms.ModelForm):
             raise forms.ValidationError("Wrong combination for username and password!")
         return self.cleaned_data
         
+class LikeForm(forms.ModelForm):
+
+    class Meta:
+        model = LikesPost
+        fields = ('likes', )

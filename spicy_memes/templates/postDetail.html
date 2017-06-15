@@ -1,7 +1,9 @@
 ﻿<!DOCTYPE html>
 
 {% load staticfiles %}
+{% load likepost_extras %}
 {% load vote_extras %}
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -21,12 +23,20 @@
         <div class="col-xs-8 memesdetail">
             <h3>{{ post.title }}</h3>
             <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
-            <strong>Posted by: </strong> {{ post.user }} ({{ post.date|timesince }} ago)<p class="pull-right"><strong>Spiciness Factor: </strong> 500 🌶️🌶️🌶️</p>
+            {% getPostLikes post as postRating %}
+            <strong>Posted by: </strong> {{ post.user }} ({{ post.date|timesince }} ago)<p class="pull-right"><strong>Spiciness Factor: </strong> {{ postRating }} 🌶️🌶️🌶️</p>
             <br>
             <p class="description">{{ post.description }}</p>
             <div class="btn-toolbar vote">
-                <a class="btn btn-default" href="#">🌶️</a>
-                <a class="btn btn-default" href="#">🍼</a>
+               <form action="{% url 'spicy_memes:likePost' pk=post.id likes=1 %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-default" type="submit" value="submit">🌶️</button>
+                    </form>
+                    <form action="{% url 'spicy_memes:likePost' pk=post.id likes=0 %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-default" type="submit" value="submit">🍼</button>
+                    </form>
+                    <a class="btn btn-default" href="{% url 'spicy_memes:postDetail' post.id %}">💬</a>
             </div>
             <hr/>
         </div>
@@ -68,8 +78,8 @@
 
         {% for comment in sortedComments %}
         <br>
-        <!-- <div class="commentProfilePic img-responsive img-rounded" style="padding-top: 5px"><img src="{{ comment.user.profile_pic.url }}"></img></div> -->
-        <div class="col-xs-2" style="padding-top: 5px"><img class="commentpic" src="{% static 'user/img/noPic.png' %}"></img></div>
+        <!-- <div class="commentProfilePic img-responsive img-rounded" style="padding-top: 5px"><img src="{{ comment.user.profile_pic.url }}"></div> -->
+        <div class="col-xs-2" style="padding-top: 5px"><img class="commentpic" src="{% static 'user/img/noPic.png' %}"></div>
         <div class="singlecomment col-xs-10">
                 <div class="cheading"><strong>{{ comment.user }}</strong>
                 <span style="float: right">{{ comment.date }}</span></div>

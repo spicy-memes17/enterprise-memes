@@ -3,9 +3,6 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404
-from .models import Post, MyUser, Comment, LikesComment
-from .forms import UploadFileForm, UploadForm, EditForm, SignUpForm, LogInForm, CommentForm, VoteCommentForm
-
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from datetime import timedelta
@@ -14,12 +11,44 @@ from django.utils.timesince import timesince
 from django.contrib import messages
 from django.core.paginator import Paginator
 
+from .models import Post, MyUser, Comment, LikesComment, LikesPost
+from .forms import UploadFileForm, UploadForm, EditForm, SignUpForm, LogInForm, CommentForm, VoteCommentForm, LikeForm
 
 @login_required
-def hotPage(request):
-    latest_meme_list = Post.objects.order_by('-date') [:20]
-    context = {'latest_meme_list': latest_meme_list}
-    return render(request, 'hotPage.html', context)
+def content(request, content=None):
+    if(content == None):
+        content = "on_fire"
+
+    memeList = Post.objects.all()
+    memeTupleList = list()
+    sortedMemeList = list()
+
+    for post in memeList:
+        mtuple = (post,
+                  (LikesPost.objects.filter(post=post).filter(likes=True).count()
+                   - LikesPost.objects.filter(post=post).filter(likes=False).count())*2
+                  + Comment.objects.filter(post=post).count()*5)
+        memeTupleList.append(mtuple)
+
+    memeTupleList = sorted(memeTupleList, key=lambda x: x[1], reverse=True)
+    
+    if(content == "fresh"):
+        content = "Fresh"
+        sortedMemeList = Post.objects.order_by('-date') [:20]
+    elif(content == "spicy"):
+        content = "Spicy"
+        for tup in memeTupleList:
+            if(tup[1] >= 5 and tup[1] < 15):
+                sortedMemeList.append(tup[0])
+    elif(content == "on_fire"):
+        content = "On Fire"
+        for tup in memeTupleList:
+            if(tup[1] >= 15):
+                sortedMemeList.append(tup[0])
+                
+    context = {'memeList': sortedMemeList, 'content': content}
+    return render(request, 'content.html', context)    
+
 
 def signUp(request):
     if request.method == 'POST':
@@ -39,21 +68,14 @@ def signUp(request):
 
     return render(request, 'signup.html', {'signUpForm': form})
 
+
 @login_required
 def userprofile(request):
     current_user = request.user
     authform = LogInForm()
     return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user})
 
-@login_required
-def trendingPage(request):
-    return render(request, 'trending.html')
 
-@login_required
-def freshPage(request):
-    latest_meme_list = Post.objects.order_by('-date') [:20]
-    context = {'latest_meme_list': latest_meme_list}
-    return render(request, 'fresh.html', context)
 
 def loginPage(request):
     current_user = request.user
@@ -68,10 +90,12 @@ def loginPage(request):
         form = LogInForm()
     return render(request, 'login.html', {'LogInForm': form, 'user' : current_user})
 
+
 @login_required
 def logOut(request):
     logout(request)
     return HttpResponseRedirect('/spicy_memes/loginPage')
+
 
 @login_required
 def deleteUser(request):
@@ -89,6 +113,7 @@ def deleteUser(request):
     else:
         return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if accessed with http-get
 
+
 @login_required
 def uploadFile(request):
     if request.method == 'POST':
@@ -102,6 +127,7 @@ def uploadFile(request):
     else:
         form = UploadForm()
         return render(request, 'uploadFile.html', {'form': form})
+
 
 @login_required
 def postDetail(request, pk):
@@ -145,6 +171,7 @@ def postDetail(request, pk):
                'voteform': voteform, 'sortedComments': sortedComments}
     return render(request, 'postDetail.html', context)
 
+
 @login_required
 def editPost(request, pk):
     if request.method == 'POST':
@@ -161,7 +188,42 @@ def editPost(request, pk):
 
     else:
         form = EditForm()
-        return render(request, '/spicy_memes/', {'form': form})   
+        return render(request, '/spicy_memes/', {'form': form})
+
+
+
+def likePost(request, pk, likes):
+
+        post = get_object_or_404(Post, pk=pk)
+        likeform = LikeForm(request.POST or None)
+        like = LikesPost()
+        if request.method == "POST":
+            # Find out if this user has already voted on the specific comment,
+            # if yes, remove whatever his vote was.
+            votes = LikesPost.objects.filter(post=post).filter(user=request.user)
+            if votes:
+                LikesPost.objects.filter(post=post).filter(user=request.user).delete()
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            if likeform.is_valid():
+                like = likeform.save(commit=False)
+                like.post = post
+                like.user = request.user
+
+                # Upvote: likes == "1"; Downvote: likes=="0" - I don't know how to
+                # adjust the matching RegEx in urls.py to accept Booleans instead of
+                # Integers
+                if (likes == "0"):
+                    like.likes = False
+                else:
+                    like.likes = True
+                like.save()
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            else:
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            likeform = LikeForm()
+        return render(request, 'postDetail.html', {'likeform': likeform, 'totalLikes': totalLikes, 'user': request.user})
 
 @login_required
 def deleteFile(request, pk):
