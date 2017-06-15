@@ -83,7 +83,7 @@ def signUp(request):
 @login_required
 def userprofile(request):
     current_user = request.user
-    generalForm = EditProfileForm(instance=request.user);
+    generalForm = EditProfileForm(instance=request.user)
     authform = LogInForm()
     profilepicform = ChangeProfilePic()
     passwordform = PasswordChangeForm(data=request.POST, user=request.user)
