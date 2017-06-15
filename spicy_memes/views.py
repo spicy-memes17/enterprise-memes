@@ -43,7 +43,7 @@ def signUp(request):
 
 def userprofile(request):
     current_user = request.user
-    generalForm = EditProfileForm();
+    generalForm = EditProfileForm(instance=request.user);
     authform = LogInForm()
     profilepicform = ChangeProfilePic()
     passwordform = PasswordChangeForm(data=request.POST, user=request.user)
@@ -148,13 +148,11 @@ def startPage(request):
 
 def edit_profile (request):
     if request.method == 'POST':
-        form = EditProfileForm(request.POST, instance = request.user)
+        form = EditProfileForm(data=request.POST, instance=request.user)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/spicy_memes/userprofile')
             #return redirect ('/spicy_memes/userprofile')
-        else:
-            print('fail')
     else:
         form=EditProfileForm(instance=request.user)
         args = {'form':form}
@@ -162,7 +160,7 @@ def edit_profile (request):
 
 def change_password (request):
     if request.method == 'POST':
-        form = PasswordChangeForm(data=request.POST, user = request.user)
+        form = PasswordChangeForm(data=request.POST, user=request.user)
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
