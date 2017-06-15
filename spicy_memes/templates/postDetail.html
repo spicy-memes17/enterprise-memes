@@ -2,6 +2,8 @@
 
 {% load staticfiles %}
 {% load likepost_extras %}
+{% load vote_extras %}
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,6 +12,7 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
 
 </head>
@@ -56,11 +59,81 @@
         <br>
         {% endif %}
     </div>
+</div>
+
+<div class="container">
     <div class="row">
-        <div class="col-md-8 comments col-md-offset-8">
-        <h3>Comments</h3>
-        <p>There are no comments yet.</p>
+        <div class="col-md-8">
+        <h3><section id= commentanchor>Comments</section></h3>
+        <br>
+        <form action="{% url 'spicy_memes:addComment' post.id %}" method="post">
+        {% csrf_token %}
+        <label>Any sauce to add?</label>
+        <br>
+        {{ commentform.content }}
+        <button type="submit" class="btn btn-default pull-left uploadbtn" value="submit" style="margin-bottom: 5px">COMMENT</button>
+        </form>
+        
+        <br>
+
+        {% for comment in sortedComments %}
+        <br>
+        <!-- <div class="commentProfilePic img-responsive img-rounded" style="padding-top: 5px"><img src="{{ comment.user.profile_pic.url }}"></img></div> -->
+        <div class="col-xs-2" style="padding-top: 5px"><img class="commentpic" src="{% static 'user/img/noPic.png' %}"></img></div>
+        <div class="singlecomment col-xs-10">
+                <div class="cheading"><strong>{{ comment.user }}</strong>
+                <span style="float: right">{{ comment.date }}</span></div>
+                <p>{{ comment.content|linebreaks }}</p>
+                <form action="{% url 'spicy_memes:voteComment' pk=comment.id likes=0 %}" method="post">
+                {% csrf_token %}
+                <div style="display: none">{{ voteform.likes }}</div>
+                <button class="btn btn-default" type="submit" value="submit" style="display: inline; float: right; padding-left: 10px;">
+                    <span id="cdownvote_{{comment.id}}" class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>
+                </button>
+                </form>
+                <form action="{% url 'spicy_memes:voteComment' pk=comment.id likes=1 %}" method="post">
+                {% csrf_token %}
+                <div style="display: none">{{ voteform.likes }}</div>
+                <button class="btn btn-default" type="submit" value="submit" style="outline: none; display: inline; float: right; padding-left: 10px;">
+                    <span id="cupvote_{{comment.id}}" class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+                </button>
+                </form>
+                {% getVotes comment as rating %}
+                <p id="rating_{{comment.id}}">{{ rating }}</p>
+                {% if user|isAuthor:comment %}
+                <a href="{% url 'spicy_memes:deleteComment' pk=comment.id %}" onclick="return confirm('Are you sure you want to delete this comment?')"><span style="display: inline; color:grey">Delete my comment</span></a>
+                {% endif %}
+                <script>
+                    rating = document.getElementById("rating_{{comment.id}}");
+                    if (rating.innerHTML < 0) {
+                        rating.style.color = "red";
+                    }
+                    else if (rating.innerHTML > 0) {
+                        rating.style.color = "green";
+                    }
+                </script>
+                {% if user|hasUpVoted:comment %}
+                <script>
+                    upvotebtn = document.getElementById("cupvote_{{comment.id}}");
+                    upvotebtn.style.color = "green";
+                </script>
+                {% endif %}
+                {% if user|hasDownVoted:comment %}
+                <script>
+                    downvotebtn = document.getElementById("cdownvote_{{comment.id}}");
+                    downvotebtn.style.color = "red";
+                </script>
+                {% endif %}
+        <br>
+        <hr/>
+        </div>
+        {% empty %}
+                <br>
+                <p>There are no comments yet.</p>
+        {% endfor %}
+        </div>
         </div>
     </div>
+</div> 
 </body>
 </html>
