@@ -19,9 +19,9 @@ urlpatterns = [
     url(r'^edit_profile', views.edit_profile, name='edit_profile'),
     url(r'^change_password', views.change_password, name='change_password'),
     url(r'^changeProfilePic', views.changeProfilePic, name='changeProfilePic'),
-    url(r'^test', views.changeProfilePic, name='changeProfilePic'),
     url(r'^post/(?P<pk>\d+)/(?P<likes>(\d+))/likePost/$', views.likePost, name='likePost'),
     url(r'^post/(?P<pk>\d+)/comment/$', views.addComment, name='addComment'),
     url(r'^post/(?P<pk>\d+)/comment/delete/$', views.deleteComment, name='deleteComment'),
     url(r'^post/(?P<pk>(\d+))/(?P<likes>(\d+))/vote/$', views.voteComment, name='voteComment'),
+    url(r'^startPage/', views.startPage, name='startPage'),
     ]

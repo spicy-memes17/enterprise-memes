@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from .models import Post
 from .forms import UploadFileForm
 from .forms import UploadForm
@@ -98,7 +99,8 @@ def loginPage(request):
             user = authenticate(username=request.POST['username'], password=request.POST['password'])
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect('/spicy_memes/hotPage') #succes redirect to the startpage
+                # Links change and this is hardcoded, how to replace this?
+                return HttpResponseRedirect('/spicy_memes') #succes redirect to the startpage
     else:
         form = LogInForm()
     return render(request, 'login.html', {'LogInForm': form, 'user' : current_user})
