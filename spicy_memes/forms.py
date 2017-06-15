@@ -1,9 +1,11 @@
 from django import forms
 # from .models import User
-from .models import Post, MyUser
+
+from .models import Post, MyUser, Comment, LikesComment, LikesPost
 from django.forms import ModelForm, Textarea
 from .authenticate import MyBackend
 from django.contrib.auth.forms import UserChangeForm
+
 
 
 class SignUpForm(forms.ModelForm):
@@ -85,7 +87,21 @@ class EditForm(ModelForm):
                 attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Enter spicy description'}),
         }
 
+class CommentForm(forms.ModelForm):
 
+    class Meta:
+        model = Comment
+        fields = ('content', )
+        widgets = {
+            'content' : Textarea(attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Share your spicy thoughts.', 'style': 'margin-bottom: 10px'}),
+        }
+        
+class VoteCommentForm(forms.ModelForm):
+
+    class Meta:
+        model = LikesComment
+        fields = ('likes', )
+        
 class LogInForm(forms.ModelForm):
     class Meta:
         model = MyUser
@@ -119,5 +135,10 @@ class ChangeProfilePic(forms.ModelForm):
         model = MyUser
         fields = ['profile_pic']
 
+        
+class LikeForm(forms.ModelForm):
 
+    class Meta:
+        model = LikesPost
+        fields = ('likes', )
 

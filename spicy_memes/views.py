@@ -14,14 +14,51 @@ from .forms import ChangeProfilePic
 from .models import MyUser
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
+from django.contrib.auth.decorators import login_required
 from datetime import timedelta
 import datetime
 from django.utils.timesince import timesince
+from django.contrib import messages
+from django.core.paginator import Paginator
 
-def hotPage(request):
-    latest_meme_list = Post.objects.order_by('-date') [:20]
-    context = {'latest_meme_list': latest_meme_list}
-    return render(request, 'hotPage.html', context)
+from .models import Post, MyUser, Comment, LikesComment, LikesPost
+from .forms import UploadFileForm, UploadForm, EditForm, SignUpForm, LogInForm, CommentForm, VoteCommentForm, LikeForm
+
+@login_required
+def content(request, content=None):
+    if(content == None):
+        content = "on_fire"
+
+    memeList = Post.objects.all()
+    memeTupleList = list()
+    sortedMemeList = list()
+
+    for post in memeList:
+        mtuple = (post,
+                  (LikesPost.objects.filter(post=post).filter(likes=True).count()
+                   - LikesPost.objects.filter(post=post).filter(likes=False).count())*2
+                  + Comment.objects.filter(post=post).count()*5)
+        memeTupleList.append(mtuple)
+
+    memeTupleList = sorted(memeTupleList, key=lambda x: x[1], reverse=True)
+    
+    if(content == "fresh"):
+        content = "Fresh"
+        sortedMemeList = Post.objects.order_by('-date') [:20]
+    elif(content == "spicy"):
+        content = "Spicy"
+        for tup in memeTupleList:
+            if(tup[1] >= 5 and tup[1] < 15):
+                sortedMemeList.append(tup[0])
+    elif(content == "on_fire"):
+        content = "On Fire"
+        for tup in memeTupleList:
+            if(tup[1] >= 15):
+                sortedMemeList.append(tup[0])
+                
+    context = {'memeList': sortedMemeList, 'content': content}
+    return render(request, 'content.html', context)    
+
 
 def signUp(request):
     if request.method == 'POST':
@@ -41,6 +78,8 @@ def signUp(request):
 
     return render(request, 'signup.html', {'signUpForm': form})
 
+
+@login_required
 def userprofile(request):
     current_user = request.user
     generalForm = EditProfileForm(instance=request.user);
@@ -49,13 +88,7 @@ def userprofile(request):
     passwordform = PasswordChangeForm(data=request.POST, user=request.user)
     return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user, 'passwordform': passwordform, 'profilepicform': profilepicform, 'generalForm': generalForm})
 
-def trendingPage(request):
-    return render(request, 'trending.html')
 
-def freshPage(request):
-    latest_meme_list = Post.objects.order_by('-date') [:20]
-    context = {'latest_meme_list': latest_meme_list}
-    return render(request, 'hotPage.html', context)
 
 def loginPage(request):
     current_user = request.user
@@ -70,10 +103,14 @@ def loginPage(request):
         form = LogInForm()
     return render(request, 'login.html', {'LogInForm': form, 'user' : current_user})
 
+
+@login_required
 def logOut(request):
     logout(request)
     return HttpResponseRedirect('/spicy_memes/')
 
+
+@login_required
 def deleteUser(request):
     current_user = request.user
     if request.method == 'POST':
@@ -89,34 +126,66 @@ def deleteUser(request):
     else:
         return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if accessed with http-get
 
+
+@login_required
 def uploadFile(request):
     if request.method == 'POST':
         form = UploadForm(user = request.user, files=request.FILES, data=request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/spicy_memes/')
+        else:
+            messages.success(request, 'Please choose an image file with a name under 40 characters long.')
+            return render(request, 'uploadFile.html', {'form': form})
     else:
         form = UploadForm()
         return render(request, 'uploadFile.html', {'form': form})
 
+
+@login_required
 def postDetail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     user = request.user
+
+    #Initialize forms
     editform = EditForm(initial={'title': post.title,'description': post.description})
+    commentform = CommentForm()
+    commentform.user = request.user
+    voteform = VoteCommentForm()
+
+    #Get difference between time posted and now
     tdelta = datetime.datetime.now() - post.date.replace(tzinfo=None)
     time_posted = (tdelta.seconds/60) - 120
+    if((datetime.datetime.today().strftime('%d-%m-%Y')) != (post.date.strftime('%d-%m-%Y'))):
+        time_posted = 16
+
     time_diff = round(15 - time_posted)
-#    if (time_posted <= 15):
-#        editable = True
-#    else :
-#        editable = False
+
+    #Probably very complicated way of getting a list that sorts comments by
+    #their user rating, but it's according to the model where there is no
+    #reference to LikesPost from Comment. Improvements welcome
+    postComments = Comment.objects.filter(post = post)
+    tupleComments = list()
+    sortedComments = list()
+    for comment in postComments:
+        ctuple = (comment, LikesComment.objects.filter(comment=comment).filter(likes=True).count() - LikesComment.objects.filter(comment=comment).filter(likes=False).count())
+        tupleComments.append(ctuple)
+    tupleComments = sorted(tupleComments, key=lambda x: x[1], reverse=True)
+    for tup in tupleComments:
+        sortedComments.append(tup[0])
+
+    #Identify post owner for editing purposes.
     if (post.user == request.user):
         postOwner = True
     else:
         postOwner = False
-    context = {'post': post, 'user': user, 'owner': postOwner, 'editform': editform, 'time_posted': time_posted, 'time_diff': time_diff}
+    context = {'post': post, 'user': user, 'owner': postOwner, 'editform': editform,'commentform': commentform,
+               'time_posted': time_posted, 'time_diff': time_diff, 'postComments': postComments,
+               'voteform': voteform, 'sortedComments': sortedComments}
     return render(request, 'postDetail.html', context)
 
+
+@login_required
 def editPost(request, pk):
     if request.method == 'POST':
         form = EditForm(request.POST)
@@ -134,10 +203,44 @@ def editPost(request, pk):
         form = EditForm()
         return render(request, '/spicy_memes/', {'form': form})
 
+
+def likePost(request, pk, likes):
+        post = get_object_or_404(Post, pk=pk)
+        likeform = LikeForm(request.POST or None)
+        like = LikesPost()
+        if request.method == "POST":
+            # Find out if this user has already voted on the specific comment,
+            # if yes, remove whatever his vote was.
+            votes = LikesPost.objects.filter(post=post).filter(user=request.user)
+            if votes:
+                LikesPost.objects.filter(post=post).filter(user=request.user).delete()
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            if likeform.is_valid():
+                like = likeform.save(commit=False)
+                like.post = post
+                like.user = request.user
+
+                # Upvote: likes == "1"; Downvote: likes=="0" - I don't know how to
+                # adjust the matching RegEx in urls.py to accept Booleans instead of
+                # Integers
+                if (likes == "0"):
+                    like.likes = False
+                else:
+                    like.likes = True
+                like.save()
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            else:
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            likeform = LikeForm()
+        return render(request, 'postDetail.html', {'likeform': likeform, 'totalLikes': totalLikes, 'user': request.user})
+
+@login_required
 def deleteFile(request, pk):
-        po = get_object_or_404(Post, pk=pk)
-        po.delete()
-        return HttpResponseRedirect('/spicy_memes/')
+    po = get_object_or_404(Post, pk=pk)
+    po.delete()
+    return HttpResponseRedirect('/spicy_memes/')
 
 
 def startPage(request):
@@ -185,3 +288,58 @@ def changeProfilePic(request):
     else:
         form = ChangeProfilePic()
         return render(request, 'test.html', {'form': form})
+
+
+def addComment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    commentform = CommentForm(request.POST or None)
+    if request.method == "POST":
+        if commentform.is_valid():
+            comment = commentform.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        commentform = CommentForm()
+    return render(request, 'postDetail.html', {'commentform': commentform})
+
+def voteComment(request, pk, likes):
+    comment = get_object_or_404(Comment, pk=pk)
+    voteform = VoteCommentForm(request.POST or None)
+    vote = LikesComment()
+    if request.method == "POST":
+
+        #Find out if this user has already voted on the specific comment,
+        #if yes, remove whatever his vote was.
+        votes = LikesComment.objects.filter(comment = comment).filter(user = request.user).filter(comment = comment)
+        if votes:
+            LikesComment.objects.filter(comment = comment).filter(user = request.user).delete()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        if voteform.is_valid():
+            vote = voteform.save(commit=False)
+            vote.user = request.user
+            vote.comment = comment
+
+            #Upvote: likes == "1"; Downvote: likes=="0" - I don't know how to
+            #adjust the matching RegEx in urls.py to accept Booleans instead of
+            #Integers
+            if (likes == "0"):
+                vote.likes = False
+            else:
+                vote.likes = True
+            vote.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        voteform = VoteCommentForm()
+    return render(request, 'postDetail.html', {'voteform': voteform, 'totalLikes': totalLikes, 'user': request.user})
+
+def deleteComment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    comment.delete()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
