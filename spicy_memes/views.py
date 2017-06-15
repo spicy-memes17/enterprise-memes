@@ -11,12 +11,14 @@ from .forms import SignUpForm
 from .forms import LogInForm
 from .models import MyUser
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from datetime import timedelta
 import datetime
 from django.utils.timesince import timesince
 from django.contrib import messages
 
 
+@login_required
 def hotPage(request):
     latest_meme_list = Post.objects.order_by('-date') [:20]
     context = {'latest_meme_list': latest_meme_list}
@@ -40,14 +42,17 @@ def signUp(request):
 
     return render(request, 'signup.html', {'signUpForm': form})
 
+@login_required
 def userprofile(request):
     current_user = request.user
     authform = LogInForm()
     return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user})
 
+@login_required
 def trendingPage(request):
     return render(request, 'trending.html')
 
+@login_required
 def freshPage(request):
     latest_meme_list = Post.objects.order_by('-date') [:20]
     context = {'latest_meme_list': latest_meme_list}
@@ -66,10 +71,12 @@ def loginPage(request):
         form = LogInForm()
     return render(request, 'login.html', {'LogInForm': form, 'user' : current_user})
 
+@login_required
 def logOut(request):
     logout(request)
     return HttpResponseRedirect('/spicy_memes/loginPage')
 
+@login_required
 def deleteUser(request):
     current_user = request.user
     if request.method == 'POST':
@@ -85,6 +92,7 @@ def deleteUser(request):
     else:
         return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if accessed with http-get
 
+@login_required
 def uploadFile(request):
     if request.method == 'POST':
         form = UploadForm(user = request.user, files=request.FILES, data=request.POST)
@@ -98,6 +106,7 @@ def uploadFile(request):
         form = UploadForm()
         return render(request, 'uploadFile.html', {'form': form})
 
+@login_required
 def postDetail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     user = request.user
@@ -116,6 +125,7 @@ def postDetail(request, pk):
     context = {'post': post, 'user': user, 'owner': postOwner, 'editform': editform, 'time_posted': time_posted, 'time_diff': time_diff}
     return render(request, 'postDetail.html', context)
 
+@login_required
 def editPost(request, pk):
     if request.method == 'POST':
         form = EditForm(request.POST)
@@ -133,7 +143,8 @@ def editPost(request, pk):
         form = EditForm()
         return render(request, '/spicy_memes/', {'form': form})   
 
+@login_required
 def deleteFile(request, pk):
-        po = get_object_or_404(Post, pk=pk)
-        po.delete()
-        return HttpResponseRedirect('/spicy_memes/')
+    po = get_object_or_404(Post, pk=pk)
+    po.delete()
+    return HttpResponseRedirect('/spicy_memes/')
