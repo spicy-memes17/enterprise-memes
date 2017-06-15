@@ -23,11 +23,19 @@
     margin-top: 50px;
 }
 
-.comments {
-    margin-left: 20px;
-    margin-right: 20px;
+.commentsection {
     margin-bottom: 25px;
+    margin-top: 50px;
     width: 100%;
+}
+
+.commentpic {
+    width: 65%;
+    height: 65%;
+}
+
+.cdate {
+    text-align: right;
 }
 
 .vote {

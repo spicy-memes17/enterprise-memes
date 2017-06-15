@@ -1,6 +1,6 @@
 from django import forms
 # from .models import User
-from .models import Post, MyUser
+from .models import Post, MyUser, Comment, LikesComment
 from django.forms import ModelForm, Textarea
 from .authenticate import MyBackend
 
@@ -77,7 +77,21 @@ class EditForm(ModelForm):
             'description' : Textarea(attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Enter spicy description'}),
         }
 
+class CommentForm(forms.ModelForm):
 
+    class Meta:
+        model = Comment
+        fields = ('content', )
+        widgets = {
+            'content' : Textarea(attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Share your spicy thoughts.', 'style': 'margin-bottom: 10px'}),
+        }
+        
+class VoteCommentForm(forms.ModelForm):
+
+    class Meta:
+        model = LikesComment
+        fields = ('likes', )
+        
 class LogInForm(forms.ModelForm):
     class Meta:
         model = MyUser
