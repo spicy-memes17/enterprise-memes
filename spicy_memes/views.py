@@ -266,9 +266,9 @@ def search(request):
             except:
                 pass
                         
-        context = {'latest_meme_list': posts}  # only temporary
+        context = {'memeList': posts, 'content': "Search"}  # only temporary
                 
-    return render(request, 'hotPage.html', context)# only temporary
+    return render(request, 'content.html', context)# only temporary
     
 
 def addComment(request, pk):

@@ -47,8 +47,7 @@ class UploadFileForm(forms.Form):
 
 # data upload mit ModelForm. ist empfohlen, wenn man mit models.py arbeitet
 class UploadForm(ModelForm):
-    tags = forms.CharField(required=False, widget=forms.Textarea(
-                                                attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Enter Spicy Tags'}))
+    tags = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Enter Spicy Tags'}))
     
     def __init__(self, **kwargs):
         self.user = kwargs.pop('user', None)
@@ -102,8 +101,7 @@ class UploadForm(ModelForm):
 
 
 class SearchForm(forms.Form):
-    search_term = forms.CharField(required=False, widget=forms.Textarea(
-                                                attrs={'class': 'form-control', 'rows': '1' ,'placeholder': 'Enter Spicy Tags'}))
+    search_term = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '1' ,'placeholder': 'Enter Spicy Tags'}))
 
     #has to be false to be able to pass empty boxes
     by_name= forms.BooleanField(required=False)
@@ -111,8 +109,7 @@ class SearchForm(forms.Form):
 
 #used for the search performed after clicking on a tag
 class TagSearchForm(forms.Form):
-    tag = forms.CharField(required=False, widget=forms.Textarea(
-                                                attrs={'class': 'form-control', 'rows': '1' ,'placeholder': 'Enter Spicy Tags'}))
+    tag = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '1' ,'placeholder': 'Enter Spicy Tags'}))
 
 # data edit with modelform. image field soll nicht editiert werden. Wenn Bild unerwünscht ist, dann lieber löschen
 class EditForm(ModelForm):
