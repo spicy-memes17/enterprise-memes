@@ -1,22 +1,20 @@
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-from django.shortcuts import get_object_or_404
+import datetime
+
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from datetime import timedelta
-import datetime
-from django.utils.timesince import timesince
-from django.contrib import messages
-from django.core.paginator import Paginator
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render
 
-from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag
-from .forms import UploadFileForm, UploadForm, EditForm, SignUpForm, LogInForm, CommentForm, VoteCommentForm, LikeForm, SearchForm, TagSearchForm
+from .forms import UploadForm, EditForm, SignUpForm, LogInForm, CommentForm, VoteCommentForm, LikeForm, \
+    SearchForm, TagSearchForm
+from .models import Post, Comment, LikesComment, LikesPost, Tag
+
 
 @login_required
 def content(request, content=None):
-    if(content == None):
+    if (content == None):
         content = "on_fire"
 
     memeList = Post.objects.all()
@@ -26,28 +24,28 @@ def content(request, content=None):
     for post in memeList:
         mtuple = (post,
                   (LikesPost.objects.filter(post=post).filter(likes=True).count()
-                   - LikesPost.objects.filter(post=post).filter(likes=False).count())*2
-                  + Comment.objects.filter(post=post).count()*5)
+                   - LikesPost.objects.filter(post=post).filter(likes=False).count()) * 2
+                  + Comment.objects.filter(post=post).count() * 5)
         memeTupleList.append(mtuple)
 
     memeTupleList = sorted(memeTupleList, key=lambda x: x[1], reverse=True)
-    
-    if(content == "fresh"):
+
+    if (content == "fresh"):
         content = "Fresh"
-        sortedMemeList = Post.objects.order_by('-date') [:20]
-    elif(content == "spicy"):
+        sortedMemeList = Post.objects.order_by('-date')[:20]
+    elif (content == "spicy"):
         content = "Spicy"
         for tup in memeTupleList:
-            if(tup[1] >= 5 and tup[1] < 15):
+            if (tup[1] >= 5 and tup[1] < 15):
                 sortedMemeList.append(tup[0])
-    elif(content == "on_fire"):
+    elif (content == "on_fire"):
         content = "On Fire"
         for tup in memeTupleList:
-            if(tup[1] >= 15):
+            if (tup[1] >= 15):
                 sortedMemeList.append(tup[0])
-                
+
     context = {'memeList': sortedMemeList, 'content': content}
-    return render(request, 'content.html', context)    
+    return render(request, 'content.html', context)
 
 
 def signUp(request):
@@ -73,8 +71,7 @@ def signUp(request):
 def userprofile(request):
     current_user = request.user
     authform = LogInForm()
-    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user})
-
+    return render(request, 'userProfile.html', {'AuthForm': authform, 'user': current_user})
 
 
 def loginPage(request):
@@ -85,10 +82,10 @@ def loginPage(request):
             user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect('/spicy_memes') #succes redirect to the startpage
+                return HttpResponseRedirect('/spicy_memes')  # succes redirect to the startpage
     else:
         form = LogInForm()
-    return render(request, 'login.html', {'LogInForm': form, 'user' : current_user})
+    return render(request, 'login.html', {'LogInForm': form, 'user': current_user})
 
 
 @login_required
@@ -103,27 +100,27 @@ def deleteUser(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        user = authenticate(username = username, password = password)
+        user = authenticate(username=username, password=password)
         if current_user == user:
             logout(request)
             current_user.delete()
             return HttpResponseRedirect('/spicy_memes/signUp')
         else:
-            return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if password is wrong
+            return HttpResponseRedirect('/spicy_memes/userprofile')  # redirect if password is wrong
     else:
-        return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if accessed with http-get
+        return HttpResponseRedirect('/spicy_memes/userprofile')  # redirect if accessed with http-get
 
 
 @login_required
 def uploadFile(request):
     if request.method == 'POST':
-        form = UploadForm(user = request.user, files=request.FILES, data=request.POST)
+        form = UploadForm(user=request.user, files=request.FILES, data=request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/spicy_memes/')
         else:
             messages.success(request, 'Please choose an image file with a name under 40 characters long.')
-            return render(request, 'uploadFile.html', {'form': form}) #add error message at some point
+            return render(request, 'uploadFile.html', {'form': form})  # add error message at some point
     else:
         form = UploadForm()
         return render(request, 'uploadFile.html', {'form': form})
@@ -134,39 +131,41 @@ def postDetail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     user = request.user
 
-    #Initialize forms
-    editform = EditForm(initial={'title': post.title,'description': post.description})
+    # Initialize forms
+    editform = EditForm(initial={'title': post.title, 'description': post.description})
     commentform = CommentForm()
     commentform.user = request.user
     voteform = VoteCommentForm()
 
-    #Get difference between time posted and now
+    # Get difference between time posted and now
     tdelta = datetime.datetime.now() - post.date.replace(tzinfo=None)
-    time_posted = (tdelta.seconds/60) - 120
-    if((datetime.datetime.today().strftime('%d-%m-%Y')) != (post.date.strftime('%d-%m-%Y'))):
+    time_posted = (tdelta.seconds / 60) - 120
+    if ((datetime.datetime.today().strftime('%d-%m-%Y')) != (post.date.strftime('%d-%m-%Y'))):
         time_posted = 16
 
     time_diff = round(15 - time_posted)
 
-    #Probably very complicated way of getting a list that sorts comments by
-    #their user rating, but it's according to the model where there is no
-    #reference to LikesPost from Comment. Improvements welcome
-    postComments = Comment.objects.filter(post = post)
+    # Probably very complicated way of getting a list that sorts comments by
+    # their user rating, but it's according to the model where there is no
+    # reference to LikesPost from Comment. Improvements welcome
+    postComments = Comment.objects.filter(post=post)
     tupleComments = list()
     sortedComments = list()
     for comment in postComments:
-        ctuple = (comment, LikesComment.objects.filter(comment=comment).filter(likes=True).count() - LikesComment.objects.filter(comment=comment).filter(likes=False).count())
+        ctuple = (comment,
+                  LikesComment.objects.filter(comment=comment).filter(likes=True).count() - LikesComment.objects.filter(
+                      comment=comment).filter(likes=False).count())
         tupleComments.append(ctuple)
     tupleComments = sorted(tupleComments, key=lambda x: x[1], reverse=True)
     for tup in tupleComments:
         sortedComments.append(tup[0])
 
-    #Identify post owner for editing purposes.
+    # Identify post owner for editing purposes.
     if (post.user == request.user):
         postOwner = True
     else:
         postOwner = False
-    context = {'post': post, 'user': user, 'owner': postOwner, 'editform': editform,'commentform': commentform,
+    context = {'post': post, 'user': user, 'owner': postOwner, 'editform': editform, 'commentform': commentform,
                'time_posted': time_posted, 'time_diff': time_diff, 'postComments': postComments,
                'voteform': voteform, 'sortedComments': sortedComments}
     return render(request, 'postDetail.html', context)
@@ -181,7 +180,7 @@ def editPost(request, pk):
             post.title = form.cleaned_data['title']
             post.description = form.cleaned_data['description']
             post.save()
-            #messages.success(request, 'Post \"%s\" was edited successfully' % post_text)
+            # messages.success(request, 'Post \"%s\" was edited successfully' % post_text)
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -191,39 +190,38 @@ def editPost(request, pk):
         return render(request, '/spicy_memes/', {'form': form})
 
 
-
 def likePost(request, pk, likes):
+    post = get_object_or_404(Post, pk=pk)
+    likeform = LikeForm(request.POST or None)
+    like = LikesPost()
+    if request.method == "POST":
+        # Find out if this user has already voted on the specific comment,
+        # if yes, remove whatever his vote was.
+        votes = LikesPost.objects.filter(post=post).filter(user=request.user)
+        if votes:
+            LikesPost.objects.filter(post=post).filter(user=request.user).delete()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-        post = get_object_or_404(Post, pk=pk)
-        likeform = LikeForm(request.POST or None)
-        like = LikesPost()
-        if request.method == "POST":
-            # Find out if this user has already voted on the specific comment,
-            # if yes, remove whatever his vote was.
-            votes = LikesPost.objects.filter(post=post).filter(user=request.user)
-            if votes:
-                LikesPost.objects.filter(post=post).filter(user=request.user).delete()
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        if likeform.is_valid():
+            like = likeform.save(commit=False)
+            like.post = post
+            like.user = request.user
 
-            if likeform.is_valid():
-                like = likeform.save(commit=False)
-                like.post = post
-                like.user = request.user
-
-                # Upvote: likes == "1"; Downvote: likes=="0" - I don't know how to
-                # adjust the matching RegEx in urls.py to accept Booleans instead of
-                # Integers
-                if (likes == "0"):
-                    like.likes = False
-                else:
-                    like.likes = True
-                like.save()
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            # Upvote: likes == "1"; Downvote: likes=="0" - I don't know how to
+            # adjust the matching RegEx in urls.py to accept Booleans instead of
+            # Integers
+            if (likes == "0"):
+                like.likes = False
             else:
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+                like.likes = True
+            like.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
-            likeform = LikeForm()
-        return render(request, 'postDetail.html', {'likeform': likeform, 'totalLikes': totalLikes, 'user': request.user})
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        likeform = LikeForm()
+    return render(request, 'postDetail.html', {'likeform': likeform, 'totalLikes': totalLikes, 'user': request.user})
+
 
 @login_required
 def deleteFile(request, pk):
@@ -234,19 +232,19 @@ def deleteFile(request, pk):
 
 def search(request):
     if request.method == 'GET':
-        searchform= SearchForm(request.GET)
-        tagsearchform= TagSearchForm(request.GET)
+        searchform = SearchForm(request.GET)
+        tagsearchform = TagSearchForm(request.GET)
         posts = []
         if searchform.is_valid():
             search_terms = searchform.cleaned_data.get('search_term').split(',')
             by_tags = searchform.cleaned_data.get('by_tag')
             by_name = searchform.cleaned_data.get('by_name')
             both_false = not (by_tags or by_name)
-            for term in search_terms:   #we sort by tags if the tag selection is true or neither is set (default)
+            for term in search_terms:  # we sort by tags if the tag selection is true or neither is set (default)
                 if both_false or by_tags:
                     try:
-                        tag= Tag.objects.get(name=term).name
-                        if tag is not "":#here or one step up?
+                        tag = Tag.objects.get(name=term).name
+                        if tag is not "":  # here or one step up?
                             filtered_posts = Post.objects.filter(tags__name=tag)
                             posts.extend(filtered_posts)
                     except:
@@ -255,21 +253,21 @@ def search(request):
                     filtered_posts = Post.objects.filter(title__contains=term)
                     posts.extend(filtered_posts)
 
-        #TODO: clean this code up a bit. maybe add a new function. is shit now
+        # TODO: clean this code up a bit. maybe add a new function. is shit now
         if tagsearchform.is_valid():
-            term= tagsearchform.cleaned_data.get('tag')
+            term = tagsearchform.cleaned_data.get('tag')
             try:
-                tag= Tag.objects.get(name=term).name
+                tag = Tag.objects.get(name=term).name
                 if tag is not "":
                     filtered_posts = Post.objects.filter(tags__name=tag)
                     posts.extend(filtered_posts)
             except:
                 pass
-                        
+
         context = {'memeList': posts, 'content': "Search"}  # only temporary
-                
-    return render(request, 'content.html', context)# only temporary
-    
+
+    return render(request, 'content.html', context)  # only temporary
+
 
 def addComment(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -287,17 +285,18 @@ def addComment(request, pk):
         commentform = CommentForm()
     return render(request, 'postDetail.html', {'commentform': commentform})
 
+
 def voteComment(request, pk, likes):
     comment = get_object_or_404(Comment, pk=pk)
     voteform = VoteCommentForm(request.POST or None)
     vote = LikesComment()
     if request.method == "POST":
 
-        #Find out if this user has already voted on the specific comment,
-        #if yes, remove whatever his vote was.
-        votes = LikesComment.objects.filter(comment = comment).filter(user = request.user).filter(comment = comment)
+        # Find out if this user has already voted on the specific comment,
+        # if yes, remove whatever his vote was.
+        votes = LikesComment.objects.filter(comment=comment).filter(user=request.user).filter(comment=comment)
         if votes:
-            LikesComment.objects.filter(comment = comment).filter(user = request.user).delete()
+            LikesComment.objects.filter(comment=comment).filter(user=request.user).delete()
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
         if voteform.is_valid():
@@ -305,9 +304,9 @@ def voteComment(request, pk, likes):
             vote.user = request.user
             vote.comment = comment
 
-            #Upvote: likes == "1"; Downvote: likes=="0" - I don't know how to
-            #adjust the matching RegEx in urls.py to accept Booleans instead of
-            #Integers
+            # Upvote: likes == "1"; Downvote: likes=="0" - I don't know how to
+            # adjust the matching RegEx in urls.py to accept Booleans instead of
+            # Integers
             if (likes == "0"):
                 vote.likes = False
             else:
@@ -319,6 +318,7 @@ def voteComment(request, pk, likes):
     else:
         voteform = VoteCommentForm()
     return render(request, 'postDetail.html', {'voteform': voteform, 'totalLikes': totalLikes, 'user': request.user})
+
 
 def deleteComment(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
