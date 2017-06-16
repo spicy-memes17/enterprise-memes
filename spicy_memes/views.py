@@ -22,8 +22,8 @@ from django.utils.timesince import timesince
 from django.contrib import messages
 from django.core.paginator import Paginator
 
-from .models import Post, MyUser, Comment, LikesComment, LikesPost
-from .forms import UploadFileForm, UploadForm, EditForm, SignUpForm, LogInForm, CommentForm, VoteCommentForm, LikeForm
+from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag
+from .forms import UploadFileForm, UploadForm, EditForm, SignUpForm, LogInForm, CommentForm, VoteCommentForm, LikeForm, SearchForm, TagSearchForm
 
 @login_required
 def content(request, content=None):
@@ -138,7 +138,7 @@ def uploadFile(request):
             return HttpResponseRedirect('/spicy_memes/')
         else:
             messages.success(request, 'Please choose an image file with a name under 40 characters long.')
-            return render(request, 'uploadFile.html', {'form': form})
+            return render(request, 'uploadFile.html', {'form': form}) #add error message at some point
     else:
         form = UploadForm()
         return render(request, 'uploadFile.html', {'form': form})
@@ -244,6 +244,45 @@ def deleteFile(request, pk):
     po.delete()
     return HttpResponseRedirect('/spicy_memes/')
 
+
+def search(request):
+    if request.method == 'GET':
+        searchform= SearchForm(request.GET)
+        tagsearchform= TagSearchForm(request.GET)
+        posts = []
+        if searchform.is_valid():
+            search_terms = searchform.cleaned_data.get('search_term').split(',')
+            by_tags = searchform.cleaned_data.get('by_tag')
+            by_name = searchform.cleaned_data.get('by_name')
+            both_false = not (by_tags or by_name)
+            for term in search_terms:   #we sort by tags if the tag selection is true or neither is set (default)
+                if both_false or by_tags:
+                    try:
+                        tag= Tag.objects.get(name=term).name
+                        if tag is not "":#here or one step up?
+                            filtered_posts = Post.objects.filter(tags__name=tag)
+                            posts.extend(filtered_posts)
+                    except:
+                        pass
+                if by_name:
+                    filtered_posts = Post.objects.filter(title__contains=term)
+                    posts.extend(filtered_posts)
+
+        #TODO: clean this code up a bit. maybe add a new function. is shit now
+        if tagsearchform.is_valid():
+            term= tagsearchform.cleaned_data.get('tag')
+            try:
+                tag= Tag.objects.get(name=term).name
+                if tag is not "":
+                    filtered_posts = Post.objects.filter(tags__name=tag)
+                    posts.extend(filtered_posts)
+            except:
+                pass
+                        
+        context = {'memeList': posts, 'content': "Search"}  # only temporary
+                
+    return render(request, 'content.html', context)# only temporary
+    
 
 def startPage(request):
     print(request.user)
