@@ -7,3 +7,5 @@ python:
 install: "pip install -r requirements"
 # command to run tests
 script: python spicy_memes/tests.py
+notifications:
+  email: false
