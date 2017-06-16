@@ -1,8 +1,9 @@
 from django import forms
 # from .models import User
-from .models import Post, MyUser, Tag
+from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag
 from django.forms import ModelForm, Textarea
 from .authenticate import MyBackend
+
 
 class SignUpForm(forms.ModelForm):
     passwordConfirm = forms.CharField(widget=forms.PasswordInput(), required=True, label="Confirm password")
@@ -123,7 +124,21 @@ class EditForm(ModelForm):
             'description' : Textarea(attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Enter spicy description'}),
         }
 
+class CommentForm(forms.ModelForm):
 
+    class Meta:
+        model = Comment
+        fields = ('content', )
+        widgets = {
+            'content' : Textarea(attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Share your spicy thoughts.', 'style': 'margin-bottom: 10px'}),
+        }
+        
+class VoteCommentForm(forms.ModelForm):
+
+    class Meta:
+        model = LikesComment
+        fields = ('likes', )
+        
 class LogInForm(forms.ModelForm):
     class Meta:
         model = MyUser
@@ -143,3 +158,8 @@ class LogInForm(forms.ModelForm):
             raise forms.ValidationError("Wrong combination for username and password!")
         return self.cleaned_data
         
+class LikeForm(forms.ModelForm):
+
+    class Meta:
+        model = LikesPost
+        fields = ('likes', )

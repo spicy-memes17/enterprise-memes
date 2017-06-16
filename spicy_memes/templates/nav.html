@@ -15,9 +15,9 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            <li {% if active == "content" %} class="active" {% endif %}><a href="{% url 'spicy_memes:content' %}">Hot</a></li>
-            <li {% if active == "trendingPage" %} class="active" {% endif %}><a href="{% url 'spicy_memes:trendingPage' %}">Trending</a></li>
-            <li {% if active == "freshPage" %} class="active" {% endif %}><a href="{% url 'spicy_memes:freshPage' %}">Fresh</a></li>
+            <li {% if active == "content" %} class="active" {% endif %}><a href="{% url 'spicy_memes:content' content="on_fire" %}">On Fire 🔥</a></li>
+            <li {% if active == "trendingPage" %} class="active" {% endif %}><a href="{% url 'spicy_memes:content' content="spicy" %}">Spicy 🌶️</a></li>
+            <li {% if active == "freshPage" %} class="active" {% endif %}><a href="{% url 'spicy_memes:content' content="fresh" %}">Fresh 👶</a></li>
             <li {% if active == "userprofile" %} class="active" {% endif %}><a href="{% url 'spicy_memes:userprofile' %}">{{user.username}}</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">

@@ -15,6 +15,15 @@
 <body>
 {% include 'nav.html' with active="index" %}
 <div class="container">
+    {% if messages %}
+          <div class="row">
+            <div class="success">
+            {% for message in messages %}
+              {{ message }}
+            {% endfor %}
+            </div>
+          </div>
+    {% endif %}
     <div><label>Upload your Meme</label>
         <form method="post" action="{% url 'spicy_memes:uploadFile' %}" enctype="multipart/form-data">
             {% csrf_token %}
