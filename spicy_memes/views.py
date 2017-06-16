@@ -2,8 +2,19 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.shortcuts import get_object_or_404
-from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
+from .models import Post
+from .forms import UploadFileForm
+from .forms import UploadForm
+from .forms import EditForm
+from .forms import SignUpForm
+from .forms import LogInForm
+from .forms import EditProfileForm
+from .forms import ChangeProfilePic
+from .models import MyUser
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from datetime import timedelta
 import datetime
@@ -59,7 +70,7 @@ def signUp(request):
             user.email = request.POST['email']
             user.set_password(request.POST['password'])
             user.save()
-            user_auth = authenticate(request, username=user.username, password=user.password)
+            user_auth = authenticate(username=user.username, password=user.password)
             login(request, user_auth)
             return HttpResponseRedirect('/spicy_memes')
 
@@ -72,8 +83,11 @@ def signUp(request):
 @login_required
 def userprofile(request):
     current_user = request.user
+    generalForm = EditProfileForm(instance=request.user)
     authform = LogInForm()
-    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user})
+    profilepicform = ChangeProfilePic()
+    passwordform = PasswordChangeForm(data=request.POST, user=request.user)
+    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user, 'passwordform': passwordform, 'profilepicform': profilepicform, 'generalForm': generalForm})
 
 
 
@@ -82,9 +96,10 @@ def loginPage(request):
     if request.method == 'POST':
         form = LogInForm(request.POST)
         if form.is_valid:
-            user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
+            user = authenticate(username=request.POST['username'], password=request.POST['password'])
             if user is not None:
                 login(request, user)
+                # Links change and this is hardcoded, how to replace this?
                 return HttpResponseRedirect('/spicy_memes') #succes redirect to the startpage
     else:
         form = LogInForm()
@@ -94,7 +109,7 @@ def loginPage(request):
 @login_required
 def logOut(request):
     logout(request)
-    return HttpResponseRedirect('/spicy_memes/loginPage')
+    return HttpResponseRedirect('/spicy_memes/')
 
 
 @login_required
@@ -191,9 +206,7 @@ def editPost(request, pk):
         return render(request, '/spicy_memes/', {'form': form})
 
 
-
 def likePost(request, pk, likes):
-
         post = get_object_or_404(Post, pk=pk)
         likeform = LikeForm(request.POST or None)
         like = LikesPost()
@@ -270,6 +283,53 @@ def search(request):
                 
     return render(request, 'content.html', context)# only temporary
     
+
+def startPage(request):
+    print(request.user)
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('/spicy_memes/hotPage')
+    return render(request, 'startPage.html')
+
+def edit_profile (request):
+    if request.method == 'POST':
+        form = EditProfileForm(data=request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/spicy_memes/userprofile')
+            #return redirect ('/spicy_memes/userprofile')
+    else:
+        form=EditProfileForm(instance=request.user)
+        args = {'form':form}
+        return render (request, 'edit_profile.html' , args)
+
+def change_password (request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return HttpResponseRedirect('/spicy_memes/userprofile')
+        else:
+            print('not valid')
+            return HttpResponseRedirect('/spicy_memes/userprofile')
+    else:
+        form=PasswordChangeForm(user=request.user)
+        return render (request, '/spicy_memes/userprofile' , {'form':form})
+
+
+def changeProfilePic(request):
+    user = request.user
+    if request.method == 'POST':
+        form = ChangeProfilePic(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/spicy_memes/userprofile')
+        else:
+            return HttpResponseRedirect('/spicy_memes/userprofile')
+    else:
+        form = ChangeProfilePic()
+        return render(request, 'test.html', {'form': form})
+
 
 def addComment(request, pk):
     post = get_object_or_404(Post, pk=pk)

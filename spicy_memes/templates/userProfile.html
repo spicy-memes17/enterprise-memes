@@ -3,8 +3,8 @@
 
 <head>
     {% load staticfiles %}
-    <title>User Profile</title>
-    <meta charset="utf-8" />
+    <title>Spicy Memes</title>
+    <meta charset="utf-8"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
     <!-- jQuery library -->
@@ -12,70 +12,138 @@
 
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    
-    <!-- javaScript -->
     <script src="{% static 'user/js/userPageJs.js' %}"></script>
+
     <!-- CSS -->
-    <link rel="stylesheet" href="{% static 'user/css/userPageStyles.css' %}" type = "text/css"/>
+    <link rel="stylesheet" href="{% static 'user/css/userPageStyles.css' %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static 'user/css/userStyles.css' %}" type="text/css"/>
 
 </head>
 {% include 'nav.html' with active="index" %}
-<body class="body" style="background-color:#f6f6f6">
-    <div class="container-fluid">
-        <div class="card hovercard">
-            <div class="card-background">
-                <img class="card-bkimg" alt="" src="{% static 'user/img/noPic.png' %}">
-                <!-- http://lorempixel.com/850/280/people/9/ -->
-            </div>
-            <div class="useravatar">
-                <img alt="" src="{% static 'user/img/noPic.png' %}">
-            </div>
-            <div class="card-info"> <span class="card-title">{{user.username}}</span>
-
-            </div>
+<body class="body">
+<div class="container">
+    <div class="card hovercard">
+        <div class="card-background">
+            <img class="card-bkimg" alt="" src="{{ user.profile_pic.url }}">
         </div>
-        <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
-            <div class="btn-group" role="group">
-                <button type="button" id="stars" class="btn btn-primary" href="#tab1" data-toggle="tab"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                    <div class="hidden-xs">User Info</div>
-                </button>
-            </div>
-            <div class="btn-group" role="group">
-                <button type="button" id="favorites" class="btn btn-default" href="#tab2" data-toggle="tab"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                    <div class="hidden-xs">Settings</div>
-                </button>
-            </div>
-            <div class="btn-group" role="group">
-                <button type="button" id="following" class="btn btn-default" href="#tab3" data-toggle="tab"><span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-                    <div class="hidden-xs">Groups</div>
-                </button>
-            </div>
+        <div class="useravatar">
+            <img alt="" src="{{ user.profile_pic.url }}">
         </div>
+        <div class="card-info"><span class="card-title">{{ user.username }}</span>
 
-        <div class="well">
-          <div class="tab-content">
+        </div>
+    </div>
+    <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+        <div class="btn-group" role="group">
+            <button type="button" id="stars" class="btn btn-primary" href="#tab1" data-toggle="tab"><span
+                    class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                <div class="hidden-xs">User Info</div>
+
+            </button>
+        </div>
+        <div class="btn-group" role="group">
+            <button type="button" id="favorites" class="btn btn-default" href="#tab2" data-toggle="tab"><span
+                    class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                <div class="hidden-xs">Settings</div>
+            </button>
+        </div>
+        <div class="btn-group" role="group">
+            <button type="button" id="following" class="btn btn-default" href="#tab3" data-toggle="tab"><span
+                    class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                <div class="hidden-xs">Groups</div>
+            </button>
+        </div>
+    </div>
+
+    <div class="well">
+        <div class="tab-content">
             <div class="tab-pane fade in active" id="tab1">
                 <h3>User Info</h3>
+                <h6>Your posts: </h6><br/>
+                <h6>[[******************]]</h6><br/>
+                <h6>[[******************]]</h6><br/>
+                <h6>[[******************]]</h6><br/>
+                <h6>[[******************]]</h6><br/>
             </div>
+
+            <! -- Settings Tab -->
             <div class="tab-pane fade in" id="tab2">
-              <h3>Settings</h3>
-              <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#delete-account">Delete Account</button>
-              <div id="delete-account" class="collapse">
-                  <form align="right" action="deleteUser" method="post">
-                      {% csrf_token %}
-                      {% for field in AuthForm %}
-                          <p>{{ field.label_tag }} <br/>{{ field }}</p>
-                      {% endfor %}
-                      <button type="submit" class="btn btn-default">Delete Account</button>
-                  </form>
-              </div>
+                <h3 class="text-center header">Settings</h3>
+                <div class="row">
+                    <div class="col-md-offset-1 col-md-4 button-wrapper">
+                        <div class="btn-group-vertical btn-block " role="group">
+                            <button type="button" onclick="changeContent('#general')" class="btn btn-info">General
+                            </button>
+                            <button type="button" onclick="changeContent('#password')" class="btn btn-info">Change
+                                password
+                            </button>
+                            <button type="button" onclick="changeContent('#picture')" class="btn btn-info">Change
+                                profile picture
+                            </button>
+                            <button type="button" onclick="changeContent('#delete-account')" class="btn btn-info">
+                                Delete Account
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 content">
+
+                        <div id="general">
+                            <form name="edit_profile" method="post" action="edit_profile">
+                                <p><strong>Change your username and / or email:</strong></p>
+                                {% csrf_token %}
+                                {{ generalForm.as_p }}
+                                <button type="submit" class="btn btn-info submit pull-right">Submit</button>
+                            </form>
+                        </div>
+
+                        <div id="password" class="hide">
+                            <form method="post" action="change_password">
+                                <p><strong>Change your password:</strong></p>
+                                {% csrf_token %}
+                                {{ passwordform.as_p }}
+                                <button type="submit" class="btn btn-info submit pull-right">Submit</button>
+                            </form>
+                        </div>
+
+                        <div id="picture" class="hide">
+                            <form action="changeProfilePic" method="post" enctype="multipart/form-data">
+                                <p><strong>Change your profile picture:</strong></p>
+                                {% csrf_token %}
+                                {{ profilepicform.profile_pic }}
+                                <button type="submit" class="btn btn-info submit pull-right">Submit</button>
+                            </form>
+                        </div>
+
+                        <div id="delete-account" class="hide">
+                            <form action="deleteUser" method="post">
+                                <p><strong>Delete your account:</strong></p>
+                                {% csrf_token %}
+                                {% for field in AuthForm %}
+                                    <p>{{ field.label_tag }} <br/>{{ field }}</p>
+                                {% endfor %}
+                                <button type="submit" class="btn btn-info submit pull-right">Delete Account</button>
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+
 
             </div>
             <div class="tab-pane fade in" id="tab3">
-              <h3>Gruppen</h3>
+                <h3>Gruppen</h3>
             </div>
-      </div>
-  </div>
-
+        </div>
+    </div>
 </div>
+<script>
+    var active = '#general';
+
+    function changeContent(id) {
+        $(active).addClass('hide');
+        $(id).removeClass('hide');
+        active = id;
+    }
+</script>
 </body>

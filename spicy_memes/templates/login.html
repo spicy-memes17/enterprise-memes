@@ -12,6 +12,15 @@
     <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
 </head>
 <body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a href="{% url 'spicy_memes:startPage' %}"><span class="navbar-brand">
+        <img alt="Spicy Memes" src="/static/logo_xs.png">
+        </span></a>
+        </div>
+    </div>
+</nav>
 <div class="container">
     <div class="row signup">
         {% if user.is_authenticated %}

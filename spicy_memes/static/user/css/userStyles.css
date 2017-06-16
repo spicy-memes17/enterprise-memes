@@ -1,0 +1,21 @@
+.header{
+    margin-bottom: 70px;
+}
+
+.button-wrapper .btn{
+    margin-bottom: 5px;
+}
+
+.content {
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-color: white;
+    min-height: 320px;
+    border: darkgrey dashed;
+}
+
+.submit {
+    margin-top: 10px;
+}
