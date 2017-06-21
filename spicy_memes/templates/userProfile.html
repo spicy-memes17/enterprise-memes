@@ -46,7 +46,7 @@
         <div class="btn-group" role="group">
             <button type="button" id="stars" class="btn btn-primary" href="#tab1" data-toggle="tab"><span
                     class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                <div class="hidden-xs">User Info</div>
+                <div class="hidden-xs">Posted Memes</div>
 
             </button>
         </div>
@@ -67,7 +67,7 @@
     <div class="well">
         <div class="tab-content">
             <div class="tab-pane fade in active" id="tab1">
-                <h3 class="text-center header">Posted Memes</h3>
+                <h3 class="text-center header">Your Posted Memes</h3>
                 <h6>[[******************]]</h6><br/>
                 <h6>[[******************]]</h6><br/>
                 <h6>[[******************]]</h6><br/>
@@ -97,9 +97,12 @@
 
                         <div id="general">
                             <form name="edit_profile" method="post" action="edit_profile">
-                                <p><strong>Change your username and / or email:</strong></p>
+                                <p><strong>Change your username or email:</strong></p>
                                 {% csrf_token %}
-                                {{ generalForm.as_p }}
+                                <p><strong>Username: </strong></p>
+                                <p>{{ generalForm.username }}</p>
+                                <p><strong>Email:</strong></p>
+                                <p>{{ generalForm.email }}</p>
                                 <button type="submit" class="btn btn-info submit pull-right">Submit</button>
                             </form>
                         </div>
