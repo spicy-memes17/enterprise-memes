@@ -9,9 +9,9 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a href="{% url 'spicy_memes:startPage' %}"><span class="navbar-brand">
-        <img alt="Spicy Memes" src="../static/logo_xs.png">
-        </span></a>
+        <a href="{% url 'spicy_memes:content' content="on_fire" %}" class="navbar-brand">
+            <img alt="Spicy Memes" src="/static/logo_xs.png">
+        </a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -23,7 +23,7 @@
             <li {% if active == "userprofile" %} class="active" {% endif %}><a href="{% url 'spicy_memes:userprofile' %}">{{user.username}}</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-			<li> 
+			<li>
 				<form method= "GET" action="{% url 'spicy_memes:search' %}">
 					<input class="form-control" type="text" name="search_term" placeholder="Enter Spicy Search"/>
 					<input type="checkbox" name="by_name"> by name </input>

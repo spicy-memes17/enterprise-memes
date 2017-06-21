@@ -17,7 +17,7 @@
     <div class="container-fluid">
         <div class="navbar-header">
       <span class="navbar-brand">
-        <img alt="Spicy Memes" src="../static/logo_xs.png">
+        <img alt="Spicy Memes" src="/static/logo_xs.png">
       </span>
         </div>
         <form class="navbar-form navbar-right hidden-xs">
@@ -30,15 +30,6 @@
     </div>
 </nav>
 <div class="container">
-
-     {% for message in messages %}
-        <div class="alert {{ message.tags }} alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            {{ message }}
-        </div>
-    {% endfor %}
 
     <div class="row text-center" id="start_buttons">
         <div class="col-md-offset-4 col-md-4" role="group">

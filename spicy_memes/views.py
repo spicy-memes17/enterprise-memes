@@ -123,7 +123,7 @@ def deleteUser(request):
             logout(request)
             current_user.delete()
             messages.success(request, 'Profile deleted.', extra_tags='alert-success')
-            return HttpResponseRedirect('/spicy_memes/')
+            return HttpResponseRedirect('/spicy_memes/signUp')
         else:
             messages.error(request, 'Wrong combination for username and password. Please try again.', extra_tags='alert-danger')
             return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if password is wrong
@@ -287,9 +287,8 @@ def search(request):
     
 
 def startPage(request):
-    print(request.user)
     if request.user.is_authenticated:
-        return HttpResponseRedirect('/spicy_memes/hotPage')
+        return HttpResponseRedirect('/spicy_memes/')
     return render(request, 'startPage.html')
 
 def edit_profile (request):
