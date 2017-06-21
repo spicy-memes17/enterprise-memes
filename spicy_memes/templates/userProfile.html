@@ -111,7 +111,23 @@
                             <form method="post" action="change_password">
                                 <p><strong>Change your password:</strong></p>
                                 {% csrf_token %}
-                                {{ passwordform.as_p }}
+
+                                <p><strong>Old password: </strong></p>
+                                <p>{{ passwordform.old_password }}</p>
+                                <span><strong>New password: </strong><span id="passwordRequirements"
+                                                                           class="glyphicon glyphicon-question-sign"
+                                                                           data-toggle="tooltip" data-placement="right"
+                                                                           title="<ul>
+                                    <li>not too similar to your other personal information.</li>
+                                    <li>contains at least 8 characters.</li>
+                                    <li>no commonly used passwords</li>
+                                    <li>not entirely numeric.</li>
+                                </ul>" data-html="true">
+                       </span></span>
+                                <p>{{ passwordform.new_password1 }}</p>
+                                <p><strong>New password confirmation: </strong></p>
+                                <p> {{ passwordform.new_password2 }}</p>
+
                                 <button type="submit" class="btn btn-info submit pull-right">Submit</button>
                             </form>
                         </div>
@@ -157,8 +173,14 @@
         active = id;
     }
 
+    // Timeout Alert
     $(".alert").fadeTo(2000, 500).slideUp(500, function () {
         $(".alert").slideUp(500);
+    });
+
+    // Tooltip Password info
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
     });
 </script>
 </body>
