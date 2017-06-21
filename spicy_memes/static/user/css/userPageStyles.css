@@ -111,3 +111,22 @@
 .submit {
     margin-top: 10px;
 }
+
+.thumbnail a img {
+    width: 200px;
+    height: 200px;
+    max-width: 200px;
+    max-height: 200px;  
+}
+
+.thumbnail a {
+    color: black;
+    text-decoration: none;
+}
+
+.thumbnail a:hover
+{
+     color:#00A0C6;
+     text-decoration:none;
+     cursor:pointer;
+}

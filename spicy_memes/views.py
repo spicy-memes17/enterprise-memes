@@ -87,7 +87,9 @@ def userprofile(request):
     authform = LogInForm()
     profilepicform = ChangeProfilePic()
     passwordform = PasswordChangeForm(data=request.POST, user=request.user)
-    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user, 'passwordform': passwordform, 'profilepicform': profilepicform, 'generalForm': generalForm})
+    #Get list of user's posts
+    user_meme_list = Post.objects.filter(user=current_user).order_by('-date')
+    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user, 'passwordform': passwordform, 'profilepicform': profilepicform, 'generalForm': generalForm, 'user_meme_list': user_meme_list})
 
 
 
