@@ -22,6 +22,15 @@
 {% include 'nav.html' with active="index" %}
 <body class="body">
 <div class="container">
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
     <div class="card hovercard">
         <div class="card-background">
             <img class="card-bkimg" alt="" src="{{ user.profile_pic.url }}">
@@ -58,8 +67,7 @@
     <div class="well">
         <div class="tab-content">
             <div class="tab-pane fade in active" id="tab1">
-                <h3>User Info</h3>
-                <h6>Your posts: </h6><br/>
+                <h3 class="text-center header">Posted Memes</h3>
                 <h6>[[******************]]</h6><br/>
                 <h6>[[******************]]</h6><br/>
                 <h6>[[******************]]</h6><br/>
@@ -145,5 +153,9 @@
         $(id).removeClass('hide');
         active = id;
     }
+
+    $(".alert").fadeTo(2000, 500).slideUp(500, function () {
+        $(".alert").slideUp(500);
+    });
 </script>
 </body>
