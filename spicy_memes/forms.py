@@ -164,14 +164,19 @@ class LogInForm(forms.ModelForm):
             raise forms.ValidationError("Wrong combination for username and password!")
         return self.cleaned_data
 
+# Similar to Django's UserChangeForm but without password field
 class EditProfileForm(UserChangeForm):
     class Meta:
         model = MyUser
-        fields = (
-            'username',
-            'email',
-            'password'
-        )
+        fields = ['username', 'email']
+
+    def __init__(self, *args, **kwargs):
+        super(UserChangeForm, self).__init__(*args, **kwargs)
+        del self.fields['password'] #delete password field
+        f = self.fields.get('user_permissions', None)
+        if f is not None:
+            f.queryset = f.queryset.select_related('content_type')
+
 
 class ChangeProfilePic(forms.ModelForm):
     class Meta:
@@ -184,4 +189,3 @@ class LikeForm(forms.ModelForm):
     class Meta:
         model = LikesPost
         fields = ('likes', )
-

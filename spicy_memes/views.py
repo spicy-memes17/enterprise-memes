@@ -124,8 +124,10 @@ def deleteUser(request):
         if current_user == user:
             logout(request)
             current_user.delete()
+            messages.success(request, 'Profile deleted.', extra_tags='alert-success')
             return HttpResponseRedirect('/spicy_memes/signUp')
         else:
+            messages.error(request, 'Wrong combination for username and password. Please try again.', extra_tags='alert-danger')
             return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if password is wrong
     else:
         return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if accessed with http-get
@@ -287,9 +289,8 @@ def search(request):
     
 
 def startPage(request):
-    print(request.user)
     if request.user.is_authenticated:
-        return HttpResponseRedirect('/spicy_memes/hotPage')
+        return content(request, None)
     return render(request, 'startPage.html')
 
 def edit_profile (request):
@@ -297,8 +298,12 @@ def edit_profile (request):
         form = EditProfileForm(data=request.POST, instance=request.user)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Your profile was updated successfully!', extra_tags='alert-success')
             return HttpResponseRedirect('/spicy_memes/userprofile')
             #return redirect ('/spicy_memes/userprofile')
+        else:
+            messages.error(request, 'Could not change name / email. Please try again.', extra_tags='alert-danger')
+            return HttpResponseRedirect('/spicy_memes/userprofile')
     else:
         form=EditProfileForm(instance=request.user)
         args = {'form':form}
@@ -310,9 +315,10 @@ def change_password (request):
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
+            messages.success(request, 'Your password was updated successfully!', extra_tags='alert-success')
             return HttpResponseRedirect('/spicy_memes/userprofile')
         else:
-            print('not valid')
+            messages.error(request, 'Could not change password. Please try again.', extra_tags='alert-danger')
             return HttpResponseRedirect('/spicy_memes/userprofile')
     else:
         form=PasswordChangeForm(user=request.user)
@@ -324,9 +330,12 @@ def changeProfilePic(request):
     if request.method == 'POST':
         form = ChangeProfilePic(request.POST, request.FILES, instance=user)
         if form.is_valid():
+            print(form);
             form.save()
+            messages.success(request, 'Your profile picture was updated successfully!', extra_tags='alert-success')
             return HttpResponseRedirect('/spicy_memes/userprofile')
         else:
+            messages.error(request, 'Could not change profile picture. Please try again.', extra_tags='alert-danger')
             return HttpResponseRedirect('/spicy_memes/userprofile')
     else:
         form = ChangeProfilePic()
