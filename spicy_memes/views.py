@@ -288,7 +288,7 @@ def search(request):
 
 def startPage(request):
     if request.user.is_authenticated:
-        return HttpResponseRedirect('/spicy_memes/')
+        return content(request, None)
     return render(request, 'startPage.html')
 
 def edit_profile (request):

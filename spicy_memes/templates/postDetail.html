@@ -78,8 +78,7 @@
 
         {% for comment in sortedComments %}
         <br>
-            <!-- TODO this has no size limitations -->
-        <div class="commentProfilePic img-responsive img-rounded" style="padding-top: 5px"><img src="{{ comment.user.profile_pic.url }}"></div>
+        <div class="col-xs-2 card hovercard" style="padding-top: 5px"><div class="useravatar"><img class="img-responsive img-rounded" src="{{ comment.user.profile_pic.url }}"></div></div>
         <!--<div class="col-xs-2" style="padding-top: 5px"><img class="commentpic" src="{% static 'user/img/noPic.png' %}"></div>-->
         <div class="singlecomment col-xs-10">
                 <div class="cheading"><strong>{{ comment.user }}</strong>

@@ -1,4 +1,7 @@
+{% load staticfiles %}
+
 <nav class="navbar navbar-default">
+      <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -10,7 +13,7 @@
             <span class="icon-bar"></span>
         </button>
         <a href="{% url 'spicy_memes:content' content="on_fire" %}" class="navbar-brand">
-            <img alt="Spicy Memes" src="/static/logo_xs.png">
+            <img alt="Spicy Memes" src="{% static 'logo_xs.png' %}">
         </a>
     </div>
 
