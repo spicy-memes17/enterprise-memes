@@ -22,38 +22,41 @@
     </div>
 </nav>
 <div class="container">
+
     <div class="row signup">
         {% if user.is_authenticated %}
-        <div class="col-md-offset-4 col-md-6">
-            <p>You are already logged into your account. Click <a href=/spicy_memes/logout>logout</a> to log in with a diffrent account!</p>
-        </div>
+            <div class="col-md-offset-4 col-md-6">
+                <p>You are already logged into your account. Click <a href=/spicy_memes/logout>logout</a> to log in with
+                    a diffrent account!</p>
+            </div>
         {% else %}
-        <div class="col-md-offset-4 col-md-6">
-            <h3>Login to my Account 🌶️</h3>
+            <div class="col-md-offset-4 col-md-6">
+                <h3>Login to my Account 🌶️</h3>
                 <form action="/spicy_memes/loginPage/" method="post">
                     {% csrf_token %}
                     {% for field in LogInForm %}
-                    <p>{{ field.label_tag }} <br/>{{ field }}</p>
+                        <p>{{ field.label_tag }} <br/>{{ field }}</p>
                     {% endfor %}
 
                     {% if LogInForm.non_field_errors %}
-                    
-                    {% for error in LogInForm.non_field_errors %}
-                        <div class="alert alert-danger">{{ error }}</div>
-                    {% endfor %}
-                    
+
+                        {% for error in LogInForm.non_field_errors %}
+                            <div class="alert alert-danger">{{ error }}</div>
+                        {% endfor %}
+
                     {% endif %}
                     <button type="submit" class="btn btn-default">Login</button>
-                    <a href="{% url 'spicy_memes:signUp' %}"> <button type="submit" class="btn btn-default">Back to SignUp</button></a> 
                 </form>
-            <div class="redirectContent">
+                <div class="redirectLogin">
+                    <p>No account? Create a new one.</p>
+                    <a href="{% url 'spicy_memes:signUp' %}">
+                        <button type="submit" class="btn btn-default">Back to SignUp</button>
+                    </a>
+                </div>
             </div>
-        </div>
         {% endif %}
     </div>
 </div>
-
-
 
 </body>
 </html>
