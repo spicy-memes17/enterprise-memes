@@ -22,6 +22,15 @@
 {% include 'nav.html' with active="index" %}
 <body class="body">
 <div class="container">
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
     <div class="card hovercard">
         <div class="card-background">
             <img class="card-bkimg" alt="" src="{{ user.profile_pic.url }}">
@@ -37,7 +46,7 @@
         <div class="btn-group" role="group">
             <button type="button" id="stars" class="btn btn-primary" href="#tab1" data-toggle="tab"><span
                     class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                <div class="hidden-xs">User Info</div>
+                <div class="hidden-xs">Posted Memes</div>
 
             </button>
         </div>
@@ -58,8 +67,7 @@
     <div class="well">
         <div class="tab-content">
             <div class="tab-pane fade in active" id="tab1">
-                <h3>User Info</h3>
-                <h6>Your posts: </h6><br/>
+                <h3 class="text-center header">Your Posted Memes</h3>
                 <h6>[[******************]]</h6><br/>
                 <h6>[[******************]]</h6><br/>
                 <h6>[[******************]]</h6><br/>
@@ -89,9 +97,12 @@
 
                         <div id="general">
                             <form name="edit_profile" method="post" action="edit_profile">
-                                <p><strong>Change your username and / or email:</strong></p>
+                                <p><strong>Change your username or email:</strong></p>
                                 {% csrf_token %}
-                                {{ generalForm.as_p }}
+                                <p><strong>Username: </strong></p>
+                                <p>{{ generalForm.username }}</p>
+                                <p><strong>Email:</strong></p>
+                                <p>{{ generalForm.email }}</p>
                                 <button type="submit" class="btn btn-info submit pull-right">Submit</button>
                             </form>
                         </div>
@@ -100,7 +111,23 @@
                             <form method="post" action="change_password">
                                 <p><strong>Change your password:</strong></p>
                                 {% csrf_token %}
-                                {{ passwordform.as_p }}
+
+                                <p><strong>Old password: </strong></p>
+                                <p>{{ passwordform.old_password }}</p>
+                                <span><strong>New password: </strong><span id="passwordRequirements"
+                                                                           class="glyphicon glyphicon-question-sign"
+                                                                           data-toggle="tooltip" data-placement="right"
+                                                                           title="<ul>
+                                    <li>not too similar to your other personal information.</li>
+                                    <li>contains at least 8 characters.</li>
+                                    <li>no commonly used passwords</li>
+                                    <li>not entirely numeric.</li>
+                                </ul>" data-html="true">
+                       </span></span>
+                                <p>{{ passwordform.new_password1 }}</p>
+                                <p><strong>New password confirmation: </strong></p>
+                                <p> {{ passwordform.new_password2 }}</p>
+
                                 <button type="submit" class="btn btn-info submit pull-right">Submit</button>
                             </form>
                         </div>
@@ -145,5 +172,15 @@
         $(id).removeClass('hide');
         active = id;
     }
+
+    // Timeout Alert
+    $(".alert").fadeTo(2000, 500).slideUp(500, function () {
+        $(".alert").slideUp(500);
+    });
+
+    // Tooltip Password info
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
 </script>
 </body>
