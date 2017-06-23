@@ -42,7 +42,7 @@ def content(request, content=None):
         memeTupleList.append(mtuple)
 
     memeTupleList = sorted(memeTupleList, key=lambda x: x[1], reverse=True)
-    
+
     if(content == "fresh"):
         content = "Fresh"
         sortedMemeList = Post.objects.order_by('-date') [:20]
@@ -56,9 +56,9 @@ def content(request, content=None):
         for tup in memeTupleList:
             if(tup[1] >= 15):
                 sortedMemeList.append(tup[0])
-                
+
     context = {'memeList': sortedMemeList, 'content': content}
-    return render(request, 'content.html', context)    
+    return render(request, 'content.html', context)
 
 
 def signUp(request):
