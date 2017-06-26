@@ -11,7 +11,7 @@ from .forms import EditForm
 from .forms import SignUpForm
 from .forms import LogInForm
 from .forms import EditProfileForm
-from .forms import ChangeProfilePic
+from .forms import ChangeProfilePic, GroupForm
 from .models import MyUser
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
@@ -22,7 +22,7 @@ from django.utils.timesince import timesince
 from django.contrib import messages
 from django.core.paginator import Paginator
 
-from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag
+from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag, MemeGroup
 from .forms import UploadFileForm, UploadForm, EditForm, SignUpForm, LogInForm, CommentForm, VoteCommentForm, LikeForm, SearchForm, TagSearchForm
 
 @login_required
@@ -87,9 +87,12 @@ def userprofile(request):
     authform = LogInForm()
     profilepicform = ChangeProfilePic()
     passwordform = PasswordChangeForm(data=request.POST, user=request.user)
+    groupform = GroupForm()
     #Get list of user's posts
     user_meme_list = Post.objects.filter(user=current_user).order_by('-date')
-    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user, 'passwordform': passwordform, 'profilepicform': profilepicform, 'generalForm': generalForm, 'user_meme_list': user_meme_list})
+    user_group_list = MemeGroup.objects.filter(users__username= current_user.username)
+    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user, 'passwordform': passwordform, 'profilepicform': profilepicform, 'generalForm': generalForm, 'user_meme_list': user_meme_list,
+                                                'groupform': groupform, 'user_group_list': user_group_list})
 
 
 
@@ -395,3 +398,46 @@ def deleteComment(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
     comment.delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def createGroup(request):
+    user = request.user
+    form = GroupForm(request.POST)
+
+    if request.method == "POST":
+        if form.is_valid():
+            groupname= form.cleaned_data.get('name')
+            all_groups_with_name = MemeGroup.objects.filter(name=groupname)
+            if len(all_groups_with_name) == 0:
+                group= MemeGroup(name=groupname)
+                group.save()
+                group.users.add(user)
+
+    return HttpResponseRedirect('/spicy_memes/userprofile')
+
+
+def leaveGroup(request, name_group, name_user):
+    group = MemeGroup.objects.get(name=name_group)
+    user = MyUser.objects.get(username=name_user)
+
+    group.users.remove(user)
+    if len(group.users.all())==0:
+        group.delete()
+
+    return HttpResponseRedirect('/spicy_memes/userprofile')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

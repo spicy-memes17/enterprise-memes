@@ -1,6 +1,6 @@
 from django import forms
 # from .models import User
-from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag
+from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag, MemeGroup
 from django.forms import ModelForm, Textarea
 from .authenticate import MyBackend
 from django.contrib.auth.forms import UserChangeForm
@@ -189,3 +189,8 @@ class LikeForm(forms.ModelForm):
     class Meta:
         model = LikesPost
         fields = ('likes', )
+
+
+class GroupForm(forms.Form):
+    name= forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '1' ,'placeholder': 'Enter Spicy Group Name'}))
+    #Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Enter a spicy name', 'style': 'margin-bottom: 5px'})

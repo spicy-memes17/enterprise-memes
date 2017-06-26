@@ -25,4 +25,6 @@ urlpatterns = [
     url(r'^post/(?P<pk>\d+)/comment/delete/$', views.deleteComment, name='deleteComment'),
     url(r'^post/(?P<pk>(\d+))/(?P<likes>(\d+))/vote/$', views.voteComment, name='voteComment'),
     url(r'^startPage/', views.startPage, name='startPage'),
+    url(r'^createGroup', views.createGroup, name= 'createGroup'),
+    url(r'^leaveGroup/(?P<name_group>.*)/(?P<name_user>.*)', views.leaveGroup, name='leaveGroup')
     ]
