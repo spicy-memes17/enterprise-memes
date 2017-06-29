@@ -185,7 +185,12 @@ def postDetail(request, pk):
         postOwner = True
     else:
         postOwner = False
-    context = {'post': post, 'user': user, 'owner': postOwner, 'editform': editform,'commentform': commentform,
+    #check if the user is an admin
+    if user.is_superuser:
+        isAdmin = True
+    else:
+        isAdmin = False
+    context = {'post': post, 'user': user, 'owner': postOwner, 'isAdmin': isAdmin, 'editform': editform,'commentform': commentform,
                'time_posted': time_posted, 'time_diff': time_diff, 'postComments': postComments,
                'voteform': voteform, 'sortedComments': sortedComments}
     return render(request, 'postDetail.html', context)

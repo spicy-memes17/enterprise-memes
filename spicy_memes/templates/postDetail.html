@@ -54,6 +54,8 @@
         <br>
         <button type="submit" class="btn btn-default pull-left uploadbtn" value="submit">SUBMIT EDIT</button>
         </form>
+        {% endif %}
+        {% if owner or isAdmin %}
         <a class="btn btn-default pull-right" href="{% url 'spicy_memes:deleteFile' pk=post.pk %}" onclick="return confirm('Are you sure you want to delete this Meme?')"><span class="glyphicon glyphicon-delete"></span><div class="uploadbtn">DELETE</div></a>
         </div>
         <br>
