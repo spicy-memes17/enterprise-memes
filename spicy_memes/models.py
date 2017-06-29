@@ -29,6 +29,13 @@ class Post(models.Model):
     def __str__(self):
         return self.title + ": " + self.description
 
+    def get_likes(self):
+        no = self.likespost_set.filter(likes=True).count() - self.likespost_set.filter(likes=False).count() 
+        if no is not None:
+            return no
+        else:
+            return 0
+
 
 class MyUser(AbstractBaseUser, PermissionsMixin): #we don't need all attributes of the django user model. extending AbstractBaseUser allows us to create a custom user model
     username = models.CharField(max_length=15, unique=True)
@@ -78,6 +85,13 @@ class Comment(models.Model):
     content = models.CharField(max_length=500)
     user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
+
+    def get_likes(self):
+        no = self.likescomment_set.filter(likes=True).count() - self.likescomment_set.filter(likes=False).count() 
+        if no is not None:
+            return no
+        else:
+            return 0
 
     def __str__(self):
         return str(self.id) + ": " + self.content[0:10]
