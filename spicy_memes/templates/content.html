@@ -3,73 +3,75 @@
 {% load staticfiles %}
 {% load likepost_extras %}
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Spicy Memes</title>
+<head>
+    <meta charset="UTF-8">
+    <title>Spicy Memes</title>
 
-        <!-- Bootstrap -->
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
-        <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
 
-    </head>
-    <body>
-        {% include 'nav.html' with active="index" %}
-        <div class="container">
-            <div class="row">
-                <div class="page-header">
-                    <h1 id="headline">{{ content }}</h1>
-                </div>
-            </div>
-            <div class="row">
-                {% for post in memeList %}
-                <div class="col-md-8 memes col-md-offset-8 ">
-                    <h3><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></h3>
-                    <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
-                        <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
-                    </a>
-                    {% getPostLikes post as rating %}
-                    <strong>Posted by: </strong> {{ post.user }}<p class="pull-right"><strong>
-                        <strong>Tags: </strong>
-                        {% for tag in post.tags.all %} <!--jeder tag ist in einer form und klickbar. es wird nach posts mit dem angeklickten tag gesucht-->
-                            <a href="{% url 'spicy_memes:search' %}?tag={{ tag.name }}">{{ tag.name }}</a>
-                            <!--
+</head>
+<body>
+{% include 'nav.html' with active="index" %}
+<div class="container">
+    <div class="row">
+        <div class="page-header">
+            <h1 id="headline">{{ content }}</h1>
+        </div>
+    </div>
+    <div class="row">
+        {% for post in memeList %}
+            <div class="col-md-8 memes col-md-offset-8 ">
+                <h3><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></h3>
+                <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
+                    <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
+                </a>
+                {% getPostLikes post as rating %}
+                <p><strong>Posted by: </strong><a href="{% url 'spicy_memes:userprofile' post.user.username %}">{{ post.user }}</a></p>
+                <p class="pull-right">
+                    <strong>Tags: </strong>
+                    {% for tag in post.tags.all %}
+                        <!--jeder tag ist in einer form und klickbar. es wird nach posts mit dem angeklickten tag gesucht-->
+                        <a href="{% url 'spicy_memes:search' %}?tag={{ tag.name }}">{{ tag.name }}</a>
+                        <!--
                             <form method="GET" action="{% url 'spicy_memes:search' %}" style="float: left">
                                 <input value="{{ tag.name }}" type="hidden" name="tag">
                                 <button type="submit" class="btn-link">{{ tag.name }}</button>
                             </form>
                             -->
-                        {% endfor %}
-                        <br>
-                        Spiciness Factor: </strong> {{ rating }} 🌶️🌶️🌶️</p>
-                    <div class="btn-toolbar vote">
-                        <form action="{% url 'spicy_memes:likePost' pk=post.id likes=1 %}" method="post">
-                            {% csrf_token %}
-                            <button class="btn btn-default" type="submit" value="submit">🌶️</button>
-                        </form>
-                        <form action="{% url 'spicy_memes:likePost' pk=post.id likes=0 %}" method="post">
-                            {% csrf_token %}
-                            <button class="btn btn-default" type="submit" value="submit">🍼</button>
-                        </form>
-                        <a class="btn btn-default" href="{% url 'spicy_memes:postDetail' post.id %}#commentanchor">💬</a>
-                    </div>
-                    <hr/>
+                    {% endfor %}
+                    <br>
+                    <strong>Spiciness Factor: </strong> {{ rating }} 🌶️🌶️🌶️</p>
+                <div class="btn-toolbar vote">
+                    <form action="{% url 'spicy_memes:likePost' pk=post.id likes=1 %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-default" type="submit" value="submit">🌶️</button>
+                    </form>
+                    <form action="{% url 'spicy_memes:likePost' pk=post.id likes=0 %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-default" type="submit" value="submit">🍼</button>
+                    </form>
+                    <a class="btn btn-default" href="{% url 'spicy_memes:postDetail' post.id %}#commentanchor">💬</a>
                 </div>
-                {% endfor %}
+                <hr/>
             </div>
-        </div>
-    </body>
+        {% endfor %}
+    </div>
+</div>
+</body>
 
-    <script>
-headline = document.getElementById("headline");
-if (headline.innerHTML == "Fresh") {
-    headline.innerHTML += " 👶";
-}
-else if (headline.innerHTML == "Spicy") {
-    headline.innerHTML += " 🌶️";
-}
-else if (headline.innerHTML == "On Fire") {
-    headline.innerHTML += " 🔥️";
-}
-    </script>
+<script>
+    headline = document.getElementById("headline");
+    if (headline.innerHTML == "Fresh") {
+        headline.innerHTML += " 👶";
+    }
+    else if (headline.innerHTML == "Spicy") {
+        headline.innerHTML += " 🌶️";
+    }
+    else if (headline.innerHTML == "On Fire") {
+        headline.innerHTML += " 🔥️";
+    }
+</script>
 </html>

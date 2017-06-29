@@ -81,15 +81,23 @@ def signUp(request):
 
 
 @login_required
-def userprofile(request):
+def userprofile(request, user_name):
     current_user = request.user
-    generalForm = EditProfileForm(instance=request.user)
-    authform = LogInForm()
-    profilepicform = ChangeProfilePic()
-    passwordform = PasswordChangeForm(data=request.POST, user=request.user)
-    #Get list of user's posts
-    user_meme_list = Post.objects.filter(user=current_user).order_by('-date')
-    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user, 'passwordform': passwordform, 'profilepicform': profilepicform, 'generalForm': generalForm, 'user_meme_list': user_meme_list})
+    user2 = get_object_or_404(MyUser, username=user_name)
+    if user2 == current_user:
+        generalForm = EditProfileForm(instance=current_user)
+        authform = LogInForm()
+        profilepicform = ChangeProfilePic()
+        passwordform = PasswordChangeForm(data=request.POST, user=current_user)
+        #Get list of user's posts
+        user_meme_list = Post.objects.filter(user=current_user).order_by('-date')
+        # user bleibt eingeloggter User, neue var user2 ist anderer User (public profile)
+        return render(request, 'userProfile.html', {'AuthForm': authform, 'user2': current_user, 'user': current_user, 'passwordform': passwordform,
+                                                    'profilepicform': profilepicform, 'generalForm': generalForm,
+                                                    'user_meme_list': user_meme_list})
+    else:
+        user_meme_list = Post.objects.filter(user=user2).order_by('-date')
+        return render(request, 'userProfilePublic.html', { 'user2': user2, 'user': current_user, 'user_meme_list': user_meme_list})
 
 
 
@@ -282,32 +290,34 @@ def search(request):
                     posts.extend(filtered_posts)
             except:
                 pass
-                        
+
         context = {'memeList': posts, 'content': "Search"}  # only temporary
-                
+
     return render(request, 'content.html', context)# only temporary
-    
+
 
 def startPage(request):
     if request.user.is_authenticated:
         return content(request, None)
     return render(request, 'startPage.html')
 
-def edit_profile (request):
+def edit_profile (request, user_name):
     if request.method == 'POST':
-        form = EditProfileForm(data=request.POST, instance=request.user)
+        form = EditProfileForm(data=request.POST, instance=request.user, user_name=user_name)
         if form.is_valid():
             form.save()
+            new_name = form.cleaned_data['username'];
             messages.success(request, 'Your profile was updated successfully!', extra_tags='alert-success')
-            return HttpResponseRedirect('/spicy_memes/userprofile')
+            return HttpResponseRedirect(reverse('/spicy_memes/userprofile', args=(), kwargs={'user_name':new_name }))
             #return redirect ('/spicy_memes/userprofile')
         else:
             messages.error(request, 'Could not change name / email. Please try again.', extra_tags='alert-danger')
             return HttpResponseRedirect('/spicy_memes/userprofile')
     else:
+        print("Im else fall")
         form=EditProfileForm(instance=request.user)
-        args = {'form':form}
-        return render (request, 'edit_profile.html' , args)
+        args = {'form': form}
+        return HttpResponseRedirect('/spicy_memes/userprofile', args)
 
 def change_password (request):
     if request.method == 'POST':
@@ -316,7 +326,7 @@ def change_password (request):
             form.save()
             update_session_auth_hash(request, form.user)
             messages.success(request, 'Your password was updated successfully!', extra_tags='alert-success')
-            return HttpResponseRedirect('/spicy_memes/userprofile')
+            return HttpResponseRedirect('/spicy_memes/userprofile', )
         else:
             messages.error(request, 'Could not change password. Please try again.', extra_tags='alert-danger')
             return HttpResponseRedirect('/spicy_memes/userprofile')
