@@ -303,14 +303,16 @@ def startPage(request):
 
 def edit_profile (request, user_name):
     if request.method == 'POST':
-        form = EditProfileForm(data=request.POST, instance=request.user, user_name=user_name)
+        form = EditProfileForm(data=request.POST, instance=request.user)
         if form.is_valid():
+            print("form valid")
             form.save()
             new_name = form.cleaned_data['username'];
             messages.success(request, 'Your profile was updated successfully!', extra_tags='alert-success')
-            return HttpResponseRedirect(reverse('/spicy_memes/userprofile', args=(), kwargs={'user_name':new_name }))
+            return HttpResponseRedirect('/spicy_memes/userprofile/' + new_name +'/')
             #return redirect ('/spicy_memes/userprofile')
         else:
+            print("form else")
             messages.error(request, 'Could not change name / email. Please try again.', extra_tags='alert-danger')
             return HttpResponseRedirect('/spicy_memes/userprofile')
     else:
@@ -319,23 +321,26 @@ def edit_profile (request, user_name):
         args = {'form': form}
         return HttpResponseRedirect('/spicy_memes/userprofile', args)
 
-def change_password (request):
+def change_password (request, user_name):
     if request.method == 'POST':
         form = PasswordChangeForm(data=request.POST, user=request.user)
+        #print(form.user)
+        print("Request:" + request.user.username)
+        print("Username:" + user_name)
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
             messages.success(request, 'Your password was updated successfully!', extra_tags='alert-success')
-            return HttpResponseRedirect('/spicy_memes/userprofile', )
+            return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name +'/', )
         else:
             messages.error(request, 'Could not change password. Please try again.', extra_tags='alert-danger')
-            return HttpResponseRedirect('/spicy_memes/userprofile')
+            return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name +'/')
     else:
         form=PasswordChangeForm(user=request.user)
         return render (request, '/spicy_memes/userprofile' , {'form':form})
 
 
-def changeProfilePic(request):
+def changeProfilePic(request, user_name):
     user = request.user
     if request.method == 'POST':
         form = ChangeProfilePic(request.POST, request.FILES, instance=user)
@@ -343,10 +348,10 @@ def changeProfilePic(request):
             print(form);
             form.save()
             messages.success(request, 'Your profile picture was updated successfully!', extra_tags='alert-success')
-            return HttpResponseRedirect('/spicy_memes/userprofile')
+            return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name +'/')
         else:
             messages.error(request, 'Could not change profile picture. Please try again.', extra_tags='alert-danger')
-            return HttpResponseRedirect('/spicy_memes/userprofile')
+            return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name +'/')
     else:
         form = ChangeProfilePic()
         return render(request, 'test.html', {'form': form})
