@@ -109,6 +109,17 @@ class LikesComment(models.Model):
         return str(self.user) + (" likes " if self.likes else " dislikes ") + str(self.comment)
 
 
+class GroupInvite(models.Model):
+    class Meta:
+        unique_together = (('user','group'),)
+
+    user= models.ForeignKey('MyUser', on_delete=models.CASCADE)
+    group= models.ForeignKey('MemeGroup', on_delete=models.CASCADE)
+
+    def __str__(self):
+        user + 'invited to ' + group
+
+
 #ADDITIONAL INFO IF SOMETHING GOES WRONG:
     #add this to the settings.py BEFORE MIGRATION
     #AUTH_USER_MODEL = 'spicy_memes.MyUser'

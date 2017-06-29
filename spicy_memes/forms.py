@@ -1,7 +1,7 @@
 from django import forms
 # from .models import User
 from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag, MemeGroup
-from django.forms import ModelForm, Textarea
+from django.forms import ModelForm, Textarea, Select
 from .authenticate import MyBackend
 from django.contrib.auth.forms import UserChangeForm
 
@@ -53,11 +53,21 @@ class UploadFileForm(forms.Form):
 # data upload mit ModelForm. ist empfohlen, wenn man mit models.py arbeitet
 class UploadForm(ModelForm):
     tags = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Enter Spicy Tags'}))
+    group = forms.ChoiceField(required=False, label='Group', choices=[], widget=Select())
     
-    def __init__(self, **kwargs):
+    def __init__(self, user, **kwargs):
         self.user = kwargs.pop('user', None)
         # self.group = kwargs.pop('group', None)
         super(UploadForm, self).__init__(**kwargs)
+        group_names = user.memegroup_set.all()
+        names = []
+        for name in group_names:
+            names.append((name,name))
+
+        #name_tuple= zip(names, names)
+        self.fields['group'] = forms.ChoiceField(
+            choices= names)
+        
 
     #fetches tags by name and writes them into a list. if the tag does not exist it is created
     def handle_tags(self, tagstring):
@@ -99,7 +109,7 @@ class UploadForm(ModelForm):
     class Meta:
         model = Post
         exclude = ('tags',) #don't remove the ,
-        fields = ['title', 'description', 'image_field']
+        fields = ['title', 'description', 'image_field', 'group']
         widgets = {
             'title': Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Spicy Title'}),
             'description': Textarea(

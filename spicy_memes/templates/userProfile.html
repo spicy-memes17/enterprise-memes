@@ -177,6 +177,7 @@
 							<li class="list-group-item">
 								<h5>{{group.name}}</h5>
 								<a class="btn btn-danger pull-right" href="{% url 'spicy_memes:leaveGroup' name_group=group.name name_user=user.username %}">leave group</a>
+								<a class="btn btn-info pull-right" href="{% url 'spicy_memes:groupDetail' group_name=group.name%}">show group</a>
 							</li>
 						{% endfor %}
 					</ul>
@@ -187,6 +188,16 @@
 					{{groupform}}
 					<button type="submit" class="btn btn-info submit pull-right">Create Group</button>
 				<form>
+				<h4>Pending Invitations:</h4>
+					<ul class="list-group">
+						{%for invite in group_invites%}
+							<li class="list-group-item">
+								<h5>{{invite.group.name}}</h5>
+								<a class="btn btn-success pull-right" href="{% url 'spicy_memes:acceptInvite' name_group=invite.group.name name_user=invite.user.username %}">Accept</a>
+								<a class="btn btn-danger pull-right" href="{% url 'spicy_memes:declineInvite' name_group=invite.group.name name_user=invite.user.username %}">Decline</a>
+							</li>
+						{% endfor %}
+					</ul>
             </div>
         </div>
     </div>

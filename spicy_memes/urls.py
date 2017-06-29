@@ -26,5 +26,8 @@ urlpatterns = [
     url(r'^post/(?P<pk>(\d+))/(?P<likes>(\d+))/vote/$', views.voteComment, name='voteComment'),
     url(r'^startPage/', views.startPage, name='startPage'),
     url(r'^createGroup', views.createGroup, name= 'createGroup'),
-    url(r'^leaveGroup/(?P<name_group>.*)/(?P<name_user>.*)', views.leaveGroup, name='leaveGroup')
+    url(r'^leaveGroup/(?P<name_group>.*)/(?P<name_user>.*)', views.leaveGroup, name='leaveGroup'),
+    url(r'^acceptInvite/(?P<name_group>.*)/(?P<name_user>.*)', views.acceptInvite, name='acceptInvite'),
+    url(r'^declineInvite/(?P<name_group>.*)/(?P<name_user>.*)', views.declineInvite, name='declineInvite'),
+    url(r'^groupDetail/(?P<group_name>.*)', views.groupDetail, name='groupDetail')
     ]
