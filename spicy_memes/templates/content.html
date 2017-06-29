@@ -26,7 +26,13 @@
                 <div class="col-md-8 memes col-md-offset-8 ">
                     <h3><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></h3>
                     <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
-                        <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
+                        {% if post.image_field.url == "/media/media/images/image.jpg" %}
+                            <div>{{ post.video_url }}</div>
+                            <iframe width="560" height="315" src="{{ post.video_url }}" frameborder="0" allowfullscreen></iframe
+                        {% else %}
+                            <div>halloooo2</div>
+                            <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
+                        {% endif %}
                     </a>
                     {% getPostLikes post as rating %}
                     <strong>Posted by: </strong> {{ post.user }}<p class="pull-right"><strong>

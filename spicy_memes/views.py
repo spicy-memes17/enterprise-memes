@@ -13,6 +13,7 @@ from .forms import LogInForm
 from .forms import EditProfileForm
 from .forms import ChangeProfilePic
 from .models import MyUser
+from itertools import chain
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -22,15 +23,18 @@ from django.utils.timesince import timesince
 from django.contrib import messages
 from django.core.paginator import Paginator
 
-from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag
-from .forms import UploadFileForm, UploadForm, EditForm, SignUpForm, LogInForm, CommentForm, VoteCommentForm, LikeForm, SearchForm, TagSearchForm
+from .models import Video, Post, MyUser, Comment, LikesComment, LikesPost, Tag
+from .forms import UploadVideoForm, UploadFileForm, UploadForm, EditForm, SignUpForm, LogInForm, CommentForm, VoteCommentForm, LikeForm, SearchForm, TagSearchForm
 
 @login_required
 def content(request, content=None):
     if(content == None):
         content = "on_fire"
 
-    memeList = Post.objects.all()
+    postList = Post.objects.all()
+    videoList = Video.objects.all()
+
+    memeList = chain(postList,videoList)
     memeTupleList = list()
     sortedMemeList = list()
 
@@ -136,16 +140,21 @@ def deleteUser(request):
 @login_required
 def uploadFile(request):
     if request.method == 'POST':
-        form = UploadForm(user = request.user, files=request.FILES, data=request.POST)
-        if form.is_valid():
-            form.save()
+        postform = UploadForm(user = request.user, files=request.FILES, data=request.POST)
+        videoform = UploadVideoForm(user = request.user, data=request.POST)
+        if postform.is_valid():
+            postform.save()
+            return HttpResponseRedirect('/spicy_memes/')
+        elif videoform.is_valid():
+            videoform.save()
             return HttpResponseRedirect('/spicy_memes/')
         else:
             messages.success(request, 'Please choose an image file with a name under 40 characters long.')
             return render(request, 'uploadFile.html', {'form': form}) #add error message at some point
     else:
-        form = UploadForm()
-        return render(request, 'uploadFile.html', {'form': form})
+        postform = UploadForm()
+        videoform = UploadVideoForm()
+        return render(request, 'uploadFile.html', {'postform': postform, 'videoform': videoform})
 
 
 @login_required

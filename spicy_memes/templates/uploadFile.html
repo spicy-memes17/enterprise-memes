@@ -28,14 +28,33 @@
         <form method="post" action="{% url 'spicy_memes:uploadFile' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <p>
-                {{ form.title }}
+            {{ postform.title }}
             </p>
             <br>
-            {{ form.description }}
+            {{ postform.description }}
 			<br>
-			{{form.tags}}
+			{{postform.tags}}
 			<br>
-            {{ form.image_field }}
+            {{ postform.image_field }}
+            <button type="submit" class="btn btn-default pull-right">
+            <span class="glyphicon glyphicon-upload" aria-hidden="true">
+                <div class="uploadbtn">UPLOAD</div>
+            </span>
+            </button>
+        </form>
+    </div>
+    <div><label>Upload your Video</label>
+        <form method="post" action="{% url 'spicy_memes:uploadFile' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p>
+            {{ videoform.title }}
+            </p>
+            <br>
+            {{ videoform.description }}
+			<br>
+			{{videoform.tags}}
+			<br>
+            {{ videoform.video_url }}
             <button type="submit" class="btn btn-default pull-right">
             <span class="glyphicon glyphicon-upload" aria-hidden="true">
                 <div class="uploadbtn">UPLOAD</div>

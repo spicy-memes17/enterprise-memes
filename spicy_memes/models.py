@@ -14,20 +14,27 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
-
-class Post(models.Model):
+class PostInfo(models.Model):
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=2000)
     date = models.DateTimeField(auto_now_add=True)
-    image_field = models.ImageField(upload_to='images/', default='media/images/image.jpg', max_length=40)
-
     tags = models.ManyToManyField('Tag', blank=True)
+    
     #default = 1 for first sprint version of meme upload
     group = models.ForeignKey('MemeGroup', default = 1, on_delete=models.CASCADE)#ForeignKey models a 1 to Many relationship
     user = models.ForeignKey('MyUser', on_delete=models.CASCADE)
 
+    class Meta:
+        abstract = True
+
     def __str__(self):
         return self.title + ": " + self.description
+    
+class Post(PostInfo):
+    image_field = models.ImageField(upload_to='images/', default='media/images/image.jpg', max_length=40)
+
+class Video(PostInfo):
+    video_url = models.URLField(max_length=1000)
 
 
 class MyUser(AbstractBaseUser, PermissionsMixin): #we don't need all attributes of the django user model. extending AbstractBaseUser allows us to create a custom user model
