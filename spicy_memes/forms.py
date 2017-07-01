@@ -53,20 +53,13 @@ class UploadFileForm(forms.Form):
 # data upload mit ModelForm. ist empfohlen, wenn man mit models.py arbeitet
 class UploadForm(ModelForm):
     tags = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Enter Spicy Tags'}))
-    group = forms.ChoiceField(required=False, label='Group', choices=[], widget=Select())
+    group = forms.ModelChoiceField(required=False, label='group', queryset=MemeGroup.objects.all())
     
     def __init__(self, user, **kwargs):
         self.user = kwargs.pop('user', None)
         # self.group = kwargs.pop('group', None)
+        #queryset = request.user.memegroup_set.all() PASS THIS FROM VIEW 
         super(UploadForm, self).__init__(**kwargs)
-        group_names = user.memegroup_set.all()
-        names = []
-        for name in group_names:
-            names.append((name,name))
-
-        #name_tuple= zip(names, names)
-        self.fields['group'] = forms.ChoiceField(
-            choices= names)
         
 
     #fetches tags by name and writes them into a list. if the tag does not exist it is created

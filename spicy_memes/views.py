@@ -148,6 +148,7 @@ def uploadFile(request):
     if request.method == 'POST':
         form = UploadForm(user = request.user, files=request.FILES, data=request.POST)
         if form.is_valid():
+            print('isvalid\n\n\n\n\n\n\n\n\n\n\n\n\n')
             form.save()
             return HttpResponseRedirect('/spicy_memes/')
         else:
