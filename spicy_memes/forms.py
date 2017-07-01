@@ -56,10 +56,11 @@ class UploadForm(ModelForm):
     group = forms.ModelChoiceField(required=False, label='group', queryset=MemeGroup.objects.all())
     
     def __init__(self, user, **kwargs):
-        self.user = kwargs.pop('user', None)
+        self.user = user
         # self.group = kwargs.pop('group', None)
-        #queryset = request.user.memegroup_set.all() PASS THIS FROM VIEW 
         super(UploadForm, self).__init__(**kwargs)
+        self.fields['group'].queryset= self.user.memegroup_set.all()
+        
         
 
     #fetches tags by name and writes them into a list. if the tag does not exist it is created
@@ -82,6 +83,7 @@ class UploadForm(ModelForm):
         obj = super(UploadForm, self).save(commit=False)
         obj.user = self.user
         #obj.group = self.group
+        print(self.user)
 
         #get list of tags
         tag_names= self.cleaned_data.get('tags')
