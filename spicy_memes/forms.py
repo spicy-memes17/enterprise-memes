@@ -27,10 +27,14 @@ class SignUpForm(forms.ModelForm):
         email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
         passwordConfirm = self.cleaned_data.get('passwordConfirm')
-        if len(username) < 4 or len(password) < 4:
-            raise forms.ValidationError("Username and password must have at least four characters.")
+        if len(username) < 4:
+            raise forms.ValidationError("Username must have at least four characters.")
         if password != passwordConfirm:
             raise forms.ValidationError("Passwords do not match!")
+        if len(password) < 8:
+           raise forms.ValidationError("Password has to contain at least 8 characters!")
+        if password.isdigit():
+           raise forms.ValidationError("You password cannot be entirely numeric.")
         if len(list(filter(lambda x: x.username == username, MyUser.objects.all()))) != 0:
             raise forms.ValidationError("Username is already taken!")
         return self.cleaned_data

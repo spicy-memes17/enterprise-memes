@@ -321,6 +321,7 @@ def edit_profile (request, user_name):
         args = {'form': form}
         return HttpResponseRedirect('/spicy_memes/userprofile', args)
 
+@login_required
 def change_password (request, user_name):
     if request.method == 'POST':
         form = PasswordChangeForm(data=request.POST, user=request.user)
@@ -331,10 +332,35 @@ def change_password (request, user_name):
             form.save()
             update_session_auth_hash(request, form.user)
             messages.success(request, 'Your password was updated successfully!', extra_tags='alert-success')
-            return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name +'/', )
-        else:
-            messages.error(request, 'Could not change password. Please try again.', extra_tags='alert-danger')
             return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name +'/')
+        else:
+        # hier werden die unterschiedlichen Fehlermeldungen generiert. Es ist nicht elegant, aber da die PasswordChangeForm
+		# eine von Django vorgegebene Form ist, lässt sich nicht auf die einzelnen Elemente zugreifen, um eine entsprechende Fehlermeldung auszulesen
+            #values = request.POST.items()
+            old_pw = request.POST.get('old_password')
+            new_pw = request.POST.get('new_password1')
+            new_pw2 = request.POST.get('new_password2')
+			# check if the old pw is equal to the new pw
+            if new_pw == old_pw:
+                messages.warning(request, 'You cannot use the same password again. Please try again.', extra_tags='alert-danger')
+                return redirect('/spicy_memes/userprofile/' + user_name +'/')
+            # check if the new password is not entirely numeric
+            elif new_pw.isdigit():
+                messages.warning(request, 'Your new password cannot be entirely numeric. Please try again.', extra_tags='alert-danger')
+                return redirect('/spicy_memes/userprofile/' + user_name +'/')
+			# check if the new password has at least 8 characters
+            elif len(new_pw) < 8:
+                messages.warning(request, 'Your new password has to contain at least 8 characters. Please try again.', extra_tags='alert-danger')
+                return redirect('/spicy_memes/userprofile/' + user_name +'/')
+			# check if the new pws match
+            elif new_pw != new_pw2:
+                messages.warning(request, 'The new passwords do not match. Please try again.', extra_tags='alert-danger')
+                return redirect('/spicy_memes/userprofile/' + user_name +'/')
+			# in this case: 
+            else:
+                messages.error(request, 'No common used passwords or personal information. Please try again.', extra_tags='alert-danger')
+                return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name +'/')
+                return redirect('/spicy_memes/userprofile/' + user_name +'/')
     else:
         form=PasswordChangeForm(user=request.user)
         return render (request, '/spicy_memes/userprofile' , {'form':form})
