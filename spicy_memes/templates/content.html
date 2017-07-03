@@ -10,7 +10,9 @@
         <!-- Bootstrap -->
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
+        <link rel="stylesheet" href="{% static 'buttons.css' %}">
 
     </head>
     <body>
@@ -29,7 +31,7 @@
                         <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
                     </a>
                     {% getPostLikes post as rating %}
-                    <strong>Posted by: </strong> {{ post.user }}<p class="pull-right"><strong>
+                    <strong>Posted by: </strong> {{ post.user }}<p class="pull-right">
                         <strong>Tags: </strong>
                         {% for tag in post.tags.all %} <!--jeder tag ist in einer form und klickbar. es wird nach posts mit dem angeklickten tag gesucht-->
                             <a href="{% url 'spicy_memes:search' %}?tag={{ tag.name }}">{{ tag.name }}</a>
@@ -41,20 +43,65 @@
                             -->
                         {% endfor %}
                         <br>
-                        Spiciness Factor: </strong> {{ rating }} 🌶️🌶️🌶️</p>
+                        <strong>Spiciness Factor: </strong> <span id="rating{{post.id}}">{{ post.get_likes }} </span>🌶️🌶️🌶️</p>
+                        <div id="test{{post.id}}"></div>
                     <div class="btn-toolbar vote">
-                        <form action="{% url 'spicy_memes:likePost' pk=post.id likes=1 %}" method="post">
-                            {% csrf_token %}
-                            <button class="btn btn-default" type="submit" value="submit">🌶️</button>
-                        </form>
-                        <form action="{% url 'spicy_memes:likePost' pk=post.id likes=0 %}" method="post">
-                            {% csrf_token %}
-                            <button class="btn btn-default" type="submit" value="submit">🍼</button>
-                        </form>
-                        <a class="btn btn-default" href="{% url 'spicy_memes:postDetail' post.id %}#commentanchor">💬</a>
+                        <button href="#" id="upvote{{post.id}}" class="btn2 btn2-default" type="submit" value="submit">🌶️</button>
+                        <button href="#" id="downvote{{post.id}}" class="btn2 btn2-default" type="submit" value="submit">🍼</button>
+                        <a class="btn2 btn2-default" href="{% url 'spicy_memes:postDetail' post.id %}#commentanchor">💬</a>
                     </div>
                     <hr/>
                 </div>
+                <script>
+                    $(document).ready(function() {
+                        $("#upvote{{post.id}}").click(function() {
+                            var id = {{ post.id }};
+                            var likes = 1;
+                            $.get("{% url 'spicy_memes:like_post' %}", {
+                                post_id: id,
+                                likes: likes
+                            }, function(data) {
+                                $("#rating{{post.id}}").html(data);
+                                if ($("#upvote{{post.id}}").hasClass('btn2-default')) {
+                                    $("#upvote{{post.id}}").removeClass('btn2-default').addClass('btn2-danger');
+                                    $("#downvote{{post.id}}").removeClass('btn2-info').addClass('btn2-default');
+                                }
+                                else {
+                                   $("#upvote{{post.id}}").removeClass('btn2-danger').addClass('btn2-default'); 
+                                }
+                            });
+                            return false;
+                        });
+                        $("#downvote{{post.id}}").click(function() {
+                            var id = {{ post.id }};
+                            var likes = 0;
+                            $.get("{% url 'spicy_memes:like_post' %}", {
+                                post_id: id,
+                                likes: likes
+                            }, function(data) {
+                                $("#rating{{post.id}}").html(data);
+                                if ($("#downvote{{post.id}}").hasClass('btn2-default')) {
+                                    $("#downvote{{post.id}}").removeClass('btn2-default').addClass('btn2-info');
+                                    $("#upvote{{post.id}}").removeClass('btn2-danger').addClass('btn2-default');
+                                }
+                                else {
+                                   $("#downvote{{post.id}}").removeClass('btn2-info').addClass('btn2-default');
+                                }
+                            });
+                        return false;
+                        });
+                    });
+                </script>
+                {% if user|hasUpVotedPost:post %}
+                <script>
+                $("#upvote{{post.id}}").removeClass('btn2-default').addClass('btn2-danger');
+                </script>
+                {% endif %}
+                {% if user|hasDownVotedPost:post %}
+                <script>
+                $("#downvote{{post.id}}").removeClass('btn2-default').addClass('btn2-info');
+                </script>
+                {% endif %}
                 {% endfor %}
             </div>
         </div>
