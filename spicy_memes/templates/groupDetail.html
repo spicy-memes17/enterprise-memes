@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+{% load likepost_extras %}
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Spicy Memes</title>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
+
+    </head>
+    <body>
+        {% include 'nav.html' with active="index" %}
+        <div class="container">
+            <div class="row">
+                <div class="page-header center-block">
+                    <h1 id="headline">{{ name }}</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8 memes col-md-offset-8 ">
+                    <h2>Memes:</h2>
+					{% for post in memes %}
+						<div class="col-xs-3 thumbnail" style="margin: 10px">
+							<div style="margin-bottom: 10px; padding-bottom: 5px">
+								<span><strong><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></strong></span>
+							</div>
+							<a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
+								<img src="{{ post.image_field.url }}" class="hidden-xs hidden-sm img-responsive img-rounded">
+							</a>
+						</div>
+					{% endfor %}
+					
+					<h2>Members:</h2>
+					<ul>
+					{%for member in members%}
+						<li>{{member.username}}<li>
+					{%endfor%}
+					</ul>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script>
+headline = document.getElementById("headline");
+if (headline.innerHTML == "Fresh") {
+    headline.innerHTML += " 👶";
+}
+else if (headline.innerHTML == "Spicy") {
+    headline.innerHTML += " 🌶️";
+}
+else if (headline.innerHTML == "On Fire") {
+    headline.innerHTML += " 🔥️";
+}
+    </script>
+</html>
