@@ -137,14 +137,23 @@ def deleteUser(request):
 
 @login_required
 def uploadFile(request):
+    video_hosts = ["youtube", "vimeo", "myvideo", "youku", "twitch", "facebook"]
     if request.method == 'POST':
         postform = UploadForm(user = request.user, files=request.FILES, data=request.POST)
         if postform.is_valid():
-            postform.save(commit=True)
-            return HttpResponseRedirect('/spicy_memes/')
+            if ((postform.cleaned_data.get('video_url') == '') or
+                ((postform.cleaned_data.get('video_url') != '') and
+                 (any
+                  (substring in postform.cleaned_data.get('video_url') for
+                   substring in video_hosts)))):
+                postform.save(commit=True)
+                return HttpResponseRedirect('/spicy_memes/')
+            else:
+                messages.success(request, 'Please enter a URL that is suitable for embedding.')
+                return render(request, 'uploadFile.html', {'postform': postform}) #add error message at some point
         else:
             messages.success(request, 'Please choose an image file with a name under 40 characters long.')
-            return render(request, 'uploadFile.html', {'form': form}) #add error message at some point
+            return render(request, 'uploadFile.html', {'postform': postform}) #add error message at some point
     else:
         postform = UploadForm(user= request.user)
         return render(request, 'uploadFile.html', {'postform': postform})
