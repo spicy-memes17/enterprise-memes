@@ -9,6 +9,7 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
 
 </head>
@@ -35,26 +36,18 @@
 			<br>
 			{{postform.tags}}
 			<br>
+			<input type="radio" name="choice-upload" id="choice-upload-file" checked onchange="changeContent('#image_field')">
+			<label for="choice-upload-file">Upload an Image</label>
+			<div id="image_field">
+			<br>
             {{ postform.image_field }}
-            <button type="submit" class="btn btn-default pull-right">
-            <span class="glyphicon glyphicon-upload" aria-hidden="true">
-                <div class="uploadbtn">UPLOAD</div>
-            </span>
-            </button>
-        </form>
-    </div>
-    <div><label>Upload your Video</label>
-        <form method="post" action="{% url 'spicy_memes:uploadFile' %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            <p>
-            {{ videoform.title }}
-            </p>
-            <br>
-            {{ videoform.description }}
+			</div>
 			<br>
-			{{videoform.tags}}
-			<br>
-            {{ videoform.video_url }}
+			<input type="radio" name="choice-upload" id="choice-upload-video" onchange="changeContent('#video_url')">
+			<label for="choice-upload-video">Post a Video</label>
+			<div id="video_url" class="hide">
+			{{ postform.video_url }}
+			</div>
             <button type="submit" class="btn btn-default pull-right">
             <span class="glyphicon glyphicon-upload" aria-hidden="true">
                 <div class="uploadbtn">UPLOAD</div>
@@ -63,4 +56,20 @@
         </form>
     </div>
 </body>
+
+<script>
+    var active = '#image_field';
+
+    function changeContent(id) {
+        $(active).addClass('hide');
+		if (active == '#video_url') {
+			$({{ postform.video_url.auto_id }}).val(''); 
+        }
+		if (active == '#image_field') {
+			$({{ postform.image_field.auto_id }}).val(''); 
+        }
+        $(id).removeClass('hide');
+        active = id;
+    }
+</script>
 </html>

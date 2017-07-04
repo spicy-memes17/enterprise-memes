@@ -26,11 +26,11 @@
                 <div class="col-md-8 memes col-md-offset-8 ">
                     <h3><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></h3>
                     <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
-                        {% if post.image_field.url == "/media/media/images/image.jpg" %}
-                            <div>{{ post.video_url }}</div>
-                            <iframe width="560" height="315" src="{{ post.video_url }}" frameborder="0" allowfullscreen></iframe
+                        {% if post|isVideo %}
+                            <div class="embed-responsive embed-responsive-16by9">
+                            <iframe class="embed-responsive-item" src="{{ post.video_url }}" frameborder="0" allowfullscreen></iframe>
+                            </div>
                         {% else %}
-                            <div>halloooo2</div>
                             <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
                         {% endif %}
                     </a>
@@ -47,7 +47,7 @@
                             -->
                         {% endfor %}
                         <br>
-                        Spiciness Factor: </strong> {{ rating }} 🌶️🌶️🌶️</p>
+                        Spiciness Factor: </strong>{{ rating }} 🌶️🌶️🌶️</p>
                     <div class="btn-toolbar vote">
                         <form action="{% url 'spicy_memes:likePost' pk=post.id likes=1 %}" method="post">
                             {% csrf_token %}

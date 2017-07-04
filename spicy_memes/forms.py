@@ -1,6 +1,6 @@
 from django import forms
 # from .models import User
-from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag, PostInfo, Video
+from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag
 from django.forms import ModelForm, Textarea
 from .authenticate import MyBackend
 from django.contrib.auth.forms import UserChangeForm
@@ -54,8 +54,8 @@ class UploadFileForm(forms.Form):
 class UploadForm(ModelForm):
     tags = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Enter Spicy Tags'}))
     
-    def __init__(self, **kwargs):
-        self.user = kwargs.pop('user', None)
+    def __init__(self, user,  **kwargs):
+        self.user = user
         # self.group = kwargs.pop('group', None)
         super(UploadForm, self).__init__(**kwargs)
 
@@ -99,70 +99,13 @@ class UploadForm(ModelForm):
     class Meta:
         model = Post
         exclude = ('tags',) #don't remove the ,
-        fields = ['title', 'description', 'image_field']
+        fields = ['title', 'description', 'image_field', 'video_url']
         widgets = {
             'title': Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Spicy Title'}),
             'description': Textarea(
                 attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Enter spicy description'}),
+            'video_url': Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'URL that allows embedding (e.g. from YouTube)'}),
         }
-
-
-class UploadVideoForm(ModelForm):
-    tags = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Enter Spicy Tags'}))
-    
-    def __init__(self, **kwargs):
-        self.user = kwargs.pop('user', None)
-        # self.group = kwargs.pop('group', None)
-        super(UploadVideoForm, self).__init__(**kwargs)
-
-    #fetches tags by name and writes them into a list. if the tag does not exist it is created
-    def handle_tags(self, tagstring):
-        tag_list = []
-        tag = Tag()
-        tag_name_list= tagstring.split(',')
-        stripped_tag_names= map(lambda x: x.strip(), tag_name_list)
-        for tag_name in stripped_tag_names: # not none check?
-            if tag_name is not "": # can this happen?
-                try:
-                    tag= Tag.objects.get(name=tag_name)
-                except Tag.DoesNotExist:
-                    tag= Tag(name=tag_name)
-                    tag.save()
-                tag_list.append(tag)
-        return tag_list
-
-    def save(self, commit=True):
-        obj = super(UploadVideoForm, self).save(commit=False)
-        obj.user = self.user
-        #obj.group = self.group
-
-        #get list of tags
-        tag_names= self.cleaned_data.get('tags')
-        tag_list= self.handle_tags(tag_names)                   # self to call functions from same class
-
-        # object has to have a value for id before a relationship can be set
-
-        if commit:
-            obj.save()
-
-        #add all tags to the many to many relationship
-        if tag_list is not None:
-            for tag in tag_list:
-                obj.tags.add(tag)
-          
-        return obj
-
-    class Meta:
-        model = Video
-        exclude = ('tags',) #don't remove the ,
-        fields = ['title', 'description', 'video_url']
-        widgets = {
-            'title': Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Spicy Title'}),
-            'description': Textarea(
-                attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Enter spicy description'}),
-        }
-
-
 
 class SearchForm(forms.Form):
     search_term = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '1' ,'placeholder': 'Enter Spicy Tags'}))
