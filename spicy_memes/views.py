@@ -79,6 +79,9 @@ def signUp(request):
 
     return render(request, 'signup.html', {'signUpForm': form})
 
+@login_required
+def userprofile(request):
+    return userprofile(request, request.user)
 
 @login_required
 def userprofile(request, user_name):
@@ -95,11 +98,12 @@ def userprofile(request, user_name):
 
         user_group_list = MemeGroup.objects.filter(users__username=current_user.username)
         group_invites = GroupInvite.objects.filter(user__username=current_user.username)
+        groupform = GroupForm()
 
         # user bleibt eingeloggter User, neue var user2 ist anderer User (public profile)
         return render(request, 'userProfile.html', {'AuthForm': authform, 'user2': current_user, 'user': current_user, 'passwordform': passwordform,
                                                     'profilepicform': profilepicform, 'generalForm': generalForm,
-                                                    'user_meme_list': user_meme_list, 'user_group_list': user_group_list, 'group_invites': group_invites})
+                                                    'user_meme_list': user_meme_list, 'user_group_list': user_group_list, 'group_invites': group_invites, 'groupform': groupform})
     else:
         user_meme_list = Post.objects.filter(user=user2).order_by('-date')
         return render(request, 'userProfilePublic.html', { 'user2': user2, 'user': current_user, 'user_meme_list': user_meme_list})
@@ -155,9 +159,9 @@ def deleteUser(request):
             return HttpResponseRedirect('/spicy_memes/signUp')
         else:
             messages.error(request, 'Wrong combination for username and password. Please try again.', extra_tags='alert-danger')
-            return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if password is wrong
+            return HttpResponseRedirect('/spicy_memes/userprofile/' + current_user) #redirect if password is wrong
     else:
-        return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if accessed with http-get
+        return HttpResponseRedirect('/spicy_memes/userprofile/' + current_user) #redirect if accessed with http-get
 
 
 @login_required
@@ -324,12 +328,12 @@ def edit_profile (request, user_name):
         else:
             print("form else")
             messages.error(request, 'Could not change name / email. Please try again.', extra_tags='alert-danger')
-            return HttpResponseRedirect('/spicy_memes/userprofile')
+            return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name)
     else:
         print("Im else fall")
         form=EditProfileForm(instance=request.user)
         args = {'form': form}
-        return HttpResponseRedirect('/spicy_memes/userprofile', args)
+        return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name, args)
 
 @login_required
 def change_password (request, user_name):
@@ -373,7 +377,7 @@ def change_password (request, user_name):
                 return redirect('/spicy_memes/userprofile/' + user_name +'/')
     else:
         form=PasswordChangeForm(user=request.user)
-        return render (request, '/spicy_memes/userprofile' , {'form':form})
+        return render (request, '/spicy_memes/userprofile/' + user_name , {'form':form})
 
 
 def changeProfilePic(request, user_name):
@@ -449,7 +453,7 @@ def createGroup(request):
                 group.save()
                 group.users.add(user)
 
-    return HttpResponseRedirect('/spicy_memes/')
+    return HttpResponseRedirect('/spicy_memes/userprofile/' + user.username)
 
 
 def leaveGroup(request, name_group, name_user):
@@ -460,7 +464,7 @@ def leaveGroup(request, name_group, name_user):
     if len(group.users.all())==0:
         group.delete()
 
-    return HttpResponseRedirect('/spicy_memes/userprofile')
+    return HttpResponseRedirect('/spicy_memes/userprofile/' + user.username)
 
 
 def acceptInvite(request, name_group, name_user):
@@ -471,7 +475,7 @@ def acceptInvite(request, name_group, name_user):
     accepted_group.users.add(accepted_user)
     invite.delete()
 
-    return HttpResponseRedirect('/spicy_memes/userprofile')
+    return HttpResponseRedirect('/spicy_memes/userprofile/' + name_user)
 
 
 def declineInvite(request, name_group, name_user):
@@ -480,7 +484,7 @@ def declineInvite(request, name_group, name_user):
     invite = GroupInvite.objects.get(user= declined_user, group= declined_group)
     invite.delete()
 
-    return HttpResponseRedirect('/spicy_memes/userprofile')
+    return HttpResponseRedirect('/spicy_memes/userprofile/' + name_user)
 
 #not done!
 def groupDetail(request, group_name):

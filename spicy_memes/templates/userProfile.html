@@ -183,7 +183,7 @@
 					</ul>
 				</div>
 				<h4>Create a Group</h4>
-				<form method="POST" action="createGroup">
+				<form method="POST" action="{% url 'spicy_memes:createGroup' %}">
 					{%csrf_token%}
 					{{groupform}}
 					<button type="submit" class="btn btn-info submit pull-right">Create Group</button>
