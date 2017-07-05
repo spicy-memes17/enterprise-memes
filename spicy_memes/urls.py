@@ -18,12 +18,24 @@ urlpatterns = [
     url(r'^logout', views.logOut, name='logoutPage'),
     url(r'^userprofile/(?P<user_name>\w+)/deleteUser', views.deleteUser, name='deleteUser'),
     url(r'^search', views.search, name='search'),
+#<<<<<<< HEAD
   #  url(r'^edit_profile/(?P<user_name>\w+)/$', views.edit_profile, name='edit_profile'),
     url(r'^userprofile/(?P<user_name>\w+)/change_password', views.change_password, name='change_password'),
     url(r'^userprofile/(?P<user_name>\w+)/changeProfilePic', views.changeProfilePic, name='changeProfilePic'),
-    url(r'^post/(?P<pk>\d+)/(?P<likes>(\d+))/likePost/$', views.likePost, name='likePost'),
+    url(r'^post/(?P<pk>\d+)/(?P<likes>(\d+))/likePost/$', views.like_post, name='likePost'),
+#=======
+    url(r'^like-post/$', views.like_post, name='like_post'),
+    url(r'^like-comment/$', views.like_comment, name='like_comment'),
+    url(r'^edit_profile', views.edit_profile, name='edit_profile'),
+#    url(r'^change_password', views.change_password, name='change_password'),
+#    url(r'^changeProfilePic', views.changeProfilePic, name='changeProfilePic'),
+#>>>>>>> master
     url(r'^post/(?P<pk>\d+)/comment/$', views.addComment, name='addComment'),
     url(r'^post/(?P<pk>\d+)/comment/delete/$', views.deleteComment, name='deleteComment'),
-    url(r'^post/(?P<pk>(\d+))/(?P<likes>(\d+))/vote/$', views.voteComment, name='voteComment'),
     url(r'^startPage/', views.startPage, name='startPage'),
+    url(r'^createGroup', views.createGroup, name='createGroup'),
+    url(r'^leaveGroup/(?P<name_group>.*)/(?P<name_user>.*)', views.leaveGroup, name='leaveGroup'),
+    url(r'^acceptInvite/(?P<name_group>.*)/(?P<name_user>.*)', views.acceptInvite, name='acceptInvite'),
+    url(r'^declineInvite/(?P<name_group>.*)/(?P<name_user>.*)', views.declineInvite, name='declineInvite'),
+    url(r'^groupDetail/(?P<group_name>.*)', views.groupDetail, name='groupDetail')
     ]

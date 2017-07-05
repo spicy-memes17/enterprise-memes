@@ -1,7 +1,7 @@
 from django import forms
 # from .models import User
-from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag
-from django.forms import ModelForm, Textarea
+from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag, MemeGroup
+from django.forms import ModelForm, Textarea, Select
 from .authenticate import MyBackend
 from django.contrib.auth.forms import UserChangeForm
 
@@ -57,11 +57,15 @@ class UploadFileForm(forms.Form):
 # data upload mit ModelForm. ist empfohlen, wenn man mit models.py arbeitet
 class UploadForm(ModelForm):
     tags = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Enter Spicy Tags'}))
+    group = forms.ModelChoiceField(required=False, label='group', queryset=MemeGroup.objects.all())
     
-    def __init__(self, **kwargs):
-        self.user = kwargs.pop('user', None)
+    def __init__(self, user, **kwargs):
+        self.user = user
         # self.group = kwargs.pop('group', None)
         super(UploadForm, self).__init__(**kwargs)
+        self.fields['group'].queryset= self.user.memegroup_set.all()
+        
+        
 
     #fetches tags by name and writes them into a list. if the tag does not exist it is created
     def handle_tags(self, tagstring):
@@ -83,6 +87,7 @@ class UploadForm(ModelForm):
         obj = super(UploadForm, self).save(commit=False)
         obj.user = self.user
         #obj.group = self.group
+        print(self.user)
 
         #get list of tags
         tag_names= self.cleaned_data.get('tags')
@@ -103,7 +108,7 @@ class UploadForm(ModelForm):
     class Meta:
         model = Post
         exclude = ('tags',) #don't remove the ,
-        fields = ['title', 'description', 'image_field']
+        fields = ['title', 'description', 'image_field', 'group']
         widgets = {
             'title': Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Spicy Title'}),
             'description': Textarea(
@@ -193,3 +198,8 @@ class LikeForm(forms.ModelForm):
     class Meta:
         model = LikesPost
         fields = ('likes', )
+
+
+class GroupForm(forms.Form):
+    name= forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '1' ,'placeholder': 'Enter Spicy Group Name'}))
+    #Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Enter a spicy name', 'style': 'margin-bottom: 5px'})
