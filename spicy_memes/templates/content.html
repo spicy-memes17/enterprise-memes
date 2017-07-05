@@ -3,10 +3,9 @@
 {% load staticfiles %}
 {% load likepost_extras %}
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Spicy Memes</title>
-
+<head>
+    <meta charset="UTF-8">
+    <title>Spicy Memes</title>
         <!-- Bootstrap -->
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
@@ -102,21 +101,23 @@
                 $("#downvote{{post.id}}").removeClass('btn2-default').addClass('btn2-info');
                 </script>
                 {% endif %}
-                {% endfor %}
+{#                {% endfor %}#}
             </div>
-        </div>
-    </body>
+        {% endfor %}
+    </div>
+</div>
+</body>
 
-    <script>
-headline = document.getElementById("headline");
-if (headline.innerHTML == "Fresh") {
-    headline.innerHTML += " 👶";
-}
-else if (headline.innerHTML == "Spicy") {
-    headline.innerHTML += " 🌶️";
-}
-else if (headline.innerHTML == "On Fire") {
-    headline.innerHTML += " 🔥️";
-}
-    </script>
+<script>
+    headline = document.getElementById("headline");
+    if (headline.innerHTML == "Fresh") {
+        headline.innerHTML += " 👶";
+    }
+    else if (headline.innerHTML == "Spicy") {
+        headline.innerHTML += " 🌶️";
+    }
+    else if (headline.innerHTML == "On Fire") {
+        headline.innerHTML += " 🔥️";
+    }
+</script>
 </html>
