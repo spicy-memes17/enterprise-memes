@@ -31,11 +31,11 @@ def content(request, content=None):
     if(content == None):
         content = "on_fire"
 
-    memeList = Post.objects.all()
+    postList = Post.objects.filter(group__name='all')
     memeTupleList = list()
     sortedMemeList = list()
 
-    for post in memeList:
+    for post in postList:
         mtuple = (post,
                   (post.get_likes())*2
                   + Comment.objects.filter(post=post).count()*5)
@@ -45,7 +45,7 @@ def content(request, content=None):
 
     if(content == "fresh"):
         content = "Fresh"
-        sortedMemeList = Post.objects.order_by('-date') [:20]
+        sortedMemeList = postList.order_by('-date')[:20]
     elif(content == "spicy"):
         content = "Spicy"
         for tup in memeTupleList:
@@ -86,7 +86,6 @@ def userprofile(request):
 @login_required
 def userprofile(request, user_name):
     current_user = request.user
-#<<<<<<< HEAD
     user2 = get_object_or_404(MyUser, username=user_name)
     if user2 == current_user:
         generalForm = EditProfileForm(instance=current_user)
@@ -107,20 +106,6 @@ def userprofile(request, user_name):
     else:
         user_meme_list = Post.objects.filter(user=user2).order_by('-date')
         return render(request, 'userProfilePublic.html', { 'user2': user2, 'user': current_user, 'user_meme_list': user_meme_list})
-# =======
-#     generalForm = EditProfileForm(instance=request.user)
-#     authform = LogInForm()
-#     profilepicform = ChangeProfilePic()
-#     passwordform = PasswordChangeForm(data=request.POST, user=request.user)
-#     groupform = GroupForm()
-#     #Get list of user's posts
-#     user_meme_list = Post.objects.filter(user=current_user).order_by('-date')
-#     user_group_list = MemeGroup.objects.filter(users__username= current_user.username)
-#     group_invites = GroupInvite.objects.filter(user__username= current_user.username)
-#
-#     return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user, 'passwordform': passwordform, 'profilepicform': profilepicform, 'generalForm': generalForm, 'user_meme_list': user_meme_list,
-#                                                 'groupform': groupform, 'user_group_list': user_group_list, 'group_invites': group_invites})
-# >>>>>>> master
 
 
 
@@ -166,22 +151,28 @@ def deleteUser(request):
 
 @login_required
 def uploadFile(request):
-    #user = request.user
-
-    #names = user.memegroup_set.all().values('name')
-    #group_names = map(lambda x: x['name'], names)
+    video_hosts = ["youtube", "vimeo", "myvideo", "youku", "twitch", "facebook"]
 
     if request.method == 'POST':
-        form = UploadForm(user = request.user, files=request.FILES, data=request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/spicy_memes/')
+        postform = UploadForm(user = request.user, files=request.FILES, data=request.POST)
+        if postform.is_valid():
+            if ((postform.cleaned_data.get('video_url') == '') or
+                    ((postform.cleaned_data.get('video_url') != '') and
+                         (any
+                              (substring in postform.cleaned_data.get('video_url') for
+                               substring in video_hosts)))):
+                postform.save()
+                return HttpResponseRedirect('/spicy_memes/')
+            else:
+                messages.success(request, 'Please enter a URL that is suitable for embedding.')
+                return render(request, 'uploadFile.html', {'postform': postform})  # add error message at some point
         else:
             messages.success(request, 'Please choose an image file with a name under 40 characters long.')
-            return render(request, 'uploadFile.html', {'form': form}) #add error message at some point
+            return render(request, 'uploadFile.html', {'postform': postform}) #add error message at some point
     else:
-        form = UploadForm(user= request.user)
-        return render(request, 'uploadFile.html', {'form': form})
+        postform = UploadForm(user=request.user) #this may be w/o user=
+        return render(request, 'uploadFile.html', {'postform': postform})
+
 
 
 @login_required
@@ -319,18 +310,15 @@ def edit_profile (request, user_name):
     if request.method == 'POST':
         form = EditProfileForm(data=request.POST, instance=request.user)
         if form.is_valid():
-            print("form valid")
             form.save()
             new_name = form.cleaned_data['username'];
             messages.success(request, 'Your profile was updated successfully!', extra_tags='alert-success')
             return HttpResponseRedirect('/spicy_memes/userprofile/' + new_name +'/')
             #return redirect ('/spicy_memes/userprofile')
         else:
-            print("form else")
             messages.error(request, 'Could not change name / email. Please try again.', extra_tags='alert-danger')
             return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name)
     else:
-        print("Im else fall")
         form=EditProfileForm(instance=request.user)
         args = {'form': form}
         return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name, args)
@@ -339,9 +327,6 @@ def edit_profile (request, user_name):
 def change_password (request, user_name):
     if request.method == 'POST':
         form = PasswordChangeForm(data=request.POST, user=request.user)
-        #print(form.user)
-        print("Request:" + request.user.username)
-        print("Username:" + user_name)
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
@@ -385,7 +370,6 @@ def changeProfilePic(request, user_name):
     if request.method == 'POST':
         form = ChangeProfilePic(request.POST, request.FILES, instance=user)
         if form.is_valid():
-            print(form);
             form.save()
             messages.success(request, 'Your profile picture was updated successfully!', extra_tags='alert-success')
             return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name +'/')
