@@ -43,26 +43,28 @@
 
         </div>
     </div>
-    <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
-        <div class="btn-group" role="group">
-            <button type="button" id="stars" class="btn btn-primary" href="#tab1" data-toggle="tab"><span
+    <div class="container-fluid" role="group" aria-label="..." id="profile">  <!--btn-pref btn-group btn-group-justified btn-group-lg --> <!--btn-group-->
+        <ul class="nav nav-pills nav-justified" role="group" id="profileTab1">
+			<li>
+            <a type="button" id="stars" class="active" href="#tab1" data-toggle="tab" onclick="saveTab('#tab1')"><span
                     class="glyphicon glyphicon-user" aria-hidden="true"></span>
                 <div class="hidden-xs">Posted Memes</div>
 
-            </button>
-        </div>
-        <div class="btn-group" role="group">
-            <button type="button" id="favorites" class="btn btn-default" href="#tab2" data-toggle="tab"><span
+            </a>
+			</li>
+			<li>
+			<a type="button" id="favorites" class="btn" href="#tab2" data-toggle="tab" onclick="saveTab('#tab2')"><span
                     class="glyphicon glyphicon-cog" aria-hidden="true"></span>
                 <div class="hidden-xs">Settings</div>
-            </button>
-        </div>
-        <div class="btn-group" role="group">
-            <button type="button" id="following" class="btn btn-default" href="#tab3" data-toggle="tab"><span
+            </a>
+			</li>
+			<li>
+			<a type="button" id="following" class="btn" href="#tab3" data-toggle="tab" onclick="saveTab('#tab3')"><span
                     class="glyphicon glyphicon-star" aria-hidden="true"></span>
                 <div class="hidden-xs">Groups</div>
-            </button>
-        </div>
+            </a>
+			</li>
+        </ul>
     </div>
 
     <div class="well">
@@ -213,21 +215,51 @@
 </div>
 <script>
     var active = '#general';
+	var activeId = 'activeid';
+	var activeTab;
 
     function changeContent(id) {
         $(active).addClass('hide');
         $(id).removeClass('hide');
         active = id;
+		activeTab = id;
+		localStorage.setItem(activeId, activeTab);
     }
+	
+	// save the last tab in local storage
+	var tabId = 'tabid';
+	var tab;
+	function saveTab(id) {
+		
+		tab = id;
+		localStorage.setItem(tabId, tab);
+		
+	}
 
     // Timeout Alert
     $(".alert").fadeTo(7000, 500).slideUp(500, function () {
         $(".alert").slideUp(500);
     });
 	
-    // Tooltip Password info
+	var lastTab;
+	var lastActive;
+    
     $(document).ready(function () {
+
+		// get to the latest tab, if it exists
+		lastTab = localStorage.getItem(tabId);
+		// toggle the last tab
+		$('#profile a[href="' + lastTab + '"]').tab('show');
+		
+		// get the last active content on the settings tab
+		lastActive = localStorage.getItem(activeId);
+		// show the content
+		changeContent(lastActive);
+
+		// Tooltip Password info
         $('[data-toggle="tooltip"]').tooltip();
+
     });
+	
 </script>
 </body>
