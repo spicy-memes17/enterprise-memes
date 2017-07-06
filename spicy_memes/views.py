@@ -31,11 +31,11 @@ def content(request, content=None):
     if(content == None):
         content = "on_fire"
 
-    memeList = Post.objects.all()
+    postList = Post.objects.filter(group__name='all')
     memeTupleList = list()
     sortedMemeList = list()
 
-    for post in memeList:
+    for post in postList:
         mtuple = (post,
                   (post.get_likes())*2
                   + Comment.objects.filter(post=post).count()*5)
@@ -45,7 +45,7 @@ def content(request, content=None):
 
     if(content == "fresh"):
         content = "Fresh"
-        sortedMemeList = Post.objects.order_by('-date') [:20]
+        sortedMemeList = postList.order_by('-date')[:20]
     elif(content == "spicy"):
         content = "Spicy"
         for tup in memeTupleList:
@@ -79,22 +79,33 @@ def signUp(request):
 
     return render(request, 'signup.html', {'signUpForm': form})
 
-
 @login_required
 def userprofile(request):
+    return userprofile(request, request.user)
+
+@login_required
+def userprofile(request, user_name):
     current_user = request.user
-    generalForm = EditProfileForm(instance=request.user)
-    authform = LogInForm()
-    profilepicform = ChangeProfilePic()
-    passwordform = PasswordChangeForm(data=request.POST, user=request.user)
-    groupform = GroupForm()
-    #Get list of user's posts
-    user_meme_list = Post.objects.filter(user=current_user).order_by('-date')
-    user_group_list = MemeGroup.objects.filter(users__username= current_user.username)
-    group_invites = GroupInvite.objects.filter(user__username= current_user.username)
-    
-    return render(request, 'userProfile.html', {'AuthForm': authform, 'user' : current_user, 'passwordform': passwordform, 'profilepicform': profilepicform, 'generalForm': generalForm, 'user_meme_list': user_meme_list,
-                                                'groupform': groupform, 'user_group_list': user_group_list, 'group_invites': group_invites})
+    user2 = get_object_or_404(MyUser, username=user_name)
+    if user2 == current_user:
+        generalForm = EditProfileForm(instance=current_user)
+        authform = LogInForm()
+        profilepicform = ChangeProfilePic()
+        passwordform = PasswordChangeForm(data=request.POST, user=current_user)
+        #Get list of user's posts
+        user_meme_list = Post.objects.filter(user=current_user).order_by('-date')
+
+        user_group_list = MemeGroup.objects.filter(users__username=current_user.username)
+        group_invites = GroupInvite.objects.filter(user__username=current_user.username)
+        groupform = GroupForm()
+
+        # user bleibt eingeloggter User, neue var user2 ist anderer User (public profile)
+        return render(request, 'userProfile.html', {'AuthForm': authform, 'user2': current_user, 'user': current_user, 'passwordform': passwordform,
+                                                    'profilepicform': profilepicform, 'generalForm': generalForm,
+                                                    'user_meme_list': user_meme_list, 'user_group_list': user_group_list, 'group_invites': group_invites, 'groupform': groupform})
+    else:
+        user_meme_list = Post.objects.filter(user=user2).order_by('-date')
+        return render(request, 'userProfilePublic.html', { 'user2': user2, 'user': current_user, 'user_meme_list': user_meme_list})
 
 
 
@@ -133,30 +144,35 @@ def deleteUser(request):
             return HttpResponseRedirect('/spicy_memes/signUp')
         else:
             messages.error(request, 'Wrong combination for username and password. Please try again.', extra_tags='alert-danger')
-            return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if password is wrong
+            return HttpResponseRedirect('/spicy_memes/userprofile/' + current_user) #redirect if password is wrong
     else:
-        return HttpResponseRedirect('/spicy_memes/userprofile') #redirect if accessed with http-get
+        return HttpResponseRedirect('/spicy_memes/userprofile/' + current_user) #redirect if accessed with http-get
 
 
 @login_required
 def uploadFile(request):
-    #user = request.user
-    
-    #names = user.memegroup_set.all().values('name')
-    #group_names = map(lambda x: x['name'], names)
-    
+    video_hosts = ["youtube", "vimeo", "myvideo", "youku", "twitch", "facebook"]
+
     if request.method == 'POST':
-        form = UploadForm(user = request.user, files=request.FILES, data=request.POST)
-        if form.is_valid():
-            print('isvalid\n\n\n\n\n\n\n\n\n\n\n\n\n')
-            form.save()
-            return HttpResponseRedirect('/spicy_memes/')
+        postform = UploadForm(user = request.user, files=request.FILES, data=request.POST)
+        if postform.is_valid():
+            if ((postform.cleaned_data.get('video_url') == '') or
+                    ((postform.cleaned_data.get('video_url') != '') and
+                         (any
+                              (substring in postform.cleaned_data.get('video_url') for
+                               substring in video_hosts)))):
+                postform.save()
+                return HttpResponseRedirect('/spicy_memes/')
+            else:
+                messages.success(request, 'Please enter a URL that is suitable for embedding.')
+                return render(request, 'uploadFile.html', {'postform': postform})  # add error message at some point
         else:
             messages.success(request, 'Please choose an image file with a name under 40 characters long.')
-            return render(request, 'uploadFile.html', {'form': form}) #add error message at some point
+            return render(request, 'uploadFile.html', {'postform': postform}) #add error message at some point
     else:
-        form = UploadForm(user= request.user)
-        return render(request, 'uploadFile.html', {'form': form})
+        postform = UploadForm(user=request.user) #this may be w/o user=
+        return render(request, 'uploadFile.html', {'postform': postform})
+
 
 
 @login_required
@@ -224,7 +240,7 @@ def like_post(request):
     post_likes = True
     if(int(request.GET['likes']) == 0):
         post_likes = False
-        
+
     if request.method == 'GET':
         try:
             like = LikesPost.objects.get(user = request.user, post = post)
@@ -279,61 +295,87 @@ def search(request):
                     posts.extend(filtered_posts)
             except:
                 pass
-                        
+
         context = {'memeList': posts, 'content': "Search"}  # only temporary
-                
+
     return render(request, 'content.html', context)# only temporary
-    
+
 
 def startPage(request):
     if request.user.is_authenticated:
         return content(request, None)
     return render(request, 'startPage.html')
 
-def edit_profile (request):
+def edit_profile (request, user_name):
     if request.method == 'POST':
         form = EditProfileForm(data=request.POST, instance=request.user)
         if form.is_valid():
             form.save()
+            new_name = form.cleaned_data['username'];
             messages.success(request, 'Your profile was updated successfully!', extra_tags='alert-success')
-            return HttpResponseRedirect('/spicy_memes/userprofile')
+            return HttpResponseRedirect('/spicy_memes/userprofile/' + new_name +'/')
             #return redirect ('/spicy_memes/userprofile')
         else:
             messages.error(request, 'Could not change name / email. Please try again.', extra_tags='alert-danger')
-            return HttpResponseRedirect('/spicy_memes/userprofile')
+            return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name)
     else:
         form=EditProfileForm(instance=request.user)
-        args = {'form':form}
-        return render (request, 'edit_profile.html' , args)
+        args = {'form': form}
+        return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name, args)
 
-def change_password (request):
+@login_required
+def change_password (request, user_name):
     if request.method == 'POST':
         form = PasswordChangeForm(data=request.POST, user=request.user)
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
             messages.success(request, 'Your password was updated successfully!', extra_tags='alert-success')
-            return HttpResponseRedirect('/spicy_memes/userprofile')
+            return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name +'/')
         else:
-            messages.error(request, 'Could not change password. Please try again.', extra_tags='alert-danger')
-            return HttpResponseRedirect('/spicy_memes/userprofile')
+        # hier werden die unterschiedlichen Fehlermeldungen generiert. Es ist nicht elegant, aber da die PasswordChangeForm
+		# eine von Django vorgegebene Form ist, lässt sich nicht auf die einzelnen Elemente zugreifen, um eine entsprechende Fehlermeldung auszulesen
+            #values = request.POST.items()
+            old_pw = request.POST.get('old_password')
+            new_pw = request.POST.get('new_password1')
+            new_pw2 = request.POST.get('new_password2')
+            # check if the old pw is equal to the new pw
+            if new_pw == old_pw:
+                messages.warning(request, 'You cannot use the same password again. Please try again.', extra_tags='alert-danger')
+                return redirect('/spicy_memes/userprofile/' + user_name +'/')
+            # check if the new password is not entirely numeric
+            elif new_pw.isdigit():
+                messages.warning(request, 'Your new password cannot be entirely numeric. Please try again.', extra_tags='alert-danger')
+                return redirect('/spicy_memes/userprofile/' + user_name +'/')
+			# check if the new password has at least 8 characters
+            elif len(new_pw) < 8:
+                messages.warning(request, 'Your new password has to contain at least 8 characters. Please try again.', extra_tags='alert-danger')
+                return redirect('/spicy_memes/userprofile/' + user_name +'/')
+			# check if the new pws match
+            elif new_pw != new_pw2:
+                messages.warning(request, 'The new passwords do not match. Please try again.', extra_tags='alert-danger')
+                return redirect('/spicy_memes/userprofile/' + user_name +'/')
+			# in this case:
+            else:
+                messages.error(request, 'No common used passwords or personal information. Please try again.', extra_tags='alert-danger')
+                return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name +'/')
+                return redirect('/spicy_memes/userprofile/' + user_name +'/')
     else:
         form=PasswordChangeForm(user=request.user)
-        return render (request, '/spicy_memes/userprofile' , {'form':form})
+        return render (request, '/spicy_memes/userprofile/' + user_name , {'form':form})
 
 
-def changeProfilePic(request):
+def changeProfilePic(request, user_name):
     user = request.user
     if request.method == 'POST':
         form = ChangeProfilePic(request.POST, request.FILES, instance=user)
         if form.is_valid():
-            print(form);
             form.save()
             messages.success(request, 'Your profile picture was updated successfully!', extra_tags='alert-success')
-            return HttpResponseRedirect('/spicy_memes/userprofile')
+            return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name +'/')
         else:
             messages.error(request, 'Could not change profile picture. Please try again.', extra_tags='alert-danger')
-            return HttpResponseRedirect('/spicy_memes/userprofile')
+            return HttpResponseRedirect('/spicy_memes/userprofile/' + user_name +'/')
     else:
         form = ChangeProfilePic()
         return render(request, 'test.html', {'form': form})
@@ -361,7 +403,7 @@ def like_comment(request):
     comment_likes = True
     if(int(request.GET['likes']) == 0):
         comment_likes = False
-        
+
     if request.method == 'GET':
         try:
             like = LikesComment.objects.get(user = request.user, comment = comment)
@@ -395,7 +437,7 @@ def createGroup(request):
                 group.save()
                 group.users.add(user)
 
-    return HttpResponseRedirect('/spicy_memes/userprofile')
+    return HttpResponseRedirect('/spicy_memes/userprofile/' + user.username)
 
 
 def leaveGroup(request, name_group, name_user):
@@ -406,7 +448,7 @@ def leaveGroup(request, name_group, name_user):
     if len(group.users.all())==0:
         group.delete()
 
-    return HttpResponseRedirect('/spicy_memes/userprofile')
+    return HttpResponseRedirect('/spicy_memes/userprofile/' + user.username)
 
 
 def acceptInvite(request, name_group, name_user):
@@ -416,8 +458,8 @@ def acceptInvite(request, name_group, name_user):
 
     accepted_group.users.add(accepted_user)
     invite.delete()
-    
-    return HttpResponseRedirect('/spicy_memes/userprofile')
+
+    return HttpResponseRedirect('/spicy_memes/userprofile/' + name_user)
 
 
 def declineInvite(request, name_group, name_user):
@@ -425,8 +467,8 @@ def declineInvite(request, name_group, name_user):
     declined_user = MyUser.objects.get(username= name_user)
     invite = GroupInvite.objects.get(user= declined_user, group= declined_group)
     invite.delete()
-    
-    return HttpResponseRedirect('/spicy_memes/userprofile')
+
+    return HttpResponseRedirect('/spicy_memes/userprofile/' + name_user)
 
 #not done!
 def groupDetail(request, group_name):

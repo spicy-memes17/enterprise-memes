@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load staticfiles %}
+    <title>Spicy Memes</title>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="{% static 'user/js/userPageJs.js' %}"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'user/css/userPageStyles.css' %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static 'user/css/userStyles.css' %}" type="text/css"/>
+
+</head>
+{% include 'nav.html' with active="index" %}
+<body class="body">
+<div class="container">
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card hovercard">
+        <div class="card-background">
+            <img class="card-bkimg" alt="" src="{{ user2.profile_pic.url }}">
+        </div>
+        <div class="useravatar">
+            <img alt="" src="{{ user2.profile_pic.url }}">
+        </div>
+        <div class="card-info"><span class="card-title">{{ user2.username }}</span>
+
+        </div>
+    </div>
+    <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+        <div class="btn-group" role="group">
+            <button type="button" id="stars" class="btn btn-primary" href="#tab1" data-toggle="tab"><span
+                    class="glyphicon glyphicon-" aria-hidden="true"></span>
+                <div class="hidden-xs">Posted Memes</div>
+            </button>
+        </div>
+    </div>
+
+    <div class="well">
+        <div class="tab-content">
+            <div class="tab-pane fade in active" id="tab1">
+                <h3>User Info</h3>
+                <br>
+                <h4><strong>Spicy collection:</strong></h4><br/>
+                <div class="row">
+                    {% for post in user_meme_list %}
+                        <div class="col-xs-3 thumbnail" style="margin: 10px">
+                            <div style="margin-bottom: 10px; padding-bottom: 5px">
+                                <span><strong><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></strong></span>
+                            </div>
+                            <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
+                                <img src="{{ post.image_field.url }}"
+                                     class="hidden-xs hidden-sm img-responsive img-rounded">
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var active = '#general';
+
+    function changeContent(id) {
+        $(active).addClass('hide');
+        $(id).removeClass('hide');
+        active = id;
+    }
+
+    // Timeout Alert
+    $(".alert").fadeTo(2000, 500).slideUp(500, function () {
+        $(".alert").slideUp(500);
+    });
+
+    // Tooltip Password info
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+</body>

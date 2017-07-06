@@ -23,7 +23,13 @@
     <div class="row">
         <div class="col-xs-8 memesdetail">
             <h3>{{ post.title }}</h3>
-            <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
+            {% if post|isVideo %}
+                <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="{{ post.video_url }}" frameborder="0" allowfullscreen></iframe>
+                </div>
+            {% else %}
+                <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
+            {% endif %}
             {% getPostLikes post as postRating %}
             <strong>Posted by: </strong> {{ post.user }} ({{ post.date|timesince }} ago)<p class="pull-right"><strong>Spiciness Factor: </strong> <span id="rating{{post.id}}">{{ post.get_likes }} </span>🌶️🌶️🌶️</p>
             <br>
@@ -85,22 +91,27 @@
         </script>
         {% endif %}
         {% if owner and time_posted < 15 %}
-        <div class="col-xs-6 col-lg-4 edit">
-        <form action="{% url 'spicy_memes:editPost' post.id %}" method="post">
-        {% csrf_token %}
-        <h3>Edit your post</h3>
-        <p>You can edit your post for another {{ time_diff }} minute(s).</p>
-        <label>Title</label>
-        {{ editform.title }}
-        <br>
-        <label>Description</label>
-        {{ editform.description }}
-        <br>
-        <button type="submit" class="btn btn-default pull-left uploadbtn" value="submit">SUBMIT EDIT</button>
-        </form>
-        <a class="btn btn-default pull-right" href="{% url 'spicy_memes:deleteFile' pk=post.pk %}" onclick="return confirm('Are you sure you want to delete this Meme?')"><span class="glyphicon glyphicon-delete"></span><div class="uploadbtn">DELETE</div></a>
-        </div>
-        <br>
+            <div class="col-xs-6 col-lg-4 edit">
+                <form action="{% url 'spicy_memes:editPost' post.id %}" method="post">
+                    {% csrf_token %}
+                    <h3>Edit your post</h3>
+                    <p>You can edit your post for another {{ time_diff }} minute(s).</p>
+                    <label>Title</label>
+                    {{ editform.title }}
+                    <br>
+                    <label>Description</label>
+                    {{ editform.description }}
+                    <br>
+                    <button type="submit" class="btn btn-default pull-left uploadbtn" value="submit">SUBMIT EDIT
+                    </button>
+                </form>
+                <a class="btn btn-default pull-right" href="{% url 'spicy_memes:deleteFile' pk=post.pk %}"
+                   onclick="return confirm('Are you sure you want to delete this Meme?')"><span
+                        class="glyphicon glyphicon-delete"></span>
+                    <div class="uploadbtn">DELETE</div>
+                </a>
+            </div>
+            <br>
         {% endif %}
     </div>
 </div>
@@ -203,10 +214,10 @@
         {% empty %}
                 <br>
                 <p>There are no comments yet.</p>
-        {% endfor %}
-        </div>
+            {% endfor %}
         </div>
     </div>
-</div> 
+</div>
+</div>
 </body>
 </html>

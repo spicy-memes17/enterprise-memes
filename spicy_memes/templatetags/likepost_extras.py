@@ -17,6 +17,12 @@ def hasUpVotedPost(user, post):
     else:
         return False
 
+@register.filter
+def isVideo(post):
+    if "http" in post.video_url:
+        return True
+    else:
+        return False
 
 @register.filter
 def hasDownVotedPost(user, post):

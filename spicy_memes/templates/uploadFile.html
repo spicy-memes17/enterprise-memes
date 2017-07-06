@@ -7,6 +7,7 @@
     <title>Spicy Memes</title>
 
     <!-- Bootstrap -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
@@ -28,16 +29,27 @@
         <form method="post" action="{% url 'spicy_memes:uploadFile' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <p>
-                {{ form.title }}
+                {{ postform.title }}
             </p>
             <br>
-            {{ form.description }}
+            {{ postform.description }}
 			<br>
-			{{form.tags}}
+			{{postform.tags}}
 			<br>
-            {{ form.image_field }}
+            <input type="radio" name="choice-upload" id="choice-upload-file" checked onchange="changeContent('#image_field')">
+			<label for="choice-upload-file">Upload an Image</label>
+			<div id="image_field">
 			<br>
-			{{form.group}}
+            {{ postform.image_field }}
+			</div>
+			<br>
+			<input type="radio" name="choice-upload" id="choice-upload-video" onchange="changeContent('#video_url')">
+			<label for="choice-upload-video">Post a Video</label>
+			<div id="video_url" class="hide">
+			{{ postform.video_url }}
+			</div>
+			<br>
+			{{postform.group}}
             <button type="submit" class="btn btn-default pull-right">
             <span class="glyphicon glyphicon-upload" aria-hidden="true">
                 <div class="uploadbtn">UPLOAD</div>
@@ -45,5 +57,21 @@
             </button>
         </form>
     </div>
+</div>
 </body>
+<script>
+    var active = '#image_field';
+
+    function changeContent(id) {
+        $(active).addClass('hide');
+		if (active == '#video_url') {
+			$({{ postform.video_url.auto_id }}).val('');
+        }
+		if (active == '#image_field') {
+			$({{ postform.image_field.auto_id }}).val('');
+        }
+        $(id).removeClass('hide');
+        active = id;
+    }
+</script>
 </html>

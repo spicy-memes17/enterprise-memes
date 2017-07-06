@@ -3,6 +3,7 @@
 
 <head>
     {% load staticfiles %}
+    {% load likepost_extras %}
     <title>Spicy Memes</title>
     <meta charset="utf-8"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -33,12 +34,12 @@
 
     <div class="card hovercard">
         <div class="card-background">
-            <img class="card-bkimg" alt="" src="{{ user.profile_pic.url }}">
+            <img class="card-bkimg" alt="" src="{{ user2.profile_pic.url }}">
         </div>
         <div class="useravatar">
-            <img alt="" src="{{ user.profile_pic.url }}">
+            <img alt="" src="{{ user2.profile_pic.url }}">
         </div>
-        <div class="card-info"><span class="card-title">{{ user.username }}</span>
+        <div class="card-info"><span class="card-title">{{ user2.username }}</span>
 
         </div>
     </div>
@@ -79,7 +80,15 @@
                         <span><strong><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></strong></span>
                     </div>
                     <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
-                        <img src="{{ post.image_field.url }}" class="hidden-xs hidden-sm img-responsive img-rounded">
+                        {% if post|isVideo %}
+                            <div class="embed-responsive embed-responsive-16by9">
+                            <iframe class="embed-responsive-item" src="{{ post.video_url }}" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                        {% else %}
+                            {% if post.image_field %}
+                            <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
+                            {% endif %}
+                        {% endif %}
                     </a>
                 </div>
                 {% endfor %}
@@ -185,7 +194,7 @@
 					</ul>
 				</div>
 				<h4>Create a Group</h4>
-				<form method="POST" action="createGroup">
+				<form method="POST" action="{% url 'spicy_memes:createGroup' %}">
 					{%csrf_token%}
 					{{groupform}}
 					<button type="submit" class="btn btn-info submit pull-right">Create Group</button>

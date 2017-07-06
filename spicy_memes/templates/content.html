@@ -3,10 +3,9 @@
 {% load staticfiles %}
 {% load likepost_extras %}
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Spicy Memes</title>
-
+<head>
+    <meta charset="UTF-8">
+    <title>Spicy Memes</title>
         <!-- Bootstrap -->
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
@@ -28,7 +27,15 @@
                 <div class="col-md-8 memes col-md-offset-8 ">
                     <h3><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></h3>
                     <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
-                        <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
+                        {% if post|isVideo %}
+                            <div class="embed-responsive embed-responsive-16by9">
+                            <iframe class="embed-responsive-item" src="{{ post.video_url }}" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                        {% else %}
+                            {% if post.image_field %}
+                            <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
+                            {% endif %}
+                        {% endif %}
                     </a>
                     {% getPostLikes post as rating %}
                     <strong>Posted by: </strong> {{ post.user }}<p class="pull-right">
@@ -43,7 +50,7 @@
                             -->
                         {% endfor %}
                         <br>
-                        <strong>Spiciness Factor: </strong> <span id="rating{{post.id}}">{{ post.get_likes }} </span>🌶️🌶️🌶️</p>
+                        <strong>Spiciness Factor: </strong><span id="rating{{post.id}}">{{ post.get_likes }} </span>🌶️🌶️🌶️</p>
                         <div id="test{{post.id}}"></div>
                     <div class="btn-toolbar vote">
                         <button href="#" id="upvote{{post.id}}" class="btn2 btn2-default" type="submit" value="submit">🌶️</button>
@@ -102,21 +109,23 @@
                 $("#downvote{{post.id}}").removeClass('btn2-default').addClass('btn2-info');
                 </script>
                 {% endif %}
-                {% endfor %}
+{#                {% endfor %}#}
             </div>
-        </div>
-    </body>
+        {% endfor %}
+    </div>
+</div>
+</body>
 
-    <script>
-headline = document.getElementById("headline");
-if (headline.innerHTML == "Fresh") {
-    headline.innerHTML += " 👶";
-}
-else if (headline.innerHTML == "Spicy") {
-    headline.innerHTML += " 🌶️";
-}
-else if (headline.innerHTML == "On Fire") {
-    headline.innerHTML += " 🔥️";
-}
-    </script>
+<script>
+    headline = document.getElementById("headline");
+    if (headline.innerHTML == "Fresh") {
+        headline.innerHTML += " 👶";
+    }
+    else if (headline.innerHTML == "Spicy") {
+        headline.innerHTML += " 🌶️";
+    }
+    else if (headline.innerHTML == "On Fire") {
+        headline.innerHTML += " 🔥️";
+    }
+</script>
 </html>
