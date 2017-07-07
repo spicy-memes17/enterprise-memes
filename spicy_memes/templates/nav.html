@@ -2,6 +2,7 @@
 
 <nav class="navbar navbar-default">
     <link rel="stylesheet" href="{% static 'spicy_memes.css' %}">
+    <link rel="stylesheet" href="{% static 'dropdown.css' %}">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -55,4 +56,21 @@
         </div>
     </div>
 </nav>
+<script>
+function dropdownFunction() {
+    document.getElementById("dropdown-menu").classList.toggle("show");
+}
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
 
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+} 
+</script>

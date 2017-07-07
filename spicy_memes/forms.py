@@ -1,5 +1,7 @@
 from django import forms
 # from .models import User
+from django.core.exceptions import ObjectDoesNotExist
+
 from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag, MemeGroup
 from django.forms import ModelForm, Textarea, Select
 from .authenticate import MyBackend
@@ -27,10 +29,14 @@ class SignUpForm(forms.ModelForm):
         email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
         passwordConfirm = self.cleaned_data.get('passwordConfirm')
-        if len(username) < 4 or len(password) < 4:
-            raise forms.ValidationError("Username and password must have at least four characters.")
+        if len(username) < 4:
+            raise forms.ValidationError("Username must have at least four characters.")
         if password != passwordConfirm:
             raise forms.ValidationError("Passwords do not match!")
+        if len(password) < 8:
+           raise forms.ValidationError("Password has to contain at least 8 characters!")
+        if password.isdigit():
+           raise forms.ValidationError("You password cannot be entirely numeric.")
         if len(list(filter(lambda x: x.username == username, MyUser.objects.all()))) != 0:
             raise forms.ValidationError("Username is already taken!")
         return self.cleaned_data
@@ -59,7 +65,7 @@ class UploadForm(ModelForm):
         self.user = user
         # self.group = kwargs.pop('group', None)
         super(UploadForm, self).__init__(**kwargs)
-        self.fields['group'].queryset= self.user.memegroup_set.all()
+        self.fields['group'].queryset = self.user.memegroup_set.all()
         
         
 
@@ -82,9 +88,16 @@ class UploadForm(ModelForm):
     def save(self, commit=True):
         obj = super(UploadForm, self).save(commit=False)
         obj.user = self.user
-        #obj.group = self.group
-        print(self.user)
+        group = self.cleaned_data.get('group')
 
+        if group is None:
+            try:
+                group = MemeGroup.objects.get(name='all')
+            except ObjectDoesNotExist:  # as this is done exactly once and only on the first post, there surely is a better solution to this. leave it like this if you want it to work
+                group = MemeGroup(name='all')
+                group.save()
+
+        obj.group = group
         #get list of tags
         tag_names= self.cleaned_data.get('tags')
         tag_list= self.handle_tags(tag_names)                   # self to call functions from same class
@@ -104,13 +117,13 @@ class UploadForm(ModelForm):
     class Meta:
         model = Post
         exclude = ('tags',) #don't remove the ,
-        fields = ['title', 'description', 'image_field', 'group']
+        fields = ['title', 'description', 'image_field', 'group', 'video_url']
         widgets = {
             'title': Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Spicy Title'}),
             'description': Textarea(
                 attrs={'class': 'form-control', 'rows': '5', 'placeholder': 'Enter spicy description'}),
+            'video_url': Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'URL that allows embedding (e.g. from YouTube)'}),
         }
-
 
 
 class SearchForm(forms.Form):
