@@ -169,8 +169,8 @@ def uploadFile(request):
                          (any
                               (substring in postform.cleaned_data.get('video_url') for
                                substring in video_hosts)))):
-                postform.save()
-                return HttpResponseRedirect('/spicy_memes/')
+                new_post = postform.save()
+                return HttpResponseRedirect('/spicy_memes/post/' + str(new_post.id) + '/detail')
             else:
                 messages.success(request, 'Please enter a URL that is suitable for embedding.')
                 return render(request, 'uploadFile.html', {'postform': postform})  # add error message at some point
@@ -178,7 +178,7 @@ def uploadFile(request):
             messages.success(request, 'Please choose an image file with a name under 40 characters long.')
             return render(request, 'uploadFile.html', {'postform': postform}) #add error message at some point
     else:
-        postform = UploadForm(user=request.user) #this may be w/o user=
+        postform = UploadForm(user=request.user)
         return render(request, 'uploadFile.html', {'postform': postform})
 
 

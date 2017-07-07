@@ -28,10 +28,10 @@
                 <iframe class="embed-responsive-item" src="{{ post.video_url }}" frameborder="0" allowfullscreen></iframe>
                 </div>
             {% else %}
-               <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
+                <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
             {% endif %}
             {% getPostLikes post as postRating %}
-            <strong>Posted by: </strong> {{ post.user }} ({{ post.date|timesince }} ago)<p class="pull-right"><strong>Spiciness Factor: </strong> <span id="rating{{post.id}}">{{ post.get_likes }} </span>🌶️🌶️🌶️</p>
+            <strong>Posted by: </strong> <a href="{% url 'spicy_memes:userprofile' post.user%}">{{ post.user }}</a> ({{ post.date|timesince }} ago)<p class="pull-right"><strong>Spiciness Factor: </strong> <span id="rating{{post.id}}">{{ post.get_likes }} </span>🌶️🌶️🌶️</p>
             <br>
             <p class="description">{{ post.description }}</p>
             <div class="btn-toolbar vote">
