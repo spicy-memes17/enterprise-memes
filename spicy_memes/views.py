@@ -281,7 +281,12 @@ def search(request):
             by_name = searchform.cleaned_data.get('by_name')
             both_false = not (by_tags or by_name)
             for term in search_terms:   #we sort by tags if the tag selection is true or neither is set (default)
-                if both_false or by_tags:
+                term = term.strip()
+                if both_false:
+                    filtered_posts = Post.objects.filter(tags__name=term) | Post.objects.filter(title__contains=term)
+                    dublonen = list(set(filtered_posts))
+                    posts.extend(dublonen)
+                if by_tags:
                     try:
                         tag= Tag.objects.get(name=term).name
                         if tag is not "":#here or one step up?
