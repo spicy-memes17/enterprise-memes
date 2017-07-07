@@ -38,7 +38,7 @@
                         {% endif %}
                     </a>
                     {% getPostLikes post as rating %}
-                    <strong>Posted by: </strong> {{ post.user }}<p class="pull-right">
+                    <strong>Posted by: </strong> <a href="{% url 'spicy_memes:userprofile' post.user%}">{{ post.user }}</a><p class="pull-right">
                         <strong>Tags: </strong>
                         {% for tag in post.tags.all %} <!--jeder tag ist in einer form und klickbar. es wird nach posts mit dem angeklickten tag gesucht-->
                             <a href="{% url 'spicy_memes:search' %}?tag={{ tag.name }}">{{ tag.name }}</a>
