@@ -119,6 +119,13 @@
     max-height: 200px;  
 }
 
+.thumbnail iframe {
+    width: 100%;
+    height: 200px;
+    max-width: 300px;
+    max-height: 200px;  
+}
+
 .thumbnail a {
     color: black;
     text-decoration: none;

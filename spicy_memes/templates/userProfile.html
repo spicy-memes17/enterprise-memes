@@ -79,12 +79,10 @@
                     </div>
                     <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
                         {% if post|isVideo %}
-                            <div class="embed-responsive embed-responsive-16by9">
-                            <iframe class="embed-responsive-item" src="{{ post.video_url }}" frameborder="0" allowfullscreen></iframe>
-                            </div>
+                            <iframe class="img-responsive text-center hidden-xs hidden-sm" src="{{ post.video_url }}" frameborder="0" allowfullscreen></iframe>
                         {% else %}
                             {% if post.image_field %}
-                            <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
+                            <img src="{{ post.image_field.url }}" class="hidden-xs hidden-sm img-responsive img-rounded" style="padding-top: 5px">
                             {% endif %}
                         {% endif %}
                     </a>

@@ -3,6 +3,7 @@
 
 <head>
     {% load staticfiles %}
+    {% load likepost_extras %}
     <title>Spicy Memes</title>
     <meta charset="utf-8"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -59,15 +60,20 @@
                 <h4><strong>Spicy collection:</strong></h4><br/>
                 <div class="row">
                     {% for post in user_meme_list %}
-                        <div class="col-xs-3 thumbnail" style="margin: 10px">
-                            <div style="margin-bottom: 10px; padding-bottom: 5px">
-                                <span><strong><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></strong></span>
-                            </div>
-                            <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
-                                <img src="{{ post.image_field.url }}"
-                                     class="hidden-xs hidden-sm img-responsive img-rounded">
-                            </a>
-                        </div>
+                <div class="col-xs-3 thumbnail" style="margin: 10px">
+                    <div style="margin-bottom: 10px; padding-bottom: 5px">
+                        <span><strong><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></strong></span>
+                    </div>
+                    <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
+                        {% if post|isVideo %}
+                            <iframe class="img-responsive text-center hidden-xs hidden-sm" src="{{ post.video_url }}" frameborder="0" allowfullscreen></iframe>
+                        {% else %}
+                            {% if post.image_field %}
+                            <img src="{{ post.image_field.url }}" class="hidden-xs hidden-sm img-responsive img-rounded" style="padding-top: 5px">
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </div>
                     {% endfor %}
                 </div>
             </div>

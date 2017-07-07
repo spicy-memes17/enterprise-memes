@@ -69,6 +69,9 @@ class MyUser(AbstractBaseUser, PermissionsMixin): #we don't need all attributes 
         """Return the email."""
         return self.email
 
+    def get_groups(self):
+        return self.memegroup_set.all()
+
     def __str__(self):
         return self.username
 
