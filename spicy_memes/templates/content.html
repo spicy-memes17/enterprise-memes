@@ -19,7 +19,10 @@
         <div class="container">
             <div class="row">
                 <div class="page-header">
-                    <h1 id="headline">{{ content }}</h1>
+                    <h1 id="headline" style="display: inline">{{ content }}</h1>
+                    {% if groupview %}
+                    <a href="{% url 'spicy_memes:groupDetail' group_name=content%}" style="display: inline-block"> (show members)</a>
+                {% endif %}
                 </div>
             </div>
             <div class="row">
@@ -108,7 +111,10 @@
                 <script>
                 $("#downvote{{post.id}}").removeClass('btn2-default').addClass('btn2-info');
                 </script>
-                {% endif %}
+
+            {% endif %}
+            {% empty %}
+            <div>There are no posts in this view or group. Spice it up by posting something fresh!!</div>
         {% endfor %}
     </div>
 </div>

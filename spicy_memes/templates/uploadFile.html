@@ -36,6 +36,10 @@
 			<br>
 			{{postform.tags}}
 			<br>
+			<br>
+			<label>Choose a group:</label>
+			{{postform.group}}
+			<br>
             <input type="radio" name="choice-upload" id="choice-upload-file" checked onchange="changeContent('#image_field')">
 			<label for="choice-upload-file">Upload an Image</label>
 			<div id="image_field">
@@ -48,8 +52,6 @@
 			<div id="video_url" class="hide">
 			{{ postform.video_url }}
 			</div>
-			<br>
-			{{postform.group}}
             <button type="submit" class="btn btn-default pull-right">
             <span class="glyphicon glyphicon-upload" aria-hidden="true">
                 <div class="uploadbtn">UPLOAD</div>

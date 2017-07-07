@@ -27,39 +27,46 @@ from .models import Post, MyUser, Comment, LikesComment, LikesPost, Tag, MemeGro
 from .forms import UploadFileForm, UploadForm, EditForm, SignUpForm, LogInForm, CommentForm, VoteCommentForm, LikeForm, SearchForm, TagSearchForm
 
 @login_required
-def content(request, content=None):
-    if(content == None):
-        content = "on_fire"
+def content(request, content=None, group_name='all'):
+    if(group_name == 'all'):
+        groupview = False
+        if(content == None):
+            content = "on_fire"
 
-    postList = Post.objects.filter(group__name='all')
-    memeTupleList = list()
-    sortedMemeList = list()
+        postList = Post.objects.filter(group__name='all')
+        memeTupleList = list()
+        sortedMemeList = list()
 
-    for post in postList:
-        mtuple = (post,
-                  (post.get_likes())*2
-                  + Comment.objects.filter(post=post).count()*5)
-        memeTupleList.append(mtuple)
+        for post in postList:
+            mtuple = (post,
+                      (post.get_likes())*2
+                      + Comment.objects.filter(post=post).count()*5)
+            memeTupleList.append(mtuple)
 
-    memeTupleList = sorted(memeTupleList, key=lambda x: x[1], reverse=True)
+        memeTupleList = sorted(memeTupleList, key=lambda x: x[1], reverse=True)
 
-    if(content == "fresh"):
-        content = "Fresh"
-        sortedMemeList = postList.order_by('-date')[:20]
-    elif(content == "spicy"):
-        content = "Spicy"
-        for tup in memeTupleList:
-            if(tup[1] >= 5 and tup[1] < 15):
-                sortedMemeList.append(tup[0])
-    elif(content == "on_fire"):
-        content = "On Fire"
-        for tup in memeTupleList:
-            if(tup[1] >= 15):
-                sortedMemeList.append(tup[0])
+        if(content == "fresh"):
+            content = "Fresh"
+            sortedMemeList = postList.order_by('-date')[:20]
+        elif(content == "spicy"):
+            content = "Spicy"
+            for tup in memeTupleList:
+                if(tup[1] >= 5 and tup[1] < 15):
+                    sortedMemeList.append(tup[0])
+        elif(content == "on_fire"):
+            content = "On Fire"
+            for tup in memeTupleList:
+                if(tup[1] >= 15):
+                    sortedMemeList.append(tup[0])
 
-    context = {'memeList': sortedMemeList, 'content': content}
-    return render(request, 'content.html', context)
-
+        context = {'memeList': sortedMemeList, 'content': content, 'groupview': groupview}
+        return render(request, 'content.html', context)
+    else:
+        postList = Post.objects.filter(group__name=group_name).order_by('-date')
+        content = group_name
+        groupview = True
+        context = {'memeList': postList, 'content': content, 'groupview' : groupview}
+        return render(request, 'content.html', context)
 
 def signUp(request):
     if request.method == 'POST':
@@ -104,7 +111,8 @@ def userprofile(request, user_name):
                                                     'profilepicform': profilepicform, 'generalForm': generalForm,
                                                     'user_meme_list': user_meme_list, 'user_group_list': user_group_list, 'group_invites': group_invites, 'groupform': groupform})
     else:
-        user_meme_list = Post.objects.filter(user=user2).order_by('-date')
+        public_user_meme_list = Post.objects.filter(user=user2).order_by('-date')
+        user_meme_list = filter(lambda x: (current_user in x.group.users.all()) or (x.group.name == 'all'), public_user_meme_list)
         return render(request, 'userProfilePublic.html', { 'user2': user2, 'user': current_user, 'user_meme_list': user_meme_list})
 
 
