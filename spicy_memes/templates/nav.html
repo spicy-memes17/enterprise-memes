@@ -37,7 +37,7 @@
             </ul>
             <form method="GET" action="{% url 'spicy_memes:search' %}" class="navbar-form navbar-right">
                 <div class="input-group" >
-                    <input type="text" class="form-control" name="search_term" placeholder="Enter Spicy Search ..."/>
+                    <input type="text"onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" class="form-control" ( name="search_term" placeholder="Enter Spicy Search ..."/>
                     <div class="input-group-btn">
                         <div class="btn-group">
                             <button role="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Options <span class="caret"></span></button>

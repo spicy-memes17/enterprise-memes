@@ -254,18 +254,33 @@ def search(request):
         if searchform.is_valid():
             search_terms = searchform.cleaned_data.get('search_term').split(',')
             by_tags = searchform.cleaned_data.get('by_tag')
+            print(search_terms)
+            print("Tags:")
+            print(by_tags)
             by_name = searchform.cleaned_data.get('by_name')
+            print("Names: ")
+            print(by_name)
             both_false = not (by_tags or by_name)
             for term in search_terms:   #we sort by tags if the tag selection is true or neither is set (default)
-                if both_false or by_tags:
+                term= term.strip()
+                if both_false:
+                    print(term)
+                    filtered_posts = Post.objects.filter(tags__name=term) | Post.objects.filter(title__contains=term)
+                    dublonen = list(set(filtered_posts))
+                    posts.extend(dublonen)
+                if by_tags:
                     try:
+                        print("filter by tags" + term)
                         tag= Tag.objects.get(name=term).name
+                        print(tag)
                         if tag is not "":#here or one step up?
+                            print("Hier")
                             filtered_posts = Post.objects.filter(tags__name=tag)
                             posts.extend(filtered_posts)
                     except:
                         pass
                 if by_name:
+                    print("filter by name")
                     filtered_posts = Post.objects.filter(title__contains=term)
                     posts.extend(filtered_posts)
 
