@@ -11,6 +11,7 @@ from .forms import UploadForm
 from .forms import EditForm
 from .forms import SignUpForm
 from .forms import LogInForm
+from .forms import InviteForm
 from .forms import EditProfileForm
 from .forms import ChangeProfilePic, GroupForm
 from .models import MyUser
@@ -112,8 +113,9 @@ def userprofile(request, user_name):
                                                     'user_meme_list': user_meme_list, 'user_group_list': user_group_list, 'group_invites': group_invites, 'groupform': groupform})
     else:
         public_user_meme_list = Post.objects.filter(user=user2).order_by('-date')
+        invite_form = InviteForm(inviter= current_user, invitee=user2)
         user_meme_list = filter(lambda x: (current_user in x.group.users.all()) or (x.group.name == 'all'), public_user_meme_list)
-        return render(request, 'userProfilePublic.html', { 'user2': user2, 'user': current_user, 'user_meme_list': user_meme_list})
+        return render(request, 'userProfilePublic.html', { 'user2': user2, 'user': current_user, 'user_meme_list': user_meme_list, 'invite_form': invite_form})
 
 
 
@@ -483,15 +485,33 @@ def declineInvite(request, name_group, name_user):
 
     return HttpResponseRedirect('/spicy_memes/userprofile/' + name_user)
 
-#not done!
+
 def groupDetail(request, group_name):
     name = group_name
     members = MemeGroup.objects.get(name= group_name).users.all()
     return render(request, 'groupDetail.html', {'name': name, 'members': members})
 
 
+def inviteToGroup(request, user_name):
+    user = MyUser.objects.get(username=user_name)
+    inviter = MyUser.objects.get(username= request.user)
+    invite_form = InviteForm(request.POST, invitee=user, inviter= request.user)
+    if request.method == "POST":
+        group_id= invite_form.data['group']     #no check if valid. blame matias if any errors occur
+        group= MemeGroup.objects.get(id=group_id)
 
+        #check if invite to this group for user already exists. if not, proceed
+        try:
+            invite = GroupInvite.objects.get(user=user, group=group)
+        except:
+            invite = None
 
+        if invite is None:
+            invite= GroupInvite(user=user, group=group)
+            invite.save()
+        
+            
+    return HttpResponseRedirect('/spicy_memes/userprofile/' + user.username)
 
 
 

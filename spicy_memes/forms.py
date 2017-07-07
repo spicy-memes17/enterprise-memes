@@ -212,3 +212,12 @@ class LikeForm(forms.ModelForm):
 class GroupForm(forms.Form):
     name= forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '1' ,'placeholder': 'Enter Spicy Group Name'}))
     #Textarea(attrs={'class': 'form-control', 'rows': '1', 'placeholder': 'Enter a spicy name', 'style': 'margin-bottom: 5px'})
+
+class InviteForm(forms.Form):
+    group = forms.ModelChoiceField(required=True, label='Choose a spicy group', queryset=MemeGroup.objects.all())
+
+    def __init__(self, *args, inviter, invitee, **kwargs):
+        super(InviteForm, self).__init__(*args, **kwargs)
+        self.fields['group'].queryset = inviter.memegroup_set.difference(invitee.memegroup_set.all())
+
+    
