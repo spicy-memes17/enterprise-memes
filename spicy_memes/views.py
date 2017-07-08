@@ -66,7 +66,11 @@ def content(request, content=None, group_name='all'):
         postList = Post.objects.filter(group__name=group_name).order_by('-date')
         content = group_name
         groupview = True
-        context = {'memeList': postList, 'content': content, 'groupview' : groupview}
+        group = MemeGroup.objects.get(name = group_name)
+        print(group)
+        membersList = MemeGroup.objects.get(name= group_name).users.all()
+        print(membersList)
+        context = {'memeList': postList, 'content': content, 'groupview' : groupview, 'memberList': membersList}
         return render(request, 'content.html', context)
 
 def signUp(request):
@@ -456,6 +460,7 @@ def createGroup(request):
 
 
 def leaveGroup(request, name_group, name_user):
+    print(leave)
     group = MemeGroup.objects.get(name=name_group)
     user = MyUser.objects.get(username=name_user)
 
