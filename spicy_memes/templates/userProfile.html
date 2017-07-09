@@ -76,8 +76,8 @@
                 <div class="row">
                 {% for post in user_meme_list %}
                 <div class="col-xs-3 thumbnail" style="margin: 10px">
-                    <div style="margin-bottom: 10px; padding-bottom: 5px">
-                        <span><strong><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></strong></span>
+                    <div style="margin-bottom: 5px; padding-bottom: 5px; text-align: center" >
+                        <span display="inline-block"><strong><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></strong></span>
                     </div>
                     <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
                         {% if post|isVideo %}

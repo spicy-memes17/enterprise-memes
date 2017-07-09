@@ -31,13 +31,34 @@
                 <img src="{{ post.image_field.url }}" class="img-responsive img-rounded" style="padding-top: 5px">
             {% endif %}
             {% getPostLikes post as postRating %}
-            <strong>Posted by: </strong> <a href="{% url 'spicy_memes:userprofile' post.user%}">{{ post.user }}</a> ({{ post.date|timesince }} ago)<p class="pull-right"><strong>Spiciness Factor: </strong> <span id="rating{{post.id}}">{{ post.get_likes }} </span>🌶️🌶️🌶️</p>
-            <br>
-            <p class="description">{{ post.description }}</p>
-            <div class="btn-toolbar vote">
+            {%  positivlikes post as posi %}
+            {% getnegPostLikes post as negLikes %}
+
+            <div class="row">
+            <div class="col-sm-2" card hovercard style="padding-top: 5px"><div class="useravatar"><img class="img-responsive img-rounded" src="{{ user.profile_pic.url }}"></div></div>
+            <div class="col-sm-4">
+                <strong>Posted by: </strong> <a href="{% url 'spicy_memes:userprofile' post.user%}">{{ post.user }}</a> <br>({{ post.date|timesince }} ago)
+                </div>
+            <div class="col-sm-2">
+                <strong>Tags: </strong><br>
+                {% for tag in post.tags.all %} <!--jeder tag ist in einer form und klickbar. es wird nach posts mit dem angeklickten tag gesucht-->
+                            <a href="{% url 'spicy_memes:search' %}?tag={{ tag.name }}">{{ tag.name }}</a>
+                        {% endfor %}
+            </div>
+                {% if posi %}
+                <p class="pull-right"><strong>Spiciness: </strong> <span id="rating{{post.id}}">{{ post.get_likes }} </span>🌶️</p>
+                {% else %}
+                <p class="pull-right"><strong>Mildness: </strong> <span id="rating{{post.id}}">{{ negLikes}} </span>🍼️</p>
+                {% endif %}
+                <br><br>
+                ️<div class="btn-toolbar vote; pull-right">
                     <button href="#" id="upvote{{post.id}}" class="btn2 btn2-default" type="submit" value="submit">🌶️</button>
                     <button href="#" id="downvote{{post.id}}" class="btn2 btn2-default" type="submit" value="submit">🍼</button>
+
+
             </div>
+            </div>
+        <p class="description">{{ post.description }}</p>
             <hr/>
         </div>
         <script>
@@ -133,7 +154,7 @@
         <br>
         <div class="col-xs-2 card hovercard" style="padding-top: 5px"><div class="useravatar"><img class="img-responsive img-rounded" src="{{ comment.user.profile_pic.url }}"></div></div>
         <!--<div class="col-xs-2" style="padding-top: 5px"><img class="commentpic" src="{% static 'user/img/noPic.png' %}"></div>-->
-        <div class="singlecomment col-xs-10">
+        <div  class="singlecomment col-xs-10">
                 <div class="cheading"><strong>{{ comment.user }}</strong>
                 <span style="float: right">{{ comment.date }}</span></div>
                 <p>{{ comment.content|linebreaks }}</p>
