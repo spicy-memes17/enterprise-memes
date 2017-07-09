@@ -134,7 +134,7 @@
         <div class="col-xs-2 card hovercard" style="padding-top: 5px"><div class="useravatar"><img class="img-responsive img-rounded" src="{{ comment.user.profile_pic.url }}"></div></div>
         <!--<div class="col-xs-2" style="padding-top: 5px"><img class="commentpic" src="{% static 'user/img/noPic.png' %}"></div>-->
         <div class="singlecomment col-xs-10">
-                <div class="cheading"><strong>{{ comment.user }}</strong>
+                <div class="cheading"><a href="{% url 'spicy_memes:userprofile' comment.user %}"><strong>{{ comment.user }}</strong></a>
                 <span style="float: right">{{ comment.date }}</span></div>
                 <p>{{ comment.content|linebreaks }}</p>
                 <button href="#" id="cdownvote{{comment.id}}" class="btn btn-default" type="submit" value="submit" style="display: inline; float: right; padding-left: 15px;">
