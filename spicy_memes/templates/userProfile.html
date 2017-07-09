@@ -190,7 +190,7 @@
                                 <div class="btn-toolbar">
                                     <button class="btn btn-danger pull-right btn-sm" role="button"
                                             href="{% url 'spicy_memes:leaveGroup' name_group=group.name name_user=user.username %}">
-                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
                                     </button>
                                     <button type="button" class="btn btn-info btn-sm pull-right" data-toggle="modal"
                                             data-target=".modal-invite"><span class="glyphicon glyphicon-envelope"
@@ -231,34 +231,32 @@
                                 <h4>Invite a new member:</h4>
                             </div>
                             <div class="modal-body">
-                                <form name="inviteUser" method="post" action="spicy_memes:inviteUser">
                                     {% csrf_token %}
                                     <div class="input-group">
-                                        <input type="text" class="form-control"
-                                               name="name"
+                                        <input type="text" class="form-control" id="invite_name"
+                                               name="group"
                                                placeholder="Enter your friends name ..."/>
                                         <div class="input-group-btn">
                                             <div class="btn-group">
                                                 <button class="btn btn-info" type="submit"
-                                                        id="invite_submit {{ form.field.value|default_if_none:"Test" }}">
+                                                        id="invite_submit">
                                                     Invite to group
                                                 </button>
                                             </div>
                                         </div>
                                         <script>
                                             $(document).ready(function () {
-                                                $("#invite_submit {{ user_name }}").click(function () {
-                                                    print("Hier " + user_name)
-                                                    var name = {{ user_name }};
-                                                    $.get("{% url 'spicy_memes:inviteUser' user_name %}", {}, function (data) {
+                                                $("#invite_submit").click(function () {
+                                                    name = $('#invite_name').attr({'value':'previous'});
+                                                    print("Hier " + name)
+                                                    $.get("{% url 'spicy_memes:inviteUser' name %}", {}, function (data) {
                                                         $("#error_or_suc").html("success");
                                                     })
                                                 })
                                             });
                                         </script>
-                                        <p id="error_or_suc"></p>
                                     </div>
-                                </form>
+                                    <p id="error_or_suc"></p>
                             </div>
                         </div>
                     </div>
