@@ -43,27 +43,31 @@
 
         </div>
     </div>
-    <div class="container-fluid" role="group" aria-label="..." id="profile">  <!--btn-pref btn-group btn-group-justified btn-group-lg --> <!--btn-group-->
+    <div class="container-fluid" role="group" aria-label="..." id="profile">
+        <!--btn-pref btn-group btn-group-justified btn-group-lg --> <!--btn-group-->
         <ul class="nav nav-pills nav-justified" role="group" id="profileTab1">
-			<li>
-            <a type="button" id="stars" class="active" href="#tab1" data-toggle="tab" onclick="saveTab('#tab1')"><span
-                    class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                <div class="hidden-xs">Posted Memes</div>
+            <li>
+                <a type="button" id="stars" class="active" href="#tab1" data-toggle="tab"
+                   onclick="saveTab('#tab1')"><span
+                        class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                    <div class="hidden-xs">Posted Memes</div>
 
-            </a>
-			</li>
-			<li>
-			<a type="button" id="favorites" class="btn" href="#tab2" data-toggle="tab" onclick="saveTab('#tab2')"><span
-                    class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                <div class="hidden-xs">Settings</div>
-            </a>
-			</li>
-			<li>
-			<a type="button" id="following" class="btn" href="#tab3" data-toggle="tab" onclick="saveTab('#tab3')"><span
-                    class="glyphicon glyphicon-star" aria-hidden="true"></span>
-                <div class="hidden-xs">Groups</div>
-            </a>
-			</li>
+                </a>
+            </li>
+            <li>
+                <a type="button" id="favorites" class="btn" href="#tab2" data-toggle="tab"
+                   onclick="saveTab('#tab2')"><span
+                        class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                    <div class="hidden-xs">Settings</div>
+                </a>
+            </li>
+            <li>
+                <a type="button" id="following" class="btn" href="#tab3" data-toggle="tab"
+                   onclick="saveTab('#tab3')"><span
+                        class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                    <div class="hidden-xs">Groups</div>
+                </a>
+            </li>
         </ul>
     </div>
 
@@ -74,22 +78,25 @@
                 <br>
                 <h4><strong>Your spicy collection:</strong></h4><br/>
                 <div class="row">
-                {% for post in user_meme_list %}
-                <div class="col-xs-3 thumbnail" style="margin: 10px">
-                    <div style="margin-bottom: 10px; padding-bottom: 5px">
-                        <span><strong><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></strong></span>
-                    </div>
-                    <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
-                        {% if post|isVideo %}
-                            <iframe class="img-responsive text-center hidden-xs hidden-sm" src="{{ post.video_url }}" frameborder="0" allowfullscreen></iframe>
-                        {% else %}
-                            {% if post.image_field %}
-                            <img src="{{ post.image_field.url }}" class="hidden-xs hidden-sm img-responsive img-rounded" style="padding-top: 5px">
-                            {% endif %}
-                        {% endif %}
-                    </a>
-                </div>
-                {% endfor %}
+                    {% for post in user_meme_list %}
+                        <div class="col-xs-3 thumbnail" style="margin: 10px">
+                            <div style="margin-bottom: 10px; padding-bottom: 5px">
+                                <span><strong><a href="{% url 'spicy_memes:postDetail' post.id %}">{{ post.title }}</a></strong></span>
+                            </div>
+                            <a href="{% url 'spicy_memes:postDetail' post.id %}" method="post">
+                                {% if post|isVideo %}
+                                    <iframe class="img-responsive text-center hidden-xs hidden-sm"
+                                            src="{{ post.video_url }}" frameborder="0" allowfullscreen></iframe>
+                                {% else %}
+                                    {% if post.image_field %}
+                                        <img src="{{ post.image_field.url }}"
+                                             class="hidden-xs hidden-sm img-responsive img-rounded"
+                                             style="padding-top: 5px">
+                                    {% endif %}
+                                {% endif %}
+                            </a>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -178,86 +185,95 @@
 
             </div>
             <div class="tab-pane fade in" id="tab3">
-                <h3>Groups</h3>
-				<h4>My Groups:</h4>
-				<div>
-					<ul class="list-group">
-						{%for group in user_group_list%}
-							<li class="list-group-item">
-								<h5>{{group.name}}</h5>
-								<a class="btn btn-danger pull-right" href="{% url 'spicy_memes:leaveGroup' name_group=group.name name_user=user.username %}">leave group</a>
-								<a class="btn btn-info pull-right" href="{% url 'spicy_memes:groupDetail' group_name=group.name%}">show group</a>
-							</li>
-						{% endfor %}
-					</ul>
-				</div>
-				<h4>Create a Group</h4>
-				<form method="POST" action="{% url 'spicy_memes:createGroup' %}">
-					{%csrf_token%}
-					{{groupform}}
-					<button type="submit" class="btn btn-info submit pull-right">Create Group</button>
-				<form>
-				<h4>Pending Invitations:</h4>
-					<ul class="list-group">
-						{%for invite in group_invites%}
-							<li class="list-group-item">
-								<h5>{{invite.group.name}}</h5>
-								<a class="btn btn-success pull-right" href="{% url 'spicy_memes:acceptInvite' name_group=invite.group.name name_user=invite.user.username %}">Accept</a>
-								<a class="btn btn-danger pull-right" href="{% url 'spicy_memes:declineInvite' name_group=invite.group.name name_user=invite.user.username %}">Decline</a>
-							</li>
-						{% endfor %}
-					</ul>
+                <h3 class="text-center"> Your Groups</h3>
+                <div class="row">
+                    <ul class="list-group col-md-offset-2 col-md-8">
+                        {% for group in user_group_list %}
+                            <li class="list-group-item clearfix">
+                                <a href="{% url 'spicy_memes:content' content="fresh" group_name=group.name %}">{{ group.name }}</a>
+                                <a class="btn btn-danger pull-right btn-sm"
+                                   href="{% url 'spicy_memes:leaveGroup' name_group=group.name name_user=user.username %}">
+                                    <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a>
+                                <a class="btn btn-info pull-right btn-sm"
+                                   href="{% url 'spicy_memes:groupDetail' group_name=group.name %}"><span
+                                        class="glyphicon glyphicon-envelope" aria-hidden="true"></span></a>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item"> You are not member of a group yet.</li>
+                        {% endfor %}
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-md-offset-1 col-md-10 pull-right">
+                                    <form method="POST" action="{% url 'spicy_memes:createGroup' %}">
+                                        {% csrf_token %}
+                                        <div class="input-group">
+                                            <input type="text" class="form-control"
+                                                   onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }"
+                                                   name="name" placeholder="Enter Spicy Group Name ..."/>
+                                            <div class="input-group-btn">
+                                                <div class="btn-group">
+                                                    <button class="btn btn-info" type="submit">Create new Group
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 </div>
 <script>
     var active = '#general';
-	var activeId = 'activeid';
-	var activeTab;
+    var activeId = 'activeid';
+    var activeTab;
 
     function changeContent(id) {
         $(active).addClass('hide');
         $(id).removeClass('hide');
         active = id;
-		activeTab = id;
-		localStorage.setItem(activeId, activeTab);
+        activeTab = id;
+        localStorage.setItem(activeId, activeTab);
     }
-	
-	// save the last tab in local storage
-	var tabId = 'tabid';
-	var tab;
-	function saveTab(id) {
-		
-		tab = id;
-		localStorage.setItem(tabId, tab);
-		
-	}
+
+    // save the last tab in local storage
+    var tabId = 'tabid';
+    var tab;
+    function saveTab(id) {
+
+        tab = id;
+        localStorage.setItem(tabId, tab);
+
+    }
 
     // Timeout Alert
     $(".alert").fadeTo(7000, 500).slideUp(500, function () {
         $(".alert").slideUp(500);
     });
-	
-	var lastTab;
-	var lastActive;
-    
+
+    var lastTab;
+    var lastActive;
+
     $(document).ready(function () {
 
-		// get to the latest tab, if it exists
-		lastTab = localStorage.getItem(tabId);
-		// toggle the last tab
-		$('#profile a[href="' + lastTab + '"]').tab('show');
-		
-		// get the last active content on the settings tab
-		lastActive = localStorage.getItem(activeId);
-		// show the content
-		changeContent(lastActive);
+        // get to the latest tab, if it exists
+        lastTab = localStorage.getItem(tabId);
+        // toggle the last tab
+        $('#profile a[href="' + lastTab + '"]').tab('show');
 
-		// Tooltip Password info
+        // get the last active content on the settings tab
+        lastActive = localStorage.getItem(activeId);
+        // show the content
+        changeContent(lastActive);
+
+        // Tooltip Password info
         $('[data-toggle="tooltip"]').tooltip();
 
     });
-	
+
 </script>
 </body>

@@ -66,7 +66,9 @@ def content(request, content=None, group_name='all'):
         postList = Post.objects.filter(group__name=group_name).order_by('-date')
         content = group_name
         groupview = True
-        context = {'memeList': postList, 'content': content, 'groupview' : groupview}
+        group = MemeGroup.objects.get(name=group_name)
+        membersList = MemeGroup.objects.get(name=group_name).users.all()
+        context = {'memeList': postList, 'content': content, 'groupview': groupview, 'memberList': membersList}
         return render(request, 'content.html', context)
 
 def signUp(request):
@@ -509,8 +511,8 @@ def inviteToGroup(request, user_name):
         if invite is None:
             invite= GroupInvite(user=user, group=group)
             invite.save()
-        
-            
+
+
     return HttpResponseRedirect('/spicy_memes/userprofile/' + user.username)
 
 
