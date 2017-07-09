@@ -455,6 +455,8 @@ def createGroup(request):
                 group= MemeGroup(name=groupname)
                 group.save()
                 group.users.add(user)
+            else:
+                messages.error(request, 'Group name already exists. Please choose another name.', extra_tags='alert-danger')
 
     return HttpResponseRedirect('/spicy_memes/userprofile/' + user.username)
 
@@ -498,25 +500,29 @@ def groupDetail(request, group_name):
 
 
 def inviteToGroup(request, user_name):
-    user = MyUser.objects.get(username=user_name)
-    inviter = MyUser.objects.get(username= request.user)
-    invite_form = InviteForm(request.POST, invitee=user, inviter= request.user)
-    if request.method == "POST":
-        group_id= invite_form.data['group']     #no check if valid. blame matias if any errors occur
-        group= MemeGroup.objects.get(id=group_id)
+    user = get_object_or_404(MyUser, username=user_name)
+    if user == 404:
+        error_or_suc = "User not found. Please try again."
+    else:
+        inviter = MyUser.objects.get(username= request.user)
+        invite_form = InviteForm(request.POST, invitee=user, inviter= request.user)
+        if request.method == "POST":
+            group_id= invite_form.data['group']     #no check if valid. blame matias if any errors occur
+            group= MemeGroup.objects.get(id=group_id)
 
-        #check if invite to this group for user already exists. if not, proceed
-        try:
-            invite = GroupInvite.objects.get(user=user, group=group)
-        except:
-            invite = None
+            #check if invite to this group for user already exists. if not, proceed
+            try:
+                invite = GroupInvite.objects.get(user=user, group=group)
+            except:
+                invite = None
 
-        if invite is None:
-            invite= GroupInvite(user=user, group=group)
-            invite.save()
+            if invite is None:
+                invite= GroupInvite(user=user, group=group)
+                invite.save()
+        error_or_suc = "Invitation successful"
         
             
-    return HttpResponseRedirect('/spicy_memes/userprofile/' + user.username)
+    return HttpResponseRedirect('/spicy_memes/userprofile/' + user.username, {'error_or_suc' : error_or_suc})
 
 
 

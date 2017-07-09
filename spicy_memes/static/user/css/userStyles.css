@@ -1,8 +1,8 @@
-.header{
+.header {
     margin-bottom: 70px;
 }
 
-.button-wrapper .btn{
+.button-wrapper .btn {
     margin-bottom: 5px;
 }
 
@@ -19,3 +19,9 @@
 .submit {
     margin-top: 10px;
 }
+
+.popover {
+    width: 100px !important;
+}
+
+
