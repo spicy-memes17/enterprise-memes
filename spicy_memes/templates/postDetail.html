@@ -140,7 +140,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-8">
-        <h3><section id= commentanchor>Comments</section></h3>
+        <h3 style="text-align: center"><section id= commentanchor>Comments</section></h3>
         <br>
         <form action="{% url 'spicy_memes:addComment' post.id %}" method="post">
         {% csrf_token %}
