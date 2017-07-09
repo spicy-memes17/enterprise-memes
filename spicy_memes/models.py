@@ -77,7 +77,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin): #we don't need all attributes 
 
 
 class MemeGroup(models.Model): #there is a group model in django. we could use it, but it doesn't seem necessary to me https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.Group
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30,unique=True)
     users = models.ManyToManyField(MyUser)
 
     def __str__(self):
