@@ -218,6 +218,6 @@ class InviteForm(forms.Form):
 
     def __init__(self, *args, inviter, invitee, **kwargs):
         super(InviteForm, self).__init__(*args, **kwargs)
-        self.fields['group'].queryset = inviter.memegroup_set.difference(invitee.memegroup_set.all())
+        self.fields['group'].queryset = inviter.memegroup_set.all().difference(invitee.memegroup_set.all())
 
     
