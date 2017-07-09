@@ -191,8 +191,14 @@
                                         href="{% url 'spicy_memes:leaveGroup' name_group=group.name name_user=user.username %}">
                                     leave group
                                 </button>
-                                <button class="btn btn-info pull-right btn-xs" role="button"
-                                        href="{% url 'spicy_memes:inviteUser' user_name=user.username %}">Invite
+                                <button type="button" class="btn btn-xs btn-info pull-right" data-toggle="popover"
+                                        title="Invite a new member: " data-html='true'  data-placement="left"
+                                        data-content="<div class='input-group'><form method='POST' action='{% url 'spicy_memes:createGroup' %}'>{% csrf_token %}<input type='text' placeholder='Enter your friend's name ...'/><div class='input-group-btn'>
+                                                <div class='btn-group'>
+                                                    <button class='btn btn-info btn-xs' type='submit'>Send
+                                                    </button>
+                                                </div>
+                                            </div></form></div>">Invite
                                 </button>
                                 {% empty %}
                             <li class="list-group-item"> You are not member of a group yet.</li>
@@ -289,6 +295,9 @@
 
         // Tooltip Password info
         $('[data-toggle="tooltip"]').tooltip();
+
+        //Popover Invite
+        $('[data-toggle="popover"]').popover();
 
     });
 
