@@ -56,12 +56,7 @@
                     <strong>Tags: </strong>
                     {% for tag in post.tags.all %}
                         <!--jeder tag ist in einer form und klickbar. es wird nach posts mit dem angeklickten tag gesucht-->
-
-                            <form method="GET" action="{% url 'spicy_memes:search' %}" style="float: left">
-                                <input value="{{ tag.name }}" type="hidden" name="tag">
-                                <button type="submit" class="btn-link">{{ tag.name }}</button>
-                            </form>
-                            
+							<a href="{% url 'spicy_memes:search' %}?search_term={{ tag.name }}">{{ tag.name }}</a>  
                     {% endfor %}
                     <br>
                     <strong>Spiciness Factor: </strong><span id="rating{{ post.id }}">{{ post.get_likes }} </span>🌶️🌶️🌶️
