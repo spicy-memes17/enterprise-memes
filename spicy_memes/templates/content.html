@@ -27,8 +27,8 @@
                     <ul class="dropdown-menu">
                         {% for member in memberList %}
                             <li><a href="{% url 'spicy_memes:userprofile' member %}">{{ member.username }}</a></li>
-                            </ul>
                         {% endfor %}
+                    </ul>
                 </div>
             {% endif %}
         </div>
