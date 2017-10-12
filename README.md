@@ -2,7 +2,7 @@
 A professional enterprise meme portal
 
 ## Getting started
-Everything you need or should do, in order to work on the project.
+Everything you need to do to work on the project.
 
 ### Prerequisites
 In order to run this project, you need
